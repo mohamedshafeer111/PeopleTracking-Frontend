@@ -1,0 +1,118 @@
+<div class="view-report-container" *ngIf="report; else noReport">
+  <h2>{{ report.reportName }}</h2>
+</div>
+
+<div class="navbar">
+  <div class="left-section">
+    <div class="picture">
+      <img src="assets/send.png" alt="share">
+      <img src="assets/download.png" alt="download" style="cursor: pointer;" (click)="onDownloadClick()" />
+
+
+    </div>
+  </div>
+
+  <div class="right-section nav-icons">
+    <img src="assets/refresh.png" alt="Refresh">
+    <img src="assets/columns.png" alt="columns">
+  </div>
+</div>
+
+<ng-template #noReport>
+  <p>No report selected.</p>
+</ng-template>
+
+<button routerLink="/createreport" class="back-btn">← Back to Reports</button>
+
+
+
+
+
+
+
+
+<div class="view-report-container" *ngIf="reportData; else loading">
+  <h2>{{ reportData.reportName }}</h2>
+
+
+
+  <div *ngIf="reportData" class="report-summary">
+    <!-- <p><strong>Report Name:</strong> {{ reportData.reportName }}</p> -->
+    <p><strong>Start Time:</strong> {{ reportData.startTime | date:'medium' }}</p>
+    <p><strong>End Time:</strong> {{ reportData.endTime | date:'medium' }}</p>
+    <p><strong>Created On:</strong> {{ reportData.createdAt | date:'medium' }}</p>
+  </div>
+
+
+  <h3 class="visit-header" *ngIf="reportData">
+    Total Visits ({{ reportData.totalVisits || 0 }})
+  </h3>
+
+  <div *ngIf="visits.length > 0; else noVisits">
+    <table class="visits-table">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>BLE Tag ID</th>
+          <th>Zone ID</th>
+          <th>Check-In Time</th>
+          <th>Check-Out Time</th>
+          <th>Time Spend (mins)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let visit of visits; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ visit.bleTagId }}</td>
+          <td>{{ visit.zoneId }}</td>
+          <td>{{ visit.checkInTime | date:'short' }}</td>
+          <td>{{ visit.checkOutTime | date:'short' }}</td>
+          <td>{{ visit.timeSpentMinutes | number:'1.0-2' }} min</td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #noVisits>
+    <p class="no-data-text">No visit data found for this report.</p>
+  </ng-template>
+</div>
+
+<!-- 🔥 Fix: Add missing loading template -->
+<ng-template #loading>
+  <p class="loading-text">Loading report data...</p>
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+<div class="pagination-container">
+  <div class="pagination-controls">
+    <label>Rows per page:</label>
+    <select [(ngModel)]="pageSize" (change)="changePageSize()">
+      <option [value]="15">15</option>
+      <option [value]="30">30</option>
+      <option [value]="50">50</option>
+      <option [value]="100">100</option>
+      <option [value]="250">250</option>
+      <option [value]="500">500</option>
+      <option [value]="1000">1000</option>
+    </select>
+  </div>
+
+
+  <div class="pagination-right">
+    <button (click)="prevPage()" [disabled]="page === 1">Previous</button>
+    <span>Page {{ page }}</span>
+    <button (click)="nextPage()" [disabled]="(page * pageSize) >= totalRecords">Next</button>
+
+  </div>
+</div>

@@ -1,0 +1,153 @@
+<nav class="navbar">
+  <h3>User</h3>
+  <div>
+    <button class="rolebutton" routerLink="/role">Role</button>
+  </div>
+  <div class="nav-icons">
+    <img src="assets/add.png" alt="Add" (click)="openCreateUserPopup()">
+    <img src="assets/upload.png" alt="upload">
+    <img src="assets/download.png" alt="download">
+    <img src="assets/refresh.png" alt="Refresh">
+    <img src="assets/columns.png" alt="columns">
+  </div>
+</nav>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+
+        <th>User Name</th>
+        <th>Contact No</th>
+        <th>Email Id</th>
+        <th>Role</th>
+        <th>Action</th>
+
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.userName }}</td>
+        <td>{{ user.contactNumber }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.roleName }}</td>
+
+
+        <td>
+
+          <img src="assets/pencil.png" alt="Edit" (click)="openUpdateUserPopup(user)" class="action-icon edit" />
+
+          <img src="assets/trash.png" alt="Delete" class="action-icon delete" (click)="openDeleteUserPopup(user)" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- </div> -->
+
+
+<div class="overlay" *ngIf="openNewUser">
+  <div class="popup">
+    <h2>Create New User</h2>
+
+    <div class="user-input-container">
+      <div class="user-data">
+        <label>User Name</label>
+        <input type="text" [(ngModel)]="NewUser.userName">
+      </div>
+      <div class="user-data">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="NewUser.email">
+
+
+
+      </div>
+      <div class="user-data">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="NewUser.password">
+
+      </div>
+      <div class="user-data">
+        <label>Contact Number</label>
+        <input type="text" [(ngModel)]="NewUser.contactNumber">
+      </div>
+      <div class="user-data">
+        <label>Role</label>
+        <select [(ngModel)]="NewUser.role">
+          <option *ngFor="let r of roles" [ngValue]="r.id">
+            {{ r.roleName }}
+          </option>
+        </select>
+
+      </div>
+
+    </div>
+
+    <div class="user-button">
+      <button class="btn create" (click)="createUser()">Create</button>
+      <button class="btn cancel" (click)="closeCreateUserPopup()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- update user -->
+
+<div class="overlay" *ngIf="openUpdateUser">
+  <div class="popup">
+    <h2>Update User</h2>
+
+    <div class="user-input-container">
+      <div class="user-data">
+        <label>User Name</label>
+        <input type="text" [(ngModel)]="UpdateUser.userName">
+      </div>
+      <div class="user-data">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="UpdateUser.password">
+      </div>
+      <div class="user-data">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="UpdateUser.email">
+      </div>
+      <div class="user-data">
+        <label>Contact Number</label>
+        <input type="text" [(ngModel)]="UpdateUser.contactNumber">
+      </div>
+      <div class="user-data">
+        <label>Role</label>
+        <select [(ngModel)]="UpdateUser.role">
+          <option *ngFor="let r of roles" [ngValue]="r.id">
+            {{ r.roleName }}
+          </option>
+        </select>
+
+      </div>
+    </div>
+
+    <div class="user-button">
+      <button class="btn create" (click)="updateUser()">update</button>
+      <button class="btn cancel" (click)="closeUpdateUserPopup()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- delete user -->
+
+
+<div class="overlaydel" *ngIf="openDeleteUser">
+  <div class="popupdel">
+    <p>Are You Sure You Want To delete this User?</p>
+
+
+    <!-- <div class="user-button"> -->
+    <button class="btn delete" (click)="deleteUser()">yes</button>
+    <button class="btn cancel" (click)="closeDeleteUserPopup()">No</button>
+  </div>
+</div>

@@ -1,0 +1,559 @@
+button.three {
+  background-color: #7030a0;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+button.three:hover {
+  background-color: #7315bb;
+}
+
+
+.table-container>table>tbody>tr>.tabledata {
+  color: black;
+}
+
+
+
+.live-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+
+
+/* Right side: map */
+.map-container {
+  flex: 1;
+  height: 90vh;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-container {
+  flex: 1;
+  height: 90vh;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dropdown container */
+.map-controls {
+  padding: 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Map div fills remaining space */
+#map {
+  flex: 1;
+  width: 100%;
+}
+
+label {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+.hour-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hour-option {
+  display: flex;
+  align-items: center;
+  /* gap: 6px; */
+  background-color: #f1f1f1;
+  padding: 3px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  border: 1px solid transparent;
+}
+
+/* highlight selected option */
+.hour-option input[type="radio"]:checked+span {
+  font-weight: 600;
+  color: #7030a0;
+}
+
+.hour-option input[type="radio"]:checked {
+  accent-color: #7030a0;
+  /* radio button color */
+}
+
+/* Hover effect */
+.hour-option:hover {
+  background-color: #e7e7e7;
+}
+
+
+#map {
+  flex: 1;
+  width: 100%;
+}
+
+.map-controls select {
+  padding: 4px 6px;
+  border: 1px solid lightslategray;
+  border-radius: 3px;
+  outline: none;
+  background-color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+
+
+.map-container1 {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  /* border-radius: 10px; */
+}
+
+
+.map-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  transition: opacity 0.3s ease-in-out;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  display: block;
+}
+
+.drawing-canvas {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 50%;
+  border: 1px solid #ccc;
+}
+
+.image-wrapper {
+  position: relative;
+}
+
+
+.device-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 5;
+}
+
+.device-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: white;
+  border: 3px solid #7030a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(128, 0, 128, 0.6);
+}
+
+.device-icon::after {
+  content: '📡';
+  font-size: 14px;
+  color: #7030a0;
+}
+
+
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-box {
+  background: #fff;
+  width: 320px;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.popup-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-apply {
+  background: #6a0dad;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #bbb;
+  color: #000;
+  padding: 8px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-apply:hover {
+  background: #5500a8;
+}
+
+.btn-cancel:hover {
+  background: #999;
+}
+
+@keyframes fadeInScale {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+.drawing-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* margin-top: 10px; */
+  background: #f5f5f5;
+}
+
+/* Transparent icon button */
+.icon-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: 0.2s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-btn img {
+  width: 22px;
+  height: 22px;
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Color Picker Icon */
+.color-picker-icon {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.color-picker-icon img {
+  width: 22px;
+  height: 22px;
+}
+
+/* Hidden color input */
+.hidden-color-input {
+  position: absolute;
+  opacity: 0;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  left: 0;
+  top: 0;
+}
+
+/* Instruction text */
+.drawing-instructions small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.map-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Floating vertical icon bar on top-left of map */
+.map-floating-icons {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.f-icon {
+  width: 22px;
+  height: 22px;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.f-icon:hover {
+  transform: scale(1.15);
+}
+
+/* Color input hidden behind color.png */
+.color-wrapper {
+  position: relative;
+}
+
+
+.f-icons {
+  width: 28px;
+  height: 28px;
+  padding: 3px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.f-icons:hover {
+  transform: scale(1.15);
+}
+
+
+
+.color-wrapper .hidden-color-input {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 32px;
+  height: 32px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+
+/* ----- Table container box ----- */
+.table-container {
+  /* width: 100%; */
+  width: 20%;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: 'RedHatDisplay-Regular', Arial, sans-serif;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  height: 97%;
+  overflow-y: auto;
+}
+
+/* ----- Table styling ----- */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabledata {
+  position: relative;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #333;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.tabledata:hover {
+  background-color: #ede6f7;
+}
+
+
+
+.table-container>table>tbody>tr>.tabledata:not(.selected) {
+  background-color: #e9def3 !important;
+  font-weight: 600;
+}
+
+
+/* ----- Child tables (Countries, Areas, etc.) ----- */
+.tabledata table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  margin-left: 0;
+  padding-left: 0;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+/* ----- Dropdown icons ----- */
+.icons {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-container img.tab {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  transform: rotate(90deg);
+}
+
+.table-container img.tab.rotate {
+  transform: rotate(180deg);
+}
+
+/* ----- Scrollbar styling ----- */
+.table-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #c3b3d9;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.tabledata.selected {
+  background-color: #7030a0 !important;
+  /* dark purple */
+  color: #fff !important;
+  font-weight: 600;
+  /* border-color: #7030a0; */
+}
+
+.tabledata.selected .tab {
+  filter: brightness(0) invert(1);
+}
+
+/* Hierarchy indentation */
+.indent {
+  display: inline-block;
+  width: 15px;
+}
+
+/* Each level adds more left space */
+.level1 {
+  margin-left: 0px;
+}
+
+.level2 {
+  margin-left: 15px;
+}
+
+.level3 {
+  margin-left: 30px;
+}
+
+.level4 {
+  margin-left: 45px;
+}
+
+.level5 {
+  margin-left: 60px;
+}
+
+.level6 {
+  margin-left: 75px;
+}
+
+.level7 {
+  margin-left: 90px;
+}
+
+p {
+  font-size: small;
+}
+
+.device-marker {
+  z-index: 2;
+}

@@ -1,0 +1,417 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.navbar {
+  width: 100%;
+  height: 60px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.navbar-left {
+  font-size: 16px;
+  font-family: 'RedHatDisplay-Regular';
+}
+.add-widget-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  gap:20px;
+}
+
+.add-widget-text {
+  color: gray;
+  font-family: 'RedHatDisplay-Regular';
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.Personal-text {
+  color: gray;
+  font-family: 'RedHatDisplay-Regular';
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.add-widget-text:hover {
+  color: #7030a0;
+}
+
+.plus-symbol {
+  font-size: 22px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.widget-text {
+  font-size: 14px;
+  text-decoration: underline; /* underline only this text */
+}
+.personal-text{
+  font-size: 14px;
+  text-decoration: underline;
+
+}
+
+/* Popup background */
+.AWContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Popup box */
+.AwContent {
+  width: 80%;
+  max-width: 1000px;
+  height: 80%;
+  background: #fff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Navbar */
+.AWNavbar {
+  height: 50px;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+.close-btn {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Main 3-column layout */
+.AWMcontainer {
+  flex: 1;
+  display: flex;
+}
+
+/* Individual sections */
+.AWProject,
+.AwZone,
+.AwParameter {
+  flex: 1;
+  border-right: 1px solid #eee;
+  padding: 20px;
+}
+.AwParameter {
+  border-right: none;
+  position: relative;
+}
+
+/* Button container at bottom-left of AwParameter */
+.AWButton {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Buttons */
+.createbtn,
+.cancelbtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+.createbtn {
+  background: #7030a0;
+  color: #fff;
+}
+.createbtn:hover {
+  background: #7030a0;
+}
+.cancelbtn {
+  background: transparent;
+  border: 1px solid #ccc;
+}
+.cancelbtn:hover {
+  background: #eee;
+}
+
+
+/* ----- AWProject container layout ----- */
+.AWProject {
+  flex: 1;
+  background: #f4f4f8;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+/* ----- Table container box ----- */
+.table-container {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: 'RedHatDisplay-Regular', Arial, sans-serif;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+/* ----- Table styling ----- */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabledata {
+  position: relative;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.tabledata:hover {
+  background-color: #ede6f7;
+}
+
+
+
+.table-container > table > tbody > tr > .tabledata:not(.selected) {
+  background-color: #e9def3 !important;
+  font-weight: 600;
+}
+
+
+/* ----- Child tables (Countries, Areas, etc.) ----- */
+.tabledata table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+ margin-left: 0;           /* remove shrinking indentation */
+  padding-left: 0;
+   margin-right: 0;           /* remove shrinking indentation */
+  padding-right: 0;
+}
+
+/* ----- Dropdown icons ----- */
+.icons {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-container img.tab {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  transform: rotate(90deg);
+}
+.table-container img.tab.rotate {
+  transform: rotate(180deg);
+}
+.tabledata.selected .tab {
+    filter: brightness(0) invert(1);
+}
+
+/* ----- Scrollbar styling ----- */
+.table-container::-webkit-scrollbar {
+  width: 6px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #c3b3d9;
+  border-radius: 10px;
+}
+.table-container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.tabledata.selected {
+  background-color: #7030a0 !important; /* dark purple */
+  color: #fff !important;
+  font-weight: 600;
+  /* border-color: #7030a0; */
+}
+/* Hierarchy indentation */
+.indent {
+  display: inline-block;
+  width: 15px;
+}
+
+/* Each level adds more left space */
+.level1 {
+  margin-left: 0px;
+}
+.level2 {
+  margin-left: 15px;
+}
+.level3 {
+  margin-left: 30px;
+}
+.level4 {
+  margin-left: 45px;
+}
+.level5 {
+  margin-left: 60px;
+}
+.level6 {
+  margin-left: 75px;
+}
+.level7 {
+  margin-left: 90px;
+}
+
+
+
+/* Dashboard grid layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+/* Individual widget box */
+.widget {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid lightgrey;
+}
+
+.widget:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.AwZone ul {
+  list-style-type: none;   /* removes bullets */
+  padding-left: 0;         /* removes left space */
+  margin: 0;
+}
+
+.AwZone li {
+  padding: 3px 0;          /* optional: spacing between items */
+  font-size: 15px;
+  font-family:'RedHatDisplay-Regular';
+  
+}
+
+.AwZone li:hover {
+color: #7030a0;
+cursor: pointer;
+font-weight: bolder;
+
+  
+}
+.checkbox-item {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.status-circle {
+  width: 10px;
+  height: 10px;
+  background-color: green; /* green circle */
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.device-name {
+  font-size: 14px;
+  color: #7030a0;
+  font-weight: 500;
+}
+
+.right-section {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.widget p {
+  font-size: 14px;
+  margin: 3px 0;
+}
+
+/* ✅ Parameter List Styling */
+.param-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align all text to the left */
+  margin-left: 5px; /* small indent for neat look */
+}
+
+.param-item {
+  font-size: 14px;
+  margin: 3px 0;
+  text-align: left;
+  letter-spacing: 0.5px;
+}

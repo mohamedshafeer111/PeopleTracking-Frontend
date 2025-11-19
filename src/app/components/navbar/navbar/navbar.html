@@ -1,0 +1,122 @@
+<div class="content1">
+  <img class="menu-icon" data-tooltip="Menu" data-tooltip="Menu" src="assets/menu.png" alt="Menu"
+    (click)="toggleSidebar()">
+  <h1>People Tracking</h1>
+  <div class="right-icons">
+     <span class="icon-wrapper" data-tooltip="Notifications">
+      <img class="last" src="assets/navclock.png" alt="Notification icon">
+    </span>
+    <span class="icon-wrapper" data-tooltip="Admin">
+      <img class="last" src="assets/admin.png"  alt="Dashboard icon">
+      <div class="user-info">
+        {{ userid }}
+      </div>
+    </span>
+    <span class="icon-wrapper" data-tooltip="Notifications">
+      <img class="last" src="assets/bell.png" alt="Notification icon">
+    </span>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- Sidebar + Main Layout -->
+<div class="layout">
+
+  <div class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <nav>
+
+      <a class="main tooltip" routerLink="/dashboard" (click)="closeAdminMenu()" data-tooltip="Dashboard">
+        <img src="assets/dashboard (2).png" alt="Dashboard icon">
+        <span class="link-text">Dashboard</span> </a>
+
+
+      <!-- Tracking with submenu -->
+      <div class="menu-item" [class.open]="isTrackingMenuOpen">
+        <a href="javascript:void(0)" (click)="toggleTrackingMenu()">
+          <span class="main tooltip" data-tooltip="Tracking">
+            <img src="assets/real-time-tracking.png" alt="Tracking">
+            <span class="link-text">Tracking</span>
+          </span>
+        </a>
+
+        <div class="submenu">
+          <!-- Heading -->
+          <a href="#">
+            <span class="tooltip" data-tooltip="Tracking">
+              <img src="assets/livetracking.png" alt="Tracking icon">
+            </span>
+            Tracking
+          </a>
+
+
+          <!-- Live -->
+          <div class="submenu-item" [class.open]="isLiveOpen">
+            <a class="one-sub" [routerLink]="'/live'" href="javascript:void(0)" (click)="toggleLiveMenu()">
+              Live
+            </a>
+          </div>
+
+          <!-- Historicals -->
+          <div class="submenu-item" [class.open]="isHistoricalsOpen">
+            <a class="one-sub" [routerLink]="'/historicals'" href="javascript:void(0)"
+              (click)="toggleHistoricalsMenu()">
+              Historicals
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+
+
+
+
+      <a class="main tooltip" href="#" data-tooltip="Events" routerLink="/events">
+        <img src="assets/calendar-check (2).png" alt="Events">
+        <span class="link-text">Events</span>
+      </a>
+
+      <a class="main tooltip" href="#" data-tooltip="Reports" routerLink="/createreport">
+        <img src="assets/monitor.png" alt="Reports">
+        <span class="link-text">Reports</span>
+      </a>
+
+      <a class="main tooltip" href="#" data-tooltip="Process & Automation" routerLink="/processautomation">
+        <img src="assets/automation (2).png" alt="Automation">
+        <span class="link-text">Process & Automation</span>
+      </a>
+
+
+      <!-- Administration with submenu -->
+      <div class="menu-item" [class.open]="isAdminMenuOpen">
+        <a href="javascript:void(0)" (click)="toggleAdminMenu()">
+          <span class="admintooltip" data-tooltip="Admin">
+            <img src="assets/admin.png" alt="Admin">
+
+            <span class="link-text">Administration</span></span></a>
+
+        <div class="submenu">
+          <a href="#">
+            <span class="tooltip" data-tooltip="Administration">
+              <img src="assets/man-in-suit-and-tie.png" alt="Dashboard icon">
+            </span>
+            Administration
+          </a>
+          <a class="one-sub" routerLink="/people" (click)="closeAdminMenu()"> Configuration</a>
+          <a class="one-sub" href="#" routerLink="/licensemanagement" (click)="closeAdminMenu()">License Management</a>
+          <a class="one-sub" href="#" routerLink="/user-management" (click)="closeAdminMenu()">User Management</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
+  <!-- Main content -->
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

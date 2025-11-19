@@ -1,0 +1,409 @@
+
+
+
+
+/* Popup box */
+.AwContent {
+  width: 80%;
+  max-width: 1000px;
+  height: 80%;
+  background: #fff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  /* overflow: hidden; */
+}
+
+/* Navbar */
+.AWNavbar {
+  height: 50px;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+.close-btn {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Main 3-column layout */
+.AWMcontainer {
+  flex: 1;
+  display: flex;
+}
+
+/* Individual sections */
+.AWProject,
+.AwZone,
+.AwParameter {
+  flex: 1;
+  border-right: 1px solid #eee;
+  padding: 20px;
+}
+.AwParameter {
+  border-right: none;
+  position: relative;
+}
+
+/* Button container at bottom-left of AwParameter */
+.AWButton {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Buttons */
+.createbtn,
+.cancelbtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+.createbtn {
+  background: #7030a0;
+  color: #fff;
+}
+.createbtn:hover {
+  background: #7030a0;
+}
+.cancelbtn {
+  background: transparent;
+  border: 1px solid #ccc;
+}
+.cancelbtn:hover {
+  background: #eee;
+}
+
+
+/* ----- AWProject container layout ----- */
+.AWProject {
+  flex: 1;
+  background: #f4f4f8;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  /* overflow-y: auto; */
+}
+
+/* ----- Table container box ----- */
+.table-container {
+  width: 50%;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: 'RedHatDisplay-Regular', Arial, sans-serif;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  min-height: 100%;
+  /* overflow-y: auto; */
+}
+
+/* ----- Table styling ----- */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabledata {
+  position: relative;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  border: 1px solid #eee;
+  background-color: #fafafa;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.tabledata:hover {
+  background-color: #ede6f7;
+}
+
+
+
+td.tabledata:not(.selected):has(.indent.level1) {
+  background-color: #e9def3 !important;
+  font-weight: 600;
+}
+
+
+
+/* ----- Child tables (Countries, Areas, etc.) ----- */
+.tabledata table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+ margin-left: 0;           /* remove shrinking indentation */
+  padding-left: 0;
+   margin-right: 0;           /* remove shrinking indentation */
+  padding-right: 0;
+}
+
+/* ----- Dropdown icons ----- */
+.icons {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-container img.tab {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  transform: rotate(90deg);
+}
+.table-container img.tab.rotate {
+  transform: rotate(180deg);
+}
+
+/* ----- Scrollbar styling ----- */
+.table-container::-webkit-scrollbar {
+  width: 6px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #c3b3d9;
+  border-radius: 10px;
+}
+.table-container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.tabledata.selected {
+  background-color: #7030a0 !important; /* dark purple */
+  color: #fff !important;
+  font-weight: 600;
+  /* border-color: #7030a0; */
+}
+/* Hierarchy indentation */
+.indent {
+  display: inline-block;
+  width: 15px;
+}
+
+/* Each level adds more left space */
+.level1 {
+  margin-left: 0px;
+}
+.level2 {
+  margin-left: 15px;
+}
+.level3 {
+  margin-left: 30px;
+}
+.level4 {
+  margin-left: 45px;
+}
+.level5 {
+  margin-left: 60px;
+}
+.level6 {
+  margin-left: 75px;
+}
+.level7 {
+  margin-left: 90px;
+}
+
+
+
+
+
+
+
+.container {
+  display: flex;
+  flex-direction: column; /* stack elements vertically */
+  gap: 10px;              /* space between navbar and form */
+  align-items: flex-start; /* keep both aligned to the left */
+}
+
+/* Navbar section (top) */
+.navbar-section {
+  width: 145%; 
+  background: #ddd;
+  border-radius: 10px;
+}
+
+/* Form section (bottom) */
+.form-section {
+  width: 100%;
+  /* background: #fff; */
+  /* border: 1px solid #ccc; */
+  border-radius: 10px;
+  padding: 15px;
+}
+
+/* Optional styling */
+.navbar {
+  padding: 10px 20px;
+  color: #7030a0;
+}
+
+
+
+
+
+.pcolor {
+  color: #7030a0;
+ 
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group input {
+  height: 30px;        /* 🔹 sets input box height */
+  padding: 2px 6px;    /* 🔹 controls inner spacing */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;     /* optional: smaller text for compact look */
+}
+
+
+.reports-wrapper {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+
+
+.rule-container {
+  display: flex;
+  margin: 40px;
+}
+
+.side-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 10px;
+  margin-right: 36px;
+  min-width: 90px;
+}
+
+.side-labels > div {
+  color: #9655a8;
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+.main-content form {
+  min-width: 600px;
+}
+
+.relationship-title {
+  color: #9655a8;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.form-row label {
+  min-width: 120px;
+  margin-right: 20px;
+  color: #222;
+  font-size: 15px;
+}
+
+.form-row input[type="text"] {
+  flex: 1;
+  padding: 7px 12px;
+  margin-right: 12px;
+  border-radius: 5px;
+  border: 1px solid #d8d8d8;
+  font-size: 15px;
+}
+
+.add-btn {
+  background-color: #9655a8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 6px;
+}
+
+.add-btn:hover {
+  background-color: #764282;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-left: 10px;
+  width: 18px;
+  height: 18px;
+  accent-color: #9655a8;
+}
+
+.form-actions {
+  margin-top: 40px;
+  text-align: right;
+}
+
+.save-btn,
+.cancel-btn {
+  min-width: 90px;
+  font-size: 16px;
+  padding: 7px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 16px;
+  transition: background 0.2s;
+}
+
+.save-btn {
+  background: #9655a8;
+  color: #fff;
+}
+
+.save-btn:hover {
+  background: #764282;
+}
+
+.cancel-btn {
+  background: #faf9fa;
+  color: #9655a8;
+  border: 1px solid #e8e2eb;
+}
+
+.cancel-btn:hover {
+  background: #f4ecf9;
+}
+

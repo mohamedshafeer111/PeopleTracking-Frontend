@@ -1,0 +1,50 @@
+/* You can add global styles to this file, and also import other style files */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+
+
+
+
+
+
+@font-face {
+  font-family: 'RedHatDisplay';
+  src: url('/assets/font/RedHatDisplay-Black.ttf') format('truetype');
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'RedHatDisplay';
+  src: url('/assets/font/RedHatDisplay-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'RedHatDisplay';
+  src: url('/assets/font/RedHatDisplay-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'RedHatDisplay';
+  src: url('/assets/font/RedHatDisplay-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+
+
+
+
+
+
+/* Apply RedHatDisplay font to the whole app */
+html, body {
+  font-family: 'RedHatDisplay', sans-serif;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+}

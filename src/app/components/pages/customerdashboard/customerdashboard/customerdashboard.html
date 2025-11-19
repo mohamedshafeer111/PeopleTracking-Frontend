@@ -1,0 +1,38 @@
+<nav class="navbar">
+    <div class="navbar-left">
+        <span class="navbar-title">Customer Dashboard</span>
+    </div>
+</nav>
+
+<div class="add-widget-container">
+
+    <span class="add-widget-text">
+        <span class="plus-symbol">+</span>
+        <span class="widget-text" routerLink="/dashboard">Dashboard</span>
+    </span>
+    <span class="add-widget-text"  (click)="openAddWidgetPopup()">
+        <span class="plus-symbol">+</span>
+        <span class="widget-text">Add Widget</span>
+    </span>
+</div>
+
+
+
+<div class="AWContainer" *ngIf="isAddWidgetPopup">
+    <div class="AwContent">
+        <div class="AWNavbar">
+            <span>Customer</span>
+            <span class="close-btn" (click)="closeAddWidgetPopup()">×</span>
+        </div>
+        <div class="personal-section">
+
+
+            <div class="personal-list">
+                <label *ngFor="let item of personalWidgets" class="checkbox-item">
+                    <input type="checkbox" [(ngModel)]="item.selected" />
+                    {{ item.name }}
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

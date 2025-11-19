@@ -1,0 +1,105 @@
+<nav class="navbar">
+    <h3>Role</h3>
+    <div>
+    <button class="rolebutton" routerLink="/user-management">User</button>
+  </div>
+
+    <div class="nav-icons">
+        <img src="assets/add.png" alt="Add" routerLink="/createrole">
+        <img src="assets/download.png" alt="Refresh">
+        <img src="assets/refresh.png" alt="Refresh">
+        <img src="assets/columns.png" alt="Refresh">
+    </div>
+</nav>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>RoleName</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let role of roles">
+                <td>{{ role.roleName }}</td>
+                <td>{{ role.description }}</td>
+
+                <td>
+
+                    <img src="assets/pencil.png" alt="Edit" (click)="openeditRolePopup(role)" class="action" />
+
+                    <img src="assets/trash.png" alt="Delete"  class="action" (click)="openDeleteRolePopup(role)"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<!-- 
+<div class="overlay" *ngIf="openCreateRole">
+    <div class="popup">
+        <h2>Create New Role</h2>
+
+        <div class="user-input-container">
+            <div class="user-data">
+                <label>Role Name</label>
+                <input type="text" [(ngModel)]="createRoles.roleName">
+            </div>
+            <div class="user-data">
+                <label>Description</label>
+                <input type="text" [(ngModel)]="createRoles.description">
+            </div>
+        </div>
+
+        <div class="user-button">
+            <button class="btn create" (click)="createRole()">Create</button>
+            <button class="btn cancel" (click)="closeCreateRolePopup()">Cancel</button>
+        </div>
+    </div>
+</div> -->
+
+<div class="overlay" *ngIf="openEditRole">
+    <div class="popup">
+        <h2>Update Role</h2>
+
+        <div class="user-input-container">
+            <div class="user-data">
+                <label>Role Name</label>
+                <input type="text" [(ngModel)]="editRoles.roleName">
+            </div>
+            <div class="user-data">
+                <label>Description</label>
+                <input type="text" [(ngModel)]="editRoles.description">
+            </div>
+        </div>
+
+        <div class="user-button">
+            <button class="btn create" (click)="updateRole()">Update</button>
+            <button class="btn cancel" (click)="closeEditRolePopup()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- delete user -->
+
+
+<div class="overlaydel" *ngIf="openDeleteRole">
+  <div class="popupdel">
+    <p>Are You Sure You Want To delete this Role?</p>
+
+
+    <!-- <div class="user-button"> -->
+    <button class="btn delete" (click)="deleteRole()">yes</button>
+    <button class="btn cancel" (click)="closeDeleteRolePopup()">No</button>
+  </div>
+</div>

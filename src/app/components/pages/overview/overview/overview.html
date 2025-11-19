@@ -1,0 +1,74 @@
+<div class="report-container">
+
+  <!-- 🔹 Heading -->
+  <h3 class="section-heading">Sensor Timeline</h3>
+
+<div class="time-container">
+  <!-- 🔹 Time Range Dropdown -->
+  <div class="control-group">
+    <label for="timeSelect">Time Range:</label>
+    <select
+      id="timeSelect"
+      [(ngModel)]="selectedTimeRange"
+      (change)="onTimeRangeChange()"
+    >
+      <option value="day">Day</option>
+      <option value="week">Week</option>
+      <option value="month">Month</option>
+    </select>
+  </div>
+
+  <!-- 🔹 Hour Buttons -->
+  <div class="hours-group">
+    <span
+      *ngFor="let hour of hours"
+      (click)="selectHour(hour)"
+      [class.active]="selectedHour === hour"
+    >
+      {{ hour }}
+    </span>
+  </div>
+
+  <!-- 🔹 Total Time Overview text -->
+  <div class="total-overview">
+    Total Time Overview:
+  </div>
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="flowchart">
+  <div class="flow-line"></div>
+
+  <div class="flow-box left">
+    <div class="content">
+      <p>Person 1 login here at 11:00am</p>
+    </div>
+  </div>
+
+  <div class="flow-box right">
+    <div class="content">
+      <p>Person 1 logout here at 11:30am</p>
+    </div>
+  </div>
+
+  <div class="flow-box left">
+    <div class="content">
+      <p>Person 1 login here at 12:00pm</p>
+    </div>
+  </div>
+
+  <div class="flow-box right">
+    <div class="content">
+      <p>Person 1 logout here at 12:30pm</p>
+    </div>
+  </div>
+</div>
