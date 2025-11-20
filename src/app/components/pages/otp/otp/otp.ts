@@ -35,6 +35,9 @@ export class Otp {
       // Store token
       // localStorage.setItem('authToken', response.token);
 
+       localStorage.setItem('token', response.token);
+
+
       // Store userid
       localStorage.setItem('userid', response.userid);
 
