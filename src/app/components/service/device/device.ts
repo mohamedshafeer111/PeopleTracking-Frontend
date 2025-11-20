@@ -8,7 +8,7 @@ export class Device {
   
 constructor(private http: HttpClient) { }
 
-  private baseUrl = 'http://165.22.215.89:5202/api';
+  private baseUrl = 'https://phcc.purpleiq.ai/api/';
 
 
 
