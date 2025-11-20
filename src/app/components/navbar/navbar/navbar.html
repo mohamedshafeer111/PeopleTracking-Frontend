@@ -3,11 +3,11 @@
     (click)="toggleSidebar()">
   <h1>People Tracking</h1>
   <div class="right-icons">
-     <span class="icon-wrapper" data-tooltip="Notifications">
+     <!-- <span class="icon-wrapper" data-tooltip="Notifications">
       <img class="last" src="assets/navclock.png" alt="Notification icon">
-    </span>
+    </span> -->
     <span class="icon-wrapper" data-tooltip="Admin">
-      <img class="last" src="assets/admin.png"  alt="Dashboard icon">
+      <img class="last" src="assets/user.png"  alt="Dashboard icon">
       <div class="user-info">
         {{ userid }}
       </div>
@@ -30,7 +30,7 @@
     <nav>
 
       <a class="main tooltip" routerLink="/dashboard" (click)="closeAdminMenu()" data-tooltip="Dashboard">
-        <img src="assets/dashboard (2).png" alt="Dashboard icon">
+        <img src="assets/dashboard.png" alt="Dashboard icon" class="white-icon">
         <span class="link-text">Dashboard</span> </a>
 
 
@@ -38,7 +38,7 @@
       <div class="menu-item" [class.open]="isTrackingMenuOpen">
         <a href="javascript:void(0)" (click)="toggleTrackingMenu()">
           <span class="main tooltip" data-tooltip="Tracking">
-            <img src="assets/real-time-tracking.png" alt="Tracking">
+            <img src="assets/marker.png" alt="Tracking" class="white-icon">
             <span class="link-text">Tracking</span>
           </span>
         </a>
@@ -47,7 +47,7 @@
           <!-- Heading -->
           <a href="#">
             <span class="tooltip" data-tooltip="Tracking">
-              <img src="assets/livetracking.png" alt="Tracking icon">
+              <img src="assets/marker.png" alt="Tracking icon" class="white-icon">
             </span>
             Tracking
           </a>
@@ -76,17 +76,17 @@
 
 
       <a class="main tooltip" href="#" data-tooltip="Events" routerLink="/events">
-        <img src="assets/calendar-check (2).png" alt="Events">
+        <img src="assets/event.png" alt="Events" class="white-icon">
         <span class="link-text">Events</span>
       </a>
 
       <a class="main tooltip" href="#" data-tooltip="Reports" routerLink="/createreport">
-        <img src="assets/monitor.png" alt="Reports">
+        <img src="assets/reports.png" alt="Reports" class="white-icon">
         <span class="link-text">Reports</span>
       </a>
 
       <a class="main tooltip" href="#" data-tooltip="Process & Automation" routerLink="/processautomation">
-        <img src="assets/automation (2).png" alt="Automation">
+        <img src="assets/automation.png" alt="Automation">
         <span class="link-text">Process & Automation</span>
       </a>
 
@@ -95,7 +95,7 @@
       <div class="menu-item" [class.open]="isAdminMenuOpen">
         <a href="javascript:void(0)" (click)="toggleAdminMenu()">
           <span class="admintooltip" data-tooltip="Admin">
-            <img src="assets/admin.png" alt="Admin">
+            <img src="assets/administration.png" alt="Admin" class="white-icon">
 
             <span class="link-text">Administration</span></span></a>
 

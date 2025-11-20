@@ -756,8 +756,8 @@ export class Dashboard implements OnInit ,OnDestroy {
   this.ws.onerror = (err) => console.error('❌ WebSocket Error:', err);
 
   this.ws.onclose = () => {
-    console.warn('🔌 WebSocket Disconnected — retrying in 5s...');
-    setTimeout(() => this.connectWebSocket(), 5000);
+    console.warn('🔌 WebSocket Disconnected — retrying in 1s...');
+    setTimeout(() => this.connectWebSocket(), 1000);
   };
 }
 

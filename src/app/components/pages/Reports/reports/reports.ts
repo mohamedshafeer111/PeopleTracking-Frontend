@@ -356,24 +356,24 @@ generateReport() {
 
     // ✅ Decide which API to call
     let apiCall;
-    if (this.selectedZoneName) {
-      // Zone-based report
-      apiCall = this.api.getGenerateReportZone(
-        this.customStartDate,
-        this.customEndDate,
-        this.selectedZoneName,
-        this.reportName
-      );
-      console.log('📡 Calling Zone Report API with zone:', this.selectedZoneName);
-    } else {
-      // General report
-      apiCall = this.api.getGenerateReport(
-        this.customStartDate,
-        this.customEndDate,
-        this.reportName
-      );
-      console.log('📡 Calling General Report API');
-    }
+if (this.selectedZoneName) {
+  apiCall = this.api.getGenerateReportZone(
+    this.customStartDate,
+    this.customEndDate,
+    this.selectedZoneName,
+    this.reportName,
+    this.shareEmails // now properly sent in POST body
+  );
+} else {
+  apiCall = this.api.getGenerateReport(
+    this.customStartDate,
+    this.customEndDate,
+    this.reportName,
+    this.shareEmails // POST body as well
+  );
+}
+
+
 
     // ✅ Subscribe to the chosen API
     apiCall.subscribe({

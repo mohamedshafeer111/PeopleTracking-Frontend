@@ -110,7 +110,7 @@ h1 {
 /* Right icons */
 .right-icons {
   display: flex;
-  gap: 15px;
+  /* gap: 15px; */
   align-items: center;
 }
 
@@ -380,3 +380,7 @@ h1 {
 
   display: inline-block;
 }
+.white-icon {
+  filter: brightness(0) invert(1);
+}
+

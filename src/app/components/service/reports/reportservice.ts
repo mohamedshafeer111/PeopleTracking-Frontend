@@ -41,22 +41,67 @@ export class Reportservice {
 
 
 
+  // // ✅ reportservice.ts
+  // getGenerateReport(startTime: string, endTime: string, reportName: string) {
+  //   const params: any = {
+  //     startTime,
+  //     endTime,
+  //     reportName
+  //   };
+
+  //   return this.http.get(`${this.apiUrl}Reports/generate`, { params });
+  // }
+
+
+  // getGenerateReportZone(startTime: string, endTime: string, zoneName: string, reportName: string) {
+  //   const params = { startTime, endTime, zoneName, reportName };
+  //   return this.http.get(`${this.apiUrl}Reports/generate/zone`, { params });
+  // }
+
+
+
+
   // ✅ reportservice.ts
-  getGenerateReport(startTime: string, endTime: string, reportName: string) {
-    const params: any = {
-      startTime,
-      endTime,
-      reportName
-    };
+getGenerateReport(startTime: string, endTime: string, reportName: string, shareWith?: string) {
+  const body: any = {
+    startTime,
+    endTime,
+    reportName
+  };
 
-    return this.http.get(`${this.apiUrl}Reports/generate`, { params });
+  if (shareWith) {
+    body.shareWith = shareWith;  // optional
   }
 
+  return this.http.post(`${this.apiUrl}Reports/generate`, body);
+}
 
-  getGenerateReportZone(startTime: string, endTime: string, zoneName: string, reportName: string) {
-    const params = { startTime, endTime, zoneName, reportName };
-    return this.http.get(`${this.apiUrl}Reports/generate/zone`, { params });
+
+
+
+
+
+
+getGenerateReportZone(
+  startTime: string,
+  endTime: string,
+  zoneName: string,
+  reportName: string,
+  shareWith?: string
+) {
+  const params: any = {
+    startTime,
+    endTime,
+    zoneName,
+    reportName
+  };
+
+  if (shareWith) {
+    params.shareWithEmail = shareWith; // ✅ correct field name
   }
+
+  return this.http.get(`${this.apiUrl}Reports/generate/zone`, { params });
+}
 
 
 

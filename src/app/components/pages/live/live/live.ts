@@ -13,9 +13,30 @@ import { Device } from '../../../service/device/device';
 })
 export class Live implements OnInit, AfterViewInit {
 
-  
+
 
   constructor(private role: Roleservice, private cdr: ChangeDetectorRef, private device: Device) { }
+
+
+  selectedTimeRange: string = 'day';
+  hours: string[] = [];
+  selectedHour: string = '';
+  showHourInputs: boolean = false;
+  savedMappingId: string = '';
+  hourMap: { [key: string]: number } = {
+    // 'Live': 0,
+    '1 Hour': 1,
+    '2 Hours': 2,
+    '8 Hours': 8,
+    '24 Hours': 24,
+    '1 Day': 24,
+    '2 Days': 48,
+    '5 Days': 120,
+    '7 Days': 168,
+    '15 Days': 360,
+    '30 Days': 720
+  };
+
 
   ngOnInit(): void {
     this.loadProject();
@@ -434,10 +455,10 @@ export class Live implements OnInit, AfterViewInit {
   }
 
 
-  selectedTimeRange: string = 'day';
-  showHourInputs: boolean = true;
-  hours: string[] = [];
-  selectedHour: string = '';
+  // selectedTimeRange: string = 'day';
+  // showHourInputs: boolean = true;
+  // hours: string[] = [];
+  // selectedHour: string = '';
 
 
   setDefaultTimeRange() {
@@ -947,7 +968,7 @@ export class Live implements OnInit, AfterViewInit {
   }
 
 
-  savedMappingId: string = "";
+  //savedMappingId: string = "";
 
   applyPolygon() {
     if (this.tempPoints.length < 3) return;
@@ -1419,5 +1440,57 @@ export class Live implements OnInit, AfterViewInit {
       }
     });
   }
+
+
+selectedDays: number = 1;  // default 1 day
+daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
+
+  loadZoneCounts() {
+  if (!this.selectedZoneName) return;
+
+  const numericHour = this.hourMap[this.selectedHour];
+  if (numericHour == null) return;
+
+  this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
+    .subscribe({
+      next: (res: any) => {
+        // ✅ Update zoneVisitorCounts from API
+        this.zoneVisitorCounts = {};
+        this.zoneVisitorCounts[res.zone] = res.count;
+
+        // ✅ Redraw canvas with updated values
+        this.redrawCanvas();
+      },
+      error: (err) => console.error('API Error:', err)
+    });
+}
+
+
+loadZoneCountsByDate() {
+  if (!this.selectedZoneName) {
+    console.warn("No zone selected");
+    return;
+  }
+
+  if (this.selectedDays == null) {
+    console.warn("No days selected");
+    return;
+  }
+
+  this.device.getVisitorsByDate(this.selectedZoneName, this.selectedDays)
+    .subscribe({
+      next: (res: any) => {
+        // reset old counts
+        this.zoneVisitorCounts = {};
+
+        // assuming API returns { zone: "...", count: 10 }
+        this.zoneVisitorCounts[res.zone] = res.count;
+
+        // redraw canvas
+        this.redrawCanvas();
+      },
+      error: (err) => console.error("API Error:", err)
+    });
+}
 
 }

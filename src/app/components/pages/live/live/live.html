@@ -135,7 +135,7 @@
                                                                                                                         *ngFor="let zone of zoneByFloor[floor.id]">
                                                                                                                         <!-- Zone row -->
                                                                                                                         <tr [class.rotate]="expandedZone.has(zone.id)"
-                                                                                                                            (click)="loadSubZones(zone.id); onZoneSelect(zone.id)">
+                                                                                                                            (click)="loadSubZones(zone.id); onZoneSelect(zone.id);loadZoneCounts();">
                                                                                                                             <td class="tabledata"
                                                                                                                                 [class.selected]="selectedItemId === zone.id"
                                                                                                                                 (click)="selectItem(zone.id)">
@@ -290,8 +290,15 @@
             </select>
 
             <!-- Dynamic Time Options -->
-            <div class="hour-inputs" *ngIf="showHourInputs">
+            <!-- <div class="hour-inputs" *ngIf="showHourInputs">
                 <label class="hour-option" *ngFor="let h of hours">
+                    <input type="radio" name="hour" [value]="h" [(ngModel)]="selectedHour" (change)="onHourChange()" />
+                    {{ h }}
+                </label>
+            </div> -->
+
+            <div class="hours-group" *ngIf="showHourInputs">
+                <label class="hour-button" *ngFor="let h of hours" [class.active]="selectedHour === h">
                     <input type="radio" name="hour" [value]="h" [(ngModel)]="selectedHour" (change)="onHourChange()" />
                     {{ h }}
                 </label>
