@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Roleservice } from '../../../service/role/roleservice';
-import L from 'leaflet';
+// import L from 'leaflet';
+import * as L from 'leaflet';
+
 import { FormsModule } from '@angular/forms';
 import { Device } from '../../../service/device/device';
 
@@ -65,32 +67,53 @@ export class Live implements OnInit, AfterViewInit {
   private map: any;
 
 
-  moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void {
-    if (this.map) {
-      this.map.flyTo([lat, lng], zoom, { animate: true, duration: 1.5 });
-      L.marker([lat, lng])
-        .addTo(this.map)
-        .bindPopup(name ? `<b>${name}</b>` : `Lat: ${lat}, Lng: ${lng}`)
-        .openPopup();
-    }
-  }
+  // moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void {
+  //   if (this.map) {
+  //     this.map.flyTo([lat, lng], zoom, { animate: true, duration: 1.5 });
+  //     L.marker([lat, lng])
+  //       .addTo(this.map)
+  //       .bindPopup(name ? `<b>${name}</b>` : `Lat: ${lat}, Lng: ${lng}`)
+  //       .openPopup();
+  //   }
+  // }
+
+moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void {
+  if (!this.map) return;
+
+  this.map.flyTo([lat, lng], zoom, { animate: true, duration: 1.5 });
+
+  L.marker([lat, lng])
+    .addTo(this.map)
+    .bindPopup(name ? `<b>${name}</b>` : `Lat: ${lat}, Lng: ${lng}`)
+    .openPopup();
+}
 
 
 
+  // async ngAfterViewInit() {
+  //   if (typeof window === 'undefined') return; // skip SSR
 
-  async ngAfterViewInit() {
-    if (typeof window === 'undefined') return; // skip SSR
+  //   // Option 1: Direct approach (recommended)
+  //   const L = await import('leaflet');
+  //   this.map = L.map('map').setView([13.0827, 80.2707], 13);
 
-    // Option 1: Direct approach (recommended)
-    const L = await import('leaflet');
-    this.map = L.map('map').setView([13.0827, 80.2707], 13);
+  //   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //     maxZoom: 19
+  //   }).addTo(this.map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    }).addTo(this.map);
+  //   this.initializeCanvas();
+  // }
+ngAfterViewInit(): void {
+  if (typeof window === 'undefined') return; // SSR safe
 
-    this.initializeCanvas();
-  }
+  this.map = L.map('map').setView([13.0827, 80.2707], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(this.map);
+
+  this.initializeCanvas();
+}
 
   // Store parent-level coordinates for reverse movement
   locationCache: {
