@@ -672,7 +672,7 @@ export class Dashboard implements OnInit ,OnDestroy {
   }
 
   private ws!: WebSocket;
-  private wsUrl = 'ws://localhost:5202/ws/ZoneCount';
+  private wsUrl = 'ws://165.22.215.89:5202/ws/ZoneCount';
 
 
 

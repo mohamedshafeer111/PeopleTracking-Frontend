@@ -8,7 +8,7 @@ export class Device {
   
 constructor(private http: HttpClient) { }
 
-  private baseUrl = 'http://localhost:5202/api';
+  private baseUrl = 'http://165.22.215.89:5202/api';
 
 
 
