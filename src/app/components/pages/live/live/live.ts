@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Roleservice } from '../../../service/role/roleservice';
-import * as L from 'leaflet';
+import L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { Device } from '../../../service/device/device';
 
@@ -12,6 +12,8 @@ import { Device } from '../../../service/device/device';
   styleUrl: './live.css'
 })
 export class Live implements OnInit, AfterViewInit {
+
+  
 
   constructor(private role: Roleservice, private cdr: ChangeDetectorRef, private device: Device) { }
 

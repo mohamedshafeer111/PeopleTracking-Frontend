@@ -1,6 +1,7 @@
 
 export const environment = {
 production: true,
-//  apiUrl: 'http://165.22.215.89:5202/api/'
- apiUrl:'https://phcc.purpleiq.ai/api/'
+//  apiUrl: 'http://172.16.100.26:5202/api/'
+
+   apiUrl : 'https://phcc.purpleiq.ai/api/'
 };
