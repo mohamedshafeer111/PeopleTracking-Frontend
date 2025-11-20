@@ -8,7 +8,9 @@ export class Device {
   
 constructor(private http: HttpClient) { }
 
-  private baseUrl = 'http://172.16.100.26:5202/api';
+  private baseUrl = 'http://localhost:5202/api';
+
+
 
   getDevicesByProject(projectId: string) {
     return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}`)

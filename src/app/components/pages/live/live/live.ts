@@ -1250,7 +1250,7 @@ export class Live implements OnInit, AfterViewInit {
 
   ws!: WebSocket;
   connectWebSocket() {
-    this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+    this.ws = new WebSocket('ws://localhost:5202/ws/ZoneCount');
 
     this.ws.onopen = () => console.log('✅ WebSocket Connected');
 
