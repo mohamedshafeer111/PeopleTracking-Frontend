@@ -1,9 +1,10 @@
-import { Component,HostListener } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component,ElementRef,HostListener } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule],
+  imports: [RouterModule,CommonModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
@@ -14,7 +15,9 @@ export class Navbar {
     this.userid = localStorage.getItem('userid') || '';
   }
 
+  menuOpen = false;
 
+constructor(private router: Router, private eRef: ElementRef) {}
 
 
   isAdminMenuOpen = false;
@@ -97,6 +100,54 @@ closeTrackingMenu() {
        this.closeAdminMenu();
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+toggleDropdown(event: Event) {
+  event.stopPropagation(); 
+  this.menuOpen = !this.menuOpen;
+}
+
+@HostListener('document:click')
+clickOutside() {
+  this.menuOpen = false;
+}
+
+goToProfile() {
+  this.router.navigate(['/profile']);
+}
+
+changePassword() {
+  this.router.navigate(['/change-password']);
+}
+
+openHelp() {
+  this.router.navigate(['/help']);
+}
+
+logout() {
+  localStorage.clear();
+  this.router.navigate(['/login']);
+}
+
+
+
+
 
 
 

@@ -6,11 +6,43 @@
      <!-- <span class="icon-wrapper" data-tooltip="Notifications">
       <img class="last" src="assets/navclock.png" alt="Notification icon">
     </span> -->
-    <span class="icon-wrapper" data-tooltip="Admin">
+
+<!-- 
+<span class="icon-wrapper" (click)="toggleDropdown($event)">
+  
+  <img class="last" src="assets/admin.png">
+
+  <div class="user-info">
+    {{ userid }}
+  </div>
+
+   Do NOT stopPropagation here unless needed 
+  <div class="dropdown" *ngIf="menuOpen">
+    <ul>
+      <li (click)="goToProfile()">My Profile</li>
+      <li (click)="changePassword()">Change Password</li>
+      <li (click)="openHelp()">Help & Support</li>
+      <li (click)="logout()">Logout</li>
+    </ul>
+  </div>
+
+</span> -->
+
+
+
+    <span class="icon-wrapper" data-tooltip="Admin" (click)="toggleDropdown($event)">
       <img class="last" src="assets/user.png"  alt="Dashboard icon">
       <div class="user-info">
         {{ userid }}
       </div>
+      <div class="dropdown" *ngIf="menuOpen">
+    <ul>
+      <li (click)="goToProfile()">My Profile</li>
+      <li (click)="changePassword()">Change Password</li>
+      <li (click)="openHelp()">Help & Support</li>
+      <li (click)="logout()">Logout</li>
+    </ul>
+  </div>
     </span>
     <span class="icon-wrapper" data-tooltip="Notifications">
       <img class="last" src="assets/bell.png" alt="Notification icon">
