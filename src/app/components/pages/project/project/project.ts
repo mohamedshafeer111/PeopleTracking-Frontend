@@ -1902,6 +1902,34 @@ export class Project implements OnInit {
 
 
 
+todayString = new Date().toISOString().split('T')[0];
+validateWeeks() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const start = new Date(this.createproject.weekStart);
+  const end = new Date(this.createproject.weekEnd);
+
+  if (start < today) {
+    alert("Week start cannot be earlier than today");
+    return false;
+  }
+  if (end < today) {
+    alert("Week end cannot be earlier than today");
+    return false;
+  }
+  if (end < start) {
+    alert("Week end cannot be earlier than start date");
+    return false;
+  }
+
+  return true;
+}
+onSubmit() {
+  if (!this.validateWeeks()) return;
+
+  // Continue form submission
+}
 
 
 

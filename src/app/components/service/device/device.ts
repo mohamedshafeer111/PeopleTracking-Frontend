@@ -30,7 +30,19 @@ export class Device {
   getDevicesByFloor(projectId: string, countryId: string, areaId: string, buildingId: string, floorId: string) {
     return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}`);
   }
-  getDevicesByZone(
+  // getDevicesByZone(
+  //   projectId: string,
+  //   countryId: string,
+  //   areaId: string,
+  //   buildingId: string,
+  //   floorId: string,
+  //   zoneId: string
+  // ) {
+  //   const url = `http://172.16.100.26:5202/api/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}/zone/${zoneId}`;
+  //   return this.http.get(url);
+  // }
+
+ getDevicesByZone(
     projectId: string,
     countryId: string,
     areaId: string,
@@ -38,15 +50,17 @@ export class Device {
     floorId: string,
     zoneId: string
   ) {
-    const url = `http://172.16.100.26:5202/api/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}/zone/${zoneId}`;
+    const url = `${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}/zone/${zoneId}`;
     return this.http.get(url);
   }
 
+  // getAllDeviceParameters() {
+  //   const url = 'http://172.16.100.26:5202/api/device-parameters/all';
+  //   return this.http.get(url);
+  // }
 
-
-  getAllDeviceParameters() {
-    const url = 'http://172.16.100.26:5202/api/device-parameters/all';
-    return this.http.get(url);
+   getAllDeviceParameters() {
+    return this.http.get(`${this.baseUrl}/device-parameters/all`);
   }
 
   addNewPara(payload: any) {
@@ -75,10 +89,14 @@ export class Device {
   }
 
 
-  private apiUrl = "http://172.16.100.26:5202/api/ZoneMapping";
+  // private apiUrl = "http://172.16.100.26:5202/api/ZoneMapping";
 
-  saveZoneMapping(data: any) {
-    return this.http.post(this.apiUrl, data);
+  // saveZoneMapping(data: any) {
+  //   return this.http.post(this.apiUrl, data);
+  // }
+
+    saveZoneMapping(data: any) {
+    return this.http.post(`${this.baseUrl}/ZoneMapping`, data);
   }
 
 
@@ -87,13 +105,21 @@ export class Device {
   }
 
   // device.service.ts
-  saveDeviceGeoJson(payload: any) {
-    return this.http.post(`http://172.16.100.26:5202/api/DeviceGeoJsonMapping`, payload);
+  // saveDeviceGeoJson(payload: any) {
+  //   return this.http.post(`http://172.16.100.26:5202/api/DeviceGeoJsonMapping`, payload);
+  // }
+
+    saveDeviceGeoJson(payload: any) {
+    return this.http.post(`${this.baseUrl}/DeviceGeoJsonMapping`, payload);
   }
 
 
-  getZoneMapping(zoneId: string) {
-    return this.http.get(`http://172.16.100.26:5202/api/DeviceGeoJsonMapping/zone/${zoneId}`);
+  // getZoneMapping(zoneId: string) {
+  //   return this.http.get(`http://172.16.100.26:5202/api/DeviceGeoJsonMapping/zone/${zoneId}`);
+  // }
+
+    getZoneMapping(zoneId: string) {
+    return this.http.get(`${this.baseUrl}/DeviceGeoJsonMapping/zone/${zoneId}`);
   }
 
 
@@ -101,8 +127,12 @@ export class Device {
     return this.http.get<any[]>(`${this.baseUrl}/ZoneMapping/by-Floor/${floorId}`);
   }
 
-  getZoneImageByZoneId(zoneId: string) {
-    return this.http.get(`http://172.16.100.26:5202/api/zones/${zoneId}/map`);
+  // getZoneImageByZoneId(zoneId: string) {
+  //   return this.http.get(`http://172.16.100.26:5202/api/zones/${zoneId}/map`);
+  // }
+
+    getZoneImageByZoneId(zoneId: string) {
+    return this.http.get(`${this.baseUrl}/zones/${zoneId}/map`);
   }
 
   getDevicesByZoneId(zoneId: string) {

@@ -229,12 +229,12 @@
 
       <div class="user-data">
         <label>Week Start</label>
-        <input type="date" [(ngModel)]="createproject.weekStart" />
+        <input type="date" [(ngModel)]="createproject.weekStart" [min]="todayString" />
       </div>
 
       <div class="user-data">
         <label>Week End</label>
-        <input type="date" [(ngModel)]="createproject.weekEnd" />
+        <input type="date" [(ngModel)]="createproject.weekEnd" [min]="todayString" />
       </div>
     </div>
 
@@ -652,7 +652,7 @@
           <img [src]="floorPreviewUrl" alt="Preview" class="preview-img" />
         </div>
       </div>
-   </div>
+    </div>
 
     <div class="user-button">
       <button class="btn create" (click)="createNewfloor()">Create</button>
