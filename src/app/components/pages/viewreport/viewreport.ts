@@ -4,6 +4,9 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Reportservice } from '../../service/reports/reportservice';
 import { FormsModule } from '@angular/forms';
 
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 
 
@@ -312,57 +315,53 @@ async loadAllPages() {
 
 
 
-
-
-
 async onDownloadClick() {
 
-  await this.loadAllPages();   // <-- LOAD ALL PAGES FIRST
+  await this.loadAllPages();
 
-  if (!this.reportData) {
-    alert("⚠️ No report data available.");
-    return;
-  }
+  const wb = XLSX.utils.book_new();
+  
+  const wsData = [
+    [`Report Name: ${this.reportData.reportName}`],
+    [`Start Time: ${new Date(this.reportData.startTime).toLocaleString()}`],
+    [`End Time: ${new Date(this.reportData.endTime).toLocaleString()}`],
+    [`Total Visits: ${this.visits.length}`],
+    [],  // blank row
+    ["S.No", "BLE Tag ID", "Zone ID", "Check-In Time", "Check-Out Time", "Time Spent (mins)"]
+  ];
 
-  if (!this.visits || this.visits.length === 0) {
-    alert("⚠️ No visit data available.");
-    return;
-  }
+  this.visits.forEach((v: any, i: number) => {
+    const checkIn = new Date(v.checkInTime);
+    const checkOut = new Date(v.checkOutTime);
+    const dur = ((checkOut.getTime() - checkIn.getTime()) / 60000).toFixed(2);
 
-  // CSV header
-  let csv = "S.No,BLE Tag ID,Zone ID,Check-In Time,Check-Out Time,Time Spent (mins)\n";
-
-  this.visits.forEach((visit: any, index: number) => {
-    const checkIn = new Date(visit.checkInTime);
-    const checkOut = new Date(visit.checkOutTime);
-    const duration = ((checkOut.getTime() - checkIn.getTime()) / 60000).toFixed(1);
-
-    csv += `${index + 1},${visit.bleTagId},${visit.zoneId},` +
-           `${checkIn.toLocaleString()},${checkOut.toLocaleString()},${duration}\n`;
+    wsData.push([
+      i + 1,
+      v.bleTagId,
+      v.zoneId,
+      checkIn.toLocaleString(),
+      checkOut.toLocaleString(),
+      dur
+    ]);
   });
 
-  // Header info
-  const headerInfo =
-    `Report Name: ${this.reportData.reportName}\n` +
-    `Start Time: ${new Date(this.reportData.startTime).toLocaleString()}\n` +
-    `End Time: ${new Date(this.reportData.endTime).toLocaleString()}\n` +
-    `Total Visits: ${this.visits.length}\n\n`;
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-  const finalCSV = headerInfo + csv;
+  // Optional: merge first header row A1:F1
+  ws['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }
+  ];
 
-  // Download file
-  const blob = new Blob([finalCSV], { type: "text/csv" });
-  const url = window.URL.createObjectURL(blob);
+  XLSX.utils.book_append_sheet(wb, ws, 'Report');
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${this.reportData.reportName || "Report"}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
-  window.URL.revokeObjectURL(url);
+  saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `${this.reportData.reportName}.xlsx`);
 }
+
+
+
+
 
 
 

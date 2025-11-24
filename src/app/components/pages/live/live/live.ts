@@ -394,6 +394,7 @@ ngAfterViewInit(): void {
           floorId
         );
         this.loadPolygonsByFloor(floorId);
+        
         this.loadDevicesByFloor(floorId);
 
         this.cdr.detectChanges();
@@ -1205,90 +1206,179 @@ ngAfterViewInit(): void {
 
 
 
-  applyDevice() {
-    if (!this.selectedDeviceId || this.placedDevices.length === 0) return;
+  // applyDevice() {
+  //   if (!this.selectedDeviceId || this.placedDevices.length === 0) return;
 
-    let selectedDevice: any = null;
-    switch (this.activeLevel) {
-      case 'project': selectedDevice = this.projectDevices.find(d => d.id === this.selectedDeviceId); break;
-      case 'country': selectedDevice = this.countryDevices.find(d => d.id === this.selectedDeviceId); break;
-      case 'area': selectedDevice = this.areaDevices.find(d => d.id === this.selectedDeviceId); break;
-      case 'building': selectedDevice = this.buildingDevices.find(d => d.id === this.selectedDeviceId); break;
-      case 'floor': selectedDevice = this.floorDevices.find(d => d.id === this.selectedDeviceId); break;
-      case 'zone': selectedDevice = this.zoneDevices.find(d => d.id === this.selectedDeviceId); break;
-    }
+  //   let selectedDevice: any = null;
+  //   switch (this.activeLevel) {
+  //     case 'project': selectedDevice = this.projectDevices.find(d => d.id === this.selectedDeviceId); break;
+  //     case 'country': selectedDevice = this.countryDevices.find(d => d.id === this.selectedDeviceId); break;
+  //     case 'area': selectedDevice = this.areaDevices.find(d => d.id === this.selectedDeviceId); break;
+  //     case 'building': selectedDevice = this.buildingDevices.find(d => d.id === this.selectedDeviceId); break;
+  //     case 'floor': selectedDevice = this.floorDevices.find(d => d.id === this.selectedDeviceId); break;
+  //     case 'zone': selectedDevice = this.zoneDevices.find(d => d.id === this.selectedDeviceId); break;
+  //   }
 
-    if (!selectedDevice) return;
+  //   if (!selectedDevice) return;
 
-    this.placedDevices.forEach(d => {
-      const payload = {
-        id: "",
-        areaId: this.selectedAreaId,
-        assemblyPoint: false,
-        buildingId: this.selectedBuildingId,
-        clientId: "YOUR_CLIENT_ID",
-        countryId: this.selectedCountryId,
-        createdAt: new Date().toISOString(),
-        createdBy: "admin",
-        deviceGeoJsonData: {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              geometry: { type: "Point", coordinates: [d.x, d.y] },
-              properties: {}
-            }
-          ]
-        },
-        deviceName: d.name,
-        deviceReferenceId: d.id,
-        exit: "",
-        floorId: this.selectedFloorId,
-        priority: "normal",
-        projectId: this.selectedProjectId,
-        status: true,
-        topZone: "",
-        userId: "loggedInUserId",
-        zoneId: this.selectedZoneId,
-        zoneName: ""
-      };
+  //   this.placedDevices.forEach(d => {
+  //     const payload = {
+  //       id: "",
+  //       areaId: this.selectedAreaId,
+  //       assemblyPoint: false,
+  //       buildingId: this.selectedBuildingId,
+  //       clientId: "YOUR_CLIENT_ID",
+  //       countryId: this.selectedCountryId,
+  //       createdAt: new Date().toISOString(),
+  //       createdBy: "admin",
+  //       deviceGeoJsonData: {
+  //         type: "FeatureCollection",
+  //         features: [
+  //           {
+  //             type: "Feature",
+  //             geometry: { type: "Point", coordinates: [d.x, d.y] },
+  //             properties: {}
+  //           }
+  //         ]
+  //       },
+  //       deviceName: d.name,
+  //       deviceReferenceId: d.id,
+  //       exit: "",
+  //       floorId: this.selectedFloorId,
+  //       priority: "normal",
+  //       projectId: this.selectedProjectId,
+  //       status: true,
+  //       topZone: "",
+  //       userId: "loggedInUserId",
+  //       zoneId: this.selectedZoneId,
+  //       zoneName: ""
+  //     };
 
-      this.device.saveDeviceGeoJson(payload).subscribe({
-        next: (res: any) => {
-          console.log("Device saved", res)
-          this.fetchZoneMapping(this.selectedZoneId);
+  //     this.device.saveDeviceGeoJson(payload).subscribe({
+  //       next: (res: any) => {
+  //         console.log("Device saved", res)
+  //         this.fetchZoneMapping(this.selectedZoneId);
 
-        },
+  //       },
 
-        error: err => console.error("Error saving device", err)
-      });
-    });
+  //       error: err => console.error("Error saving device", err)
+  //     });
+  //   });
 
-    this.placedDevices = [];
-    this.showDevicePopup = false;
+  //   this.placedDevices = [];
+  //   this.showDevicePopup = false;
+  // }
+
+applyDevice() {
+  if (!this.selectedDeviceId || this.placedDevices.length === 0) return;
+
+  let selectedDevice = null;
+
+  switch (this.activeLevel) {
+    case 'project': selectedDevice = this.projectDevices.find(d => d.id === this.selectedDeviceId); break;
+    case 'country': selectedDevice = this.countryDevices.find(d => d.id === this.selectedDeviceId); break;
+    case 'area': selectedDevice = this.areaDevices.find(d => d.id === this.selectedDeviceId); break;
+    case 'building': selectedDevice = this.buildingDevices.find(d => d.id === this.selectedDeviceId); break;
+    case 'floor': selectedDevice = this.floorDevices.find(d => d.id === this.selectedDeviceId); break;
+    case 'zone': selectedDevice = this.zoneDevices.find(d => d.id === this.selectedDeviceId); break;
   }
 
+  if (!selectedDevice) return;
+
+  // Save only last dropped device
+  const d = this.placedDevices[this.placedDevices.length - 1];
+
+  const payload = {
+    id: "",
+    areaId: this.selectedAreaId,
+    assemblyPoint: false,
+    buildingId: this.selectedBuildingId,
+    clientId: "YOUR_CLIENT_ID",
+    countryId: this.selectedCountryId,
+    createdAt: new Date().toISOString(),
+    createdBy: "admin",
+    deviceGeoJsonData: {
+      type: "FeatureCollection",
+      features: [
+        { type: "Feature", geometry: { type: "Point", coordinates: [d.x, d.y] }, properties: {} }
+      ]
+    },
+    deviceName: d.name,
+    deviceReferenceId: d.id,
+    exit: "",
+    floorId: this.selectedFloorId,
+    priority: "normal",
+    projectId: this.selectedProjectId,
+    status: true,
+    topZone: "",
+    userId: "loggedInUserId",
+    zoneId: this.selectedZoneId,
+    zoneName: ""
+  };
+
+  this.device.saveDeviceGeoJson(payload).subscribe({
+    next: (res) => {
+      console.log("Device saved", res);
+      this.fetchZoneMapping(this.selectedZoneId);
+    },
+    error: err => console.error("Error saving device", err)
+  });
+
+  this.placedDevices = [];
+  this.showDevicePopup = false;
+}
 
   placedDevicesByZone: { [zoneId: string]: any[] } = {};
 
-  fetchZoneMapping(zoneId: string) {
-    this.device.getZoneMapping(zoneId).subscribe({
-      next: (zoneData: any) => {
+  // fetchZoneMapping(zoneId: string) {
+  //   this.device.getZoneMapping(zoneId).subscribe({
+  //     next: (zoneData: any) => {
 
-        const devices = zoneData?.deviceGeoJsonData?.features?.map((f: any) => ({
-          id: zoneData.deviceReferenceId,
-          name: zoneData.deviceName,
+  //       const devices = zoneData?.deviceGeoJsonData?.features?.map((f: any) => ({
+  //         id: zoneData.deviceReferenceId,
+  //         name: zoneData.deviceName,
+  //         x: f.geometry.coordinates[0],
+  //         y: f.geometry.coordinates[1]
+  //       })) || [];
+
+  //       this.placedDevicesByZone[zoneId] = devices;
+  //       this.placedDevices = devices;
+
+  //       this.cdr.detectChanges();
+  //     }
+  //   });
+  // }
+
+
+  fetchZoneMapping(zoneId: string) {
+  this.device.getZoneMapping(zoneId).subscribe({
+    next: (response: any[]) => {
+
+      if (!Array.isArray(response)) {
+        console.warn("Invalid response format");
+        return;
+      }
+
+      // Flatten all devices
+      const devices = response.flatMap((item: any) =>
+        item.deviceGeoJsonData?.features?.map((f: any) => ({
+          id: item.deviceReferenceId,
+          name: item.deviceName,
           x: f.geometry.coordinates[0],
           y: f.geometry.coordinates[1]
-        })) || [];
+        })) || []
+      );
 
-        this.placedDevicesByZone[zoneId] = devices;
-        this.placedDevices = devices;
+      this.placedDevicesByZone[zoneId] = devices;
+      this.placedDevices = devices;
 
-        this.cdr.detectChanges();
-      }
-    });
-  }
+      console.log("🟢 All devices loaded:", devices);
+
+      this.cdr.detectChanges();
+    }
+  });
+}
+
 
 
 
@@ -1297,6 +1387,8 @@ ngAfterViewInit(): void {
   ws!: WebSocket;
   connectWebSocket() {
     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+
+    // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.ws.onopen = () => console.log('✅ WebSocket Connected');
 
@@ -1454,6 +1546,7 @@ ngAfterViewInit(): void {
             y
           });
         });
+        this.cdr.detectChanges();
 
         console.log("📌 Loaded devices:", this.placedDevices);
       },

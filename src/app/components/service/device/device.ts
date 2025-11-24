@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,8 +9,8 @@ export class Device {
 
   constructor(private http: HttpClient) { }
 
-  private baseUrl = 'https://phcc.purpleiq.ai/api';
-
+   private baseUrl = 'https://phcc.purpleiq.ai/api';
+   // private baseUrl = 'http://172.16.100.26:5202/api';
 
 
   getDevicesByProject(projectId: string) {
@@ -118,9 +119,9 @@ export class Device {
   //   return this.http.get(`http://172.16.100.26:5202/api/DeviceGeoJsonMapping/zone/${zoneId}`);
   // }
 
-    getZoneMapping(zoneId: string) {
-    return this.http.get(`${this.baseUrl}/DeviceGeoJsonMapping/zone/${zoneId}`);
-  }
+getZoneMapping(zoneId: string): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/DeviceGeoJsonMapping/zone/${zoneId}`);
+}
 
 
   getZoneMappingByFloor(floorId: string) {

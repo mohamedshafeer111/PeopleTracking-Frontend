@@ -630,3 +630,18 @@ p {
 .control-group select:focus {
   border-color: #7030a0;
 }
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: #7030a0; /* theme color */
+}
+
+
+
+/* Focus highlight */
+.map-controls select:focus {
+  border-color: #7030a0;
+}

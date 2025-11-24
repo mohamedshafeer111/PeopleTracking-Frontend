@@ -12,7 +12,7 @@ import { Websocket } from '../../../service/websocket/websocket';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit ,OnDestroy {
+export class Dashboard implements OnInit, OnDestroy {
 
 
 
@@ -22,12 +22,12 @@ export class Dashboard implements OnInit ,OnDestroy {
     this.connectWebSocket();
   }
 
-  constructor(private cdr: ChangeDetectorRef, private role: Roleservice, private device: Device, private http: HttpClient,private zoneSocket: Websocket) { }
+  constructor(private cdr: ChangeDetectorRef, private role: Roleservice, private device: Device, private http: HttpClient, private zoneSocket: Websocket) { }
 
   isAddWidgetPopup: boolean = false;
 
   openAddWidgetPopup() {
-     this.resetPopupData();
+    this.resetPopupData();
     this.isAddWidgetPopup = true;
   }
   closeAddWidgetPopup() {
@@ -127,7 +127,7 @@ export class Dashboard implements OnInit ,OnDestroy {
 
   selectedProjectId: string = '';
   loadArea(countryId: string, projectId?: string) {
-     this.resetDeviceSelection();
+    this.resetDeviceSelection();
     this.selectedCountryId = countryId;
     // Collapse if already expanded
     if (this.expandedCountry.has(countryId)) {
@@ -179,7 +179,7 @@ export class Dashboard implements OnInit ,OnDestroy {
   selectedCountryId: string = '';
 
   loadBuilding(areaId: string) {
-     this.resetDeviceSelection();
+    this.resetDeviceSelection();
     this.selectedAreaId = areaId;
     if (this.expandedArea.has(areaId)) {
       this.expandedArea.delete(areaId);
@@ -220,7 +220,7 @@ export class Dashboard implements OnInit ,OnDestroy {
 
   selectedAreaId: string = '';
   loadFloor(buildingId: string) {
-     this.resetDeviceSelection();
+    this.resetDeviceSelection();
     this.selectedBuildingId = buildingId;
     if (this.expandedBuilding.has(buildingId)) {
       this.expandedBuilding.delete(buildingId);
@@ -267,7 +267,7 @@ export class Dashboard implements OnInit ,OnDestroy {
 
   selectedBuildingId: string = '';
   loadZones(floorId: string) {
-     this.resetDeviceSelection();
+    this.resetDeviceSelection();
     this.selectedFloorId = floorId;
     if (this.expandedFloor.has(floorId)) {
       this.expandedFloor.delete(floorId);
@@ -312,7 +312,7 @@ export class Dashboard implements OnInit ,OnDestroy {
   }
   selectedFloorId: string = '';
   loadSubZones(zoneId: string) {
-     this.resetDeviceSelection();
+    this.resetDeviceSelection();
     if (this.expandedZone.has(zoneId)) {
       this.expandedZone.delete(zoneId);
       return;
@@ -627,9 +627,9 @@ export class Dashboard implements OnInit ,OnDestroy {
     this.selectedDeviceId = '';
     this.selectedDeviceName = '';
     this.deviceParameters = [];
-}
+  }
 
-  
+
   createWidgets() {
     if (!this.selectedDeviceId || this.selectedParameters.size === 0) {
       alert("Please select at least one device and one parameter.");
@@ -688,43 +688,43 @@ export class Dashboard implements OnInit ,OnDestroy {
   }
 
   resetPopupData() {
-  // Clear selected items
-  this.selectedItemId = "";
-  this.selectedDeviceId = "";
-  this.selectedParameters = new Set();
+    // Clear selected items
+    this.selectedItemId = "";
+    this.selectedDeviceId = "";
+    this.selectedParameters = new Set();
 
-  // Clear device lists
-  this.projectDevices = [];
-  this.countryDevices = [];
-  this.areaDevices = [];
-  this.buildingDevices = [];
-  this.floorDevices = [];
-  this.zoneDevices = [];
-  this.deviceParameters = [];
+    // Clear device lists
+    this.projectDevices = [];
+    this.countryDevices = [];
+    this.areaDevices = [];
+    this.buildingDevices = [];
+    this.floorDevices = [];
+    this.zoneDevices = [];
+    this.deviceParameters = [];
 
-  // Clear expansions
-  this.expandedProjects.clear();
-  this.expandedCountry.clear();
-  this.expandedArea.clear();
-  this.expandedBuilding.clear();
-  this.expandedFloor.clear();
-  this.expandedZone.clear();
+    // Clear expansions
+    this.expandedProjects.clear();
+    this.expandedCountry.clear();
+    this.expandedArea.clear();
+    this.expandedBuilding.clear();
+    this.expandedFloor.clear();
+    this.expandedZone.clear();
 
-  // Clear nested data
-  this.countriesByProject = {};
-  this.areaByCountry = {};
-  this.buildingByArea = {};
-  this.floorByBuilding = {};
-  this.zoneByFloor = {};
-  this.subZoneByZone = {};
+    // Clear nested data
+    this.countriesByProject = {};
+    this.areaByCountry = {};
+    this.buildingByArea = {};
+    this.floorByBuilding = {};
+    this.zoneByFloor = {};
+    this.subZoneByZone = {};
 
-  // Reset active level
-  this.activeLevel = null;
-}
+    // Reset active level
+    this.activeLevel = null;
+  }
 
 
   private ws!: WebSocket;
-  //private wsUrl = 'ws://165.22.215.89:5202/ws/ZoneCount';
+ // private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
 
   private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
 
@@ -764,19 +764,166 @@ export class Dashboard implements OnInit ,OnDestroy {
   }
 
   //✅ Connect to WebSocket and update matching widgets
+  //   connectWebSocket() {
+  //   this.ws = new WebSocket(this.wsUrl);
+
+  //   this.ws.onopen = () => console.log('✅ WebSocket Connected');
+
+  //   this.ws.onmessage = (event) => {
+  //     try {
+  //       const data = JSON.parse(event.data);
+  //       const updates = Array.isArray(data) ? data : [data];
+
+  //       updates.forEach((update: any) => {
+  //         const zoneId = (update.ZoneId || '').trim().toLowerCase();
+  //         const count = update.Count;
+
+  //         console.log('📨 Received update:', update);
+
+  //         const widget = this.widgets.find(
+  //           (w) => w.deviceName.trim().toLowerCase() === zoneId
+  //         );
+
+  //         if (!widget?.params) return;
+
+  //         // update or add params dynamically
+  //         let zoneParam = widget.params.find((p: any) => p.name.toLowerCase() === 'zonename');
+  //         let countParam = widget.params.find((p: any) => p.name.toLowerCase() === 'peoplecount');
+
+  //         if (zoneParam) zoneParam.value = update.ZoneId;
+  //         else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
+
+  //         if (countParam) countParam.value = count;
+  //         else widget.params.push({ name: 'PeopleCount', value: count });
+
+
+  //       });
+
+  //       this.cdr.detectChanges();
+  //     } catch (err) {
+  //       console.error('⚠️ WebSocket message parse error:', err);
+  //     }
+  //   };
+
+  //   this.ws.onerror = (err) => console.error('❌ WebSocket Error:', err);
+
+  //   this.ws.onclose = () => {
+  //     console.warn('🔌 WebSocket Disconnected — retrying in 1s...');
+  //     setTimeout(() => this.connectWebSocket(), 1000);
+  //   };
+  // }
+
+
+
+  // connectWebSocket() {
+  //   this.ws = new WebSocket(this.wsUrl);
+
+  //   this.ws.onopen = () => console.log('✅ WebSocket Connected');
+
+  //   this.ws.onmessage = (event) => {
+  //     try {
+  //       const data = JSON.parse(event.data);
+
+  //       // 🔥 If empty array -> set default PeopleCount = 0
+  //       if (Array.isArray(data) && data.length === 0) {
+  //         console.log("📭 Empty update received. Setting PeopleCount = 0");
+
+  //         this.widgets.forEach((widget) => {
+  //           let countParam = widget.params.find(
+  //             (p: any) => p.name.toLowerCase() === 'peoplecount'
+  //           );
+
+  //           if (countParam) countParam.value = 0;
+  //           else widget.params.push({ name: 'PeopleCount', value: 0 });
+  //         });
+
+  //         this.cdr.detectChanges();
+  //         return;
+  //       }
+
+  //       const updates = Array.isArray(data) ? data : [data];
+
+  //       updates.forEach((update: any) => {
+  //         const zoneId = (update.ZoneId || '').trim().toLowerCase();
+  //         const count = update.Count ?? 0; // default 0
+
+  //         const widget = this.widgets.find(
+  //           (w) => w.deviceName.trim().toLowerCase() === zoneId
+  //         );
+
+  //         if (!widget?.params) return;
+
+  //         let zoneParam = widget.params.find(
+  //           (p: any) => p.name.toLowerCase() === 'zonename'
+  //         );
+  //         let countParam = widget.params.find(
+  //           (p: any) => p.name.toLowerCase() === 'peoplecount'
+  //         );
+
+  //         if (zoneParam) zoneParam.value = update.ZoneId;
+  //         else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
+
+  //         if (countParam) countParam.value = count;
+  //         else widget.params.push({ name: 'PeopleCount', value: count });
+  //       });
+
+  //       this.cdr.detectChanges();
+  //     } catch (err) {
+  //       console.error('⚠️ WebSocket message parse error:', err);
+  //     }
+  //   };
+
+  // }
+
+
   connectWebSocket() {
   this.ws = new WebSocket(this.wsUrl);
 
-  this.ws.onopen = () => console.log('✅ WebSocket Connected');
+  this.ws.onopen = () => {
+    console.log('✅ WebSocket Connected');
+
+    // 🔥 HARD-CODE status = online for all widgets
+    this.widgets.forEach((widget) => {
+      let statusParam = widget.params.find(
+        (p: any) => p.name.toLowerCase() === 'status'
+      );
+
+      if (statusParam) {
+        statusParam.value = 'online';
+      } else {
+        widget.params.push({ name: 'Status', value: 'online' });
+      }
+    });
+
+    this.cdr.detectChanges();
+  };
 
   this.ws.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data);
+
+      // 🔥 Empty array → PeopleCount = 0 for all widgets
+      if (Array.isArray(data) && data.length === 0) {
+        console.log("📭 Empty update received. Setting PeopleCount = 0");
+
+        this.widgets.forEach((widget) => {
+          let countParam = widget.params.find(
+            (p: any) => p.name.toLowerCase() === 'peoplecount'
+          );
+
+          if (countParam) countParam.value = 0;
+          else widget.params.push({ name: 'PeopleCount', value: 0 });
+        });
+
+        this.cdr.detectChanges();
+        return;
+      }
+
       const updates = Array.isArray(data) ? data : [data];
 
       updates.forEach((update: any) => {
         const zoneId = (update.ZoneId || '').trim().toLowerCase();
-        const count = update.Count;
+        const count = update.Count ?? 0; // default 0
 
         console.log('📨 Received update:', update);
 
@@ -786,17 +933,26 @@ export class Dashboard implements OnInit ,OnDestroy {
 
         if (!widget?.params) return;
 
-        // update or add params dynamically
-        let zoneParam = widget.params.find((p: any) => p.name.toLowerCase() === 'zonename');
-        let countParam = widget.params.find((p: any) => p.name.toLowerCase() === 'peoplecount');
-
+        // ZoneName
+        let zoneParam = widget.params.find(
+          (p: any) => p.name.toLowerCase() === 'zonename'
+        );
         if (zoneParam) zoneParam.value = update.ZoneId;
         else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
 
+        // PeopleCount
+        let countParam = widget.params.find(
+          (p: any) => p.name.toLowerCase() === 'peoplecount'
+        );
         if (countParam) countParam.value = count;
         else widget.params.push({ name: 'PeopleCount', value: count });
 
-        
+        // 🔥 HARD-CODE status = online (always)
+        let statusParam = widget.params.find(
+          (p: any) => p.name.toLowerCase() === 'status'
+        );
+        if (statusParam) statusParam.value = 'online';
+        else widget.params.push({ name: 'Status', value: 'online' });
       });
 
       this.cdr.detectChanges();
@@ -813,6 +969,4 @@ export class Dashboard implements OnInit ,OnDestroy {
   };
 }
 
-
-
-  }
+}
