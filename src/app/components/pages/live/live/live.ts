@@ -6,6 +6,7 @@ import * as L from 'leaflet';
 
 import { FormsModule } from '@angular/forms';
 import { Device } from '../../../service/device/device';
+import 'leaflet/dist/leaflet.css'; 
 
 @Component({
   selector: 'app-live',
@@ -25,18 +26,35 @@ export class Live implements OnInit, AfterViewInit {
   selectedHour: string = '';
   showHourInputs: boolean = false;
   savedMappingId: string = '';
-  hourMap: { [key: string]: number } = {
+  // hourMap: { [key: string]: number } = {
+  //   // 'Live': 0,
+  //   '1 Hour': 1,
+  //   '2 Hours': 2,
+  //   '8 Hours': 8,
+  //   '24 Hours': 24,
+  //   '1 Day': 24,
+  //   '2 Days': 48,
+  //   '5 Days': 120,
+  //   '7 Days': 168,
+  //   '15 Days': 360,
+  //   '30 Days': 720
+  // };
+
+    hourMap: { [key: string]: number } = {
+    // Day options
     // 'Live': 0,
     '1 Hour': 1,
     '2 Hours': 2,
     '8 Hours': 8,
     '24 Hours': 24,
-    '1 Day': 24,
-    '2 Days': 48,
-    '5 Days': 120,
-    '7 Days': 168,
-    '15 Days': 360,
-    '30 Days': 720
+
+    // Week options
+    '1 Day': 1,
+    '2 Days': 2,
+    '5 Days': 5,
+    '7 Days': 7,
+    '15 Days': 15,
+    '30 Days': 30
   };
 
 
@@ -505,30 +523,30 @@ ngAfterViewInit(): void {
     this.showHourInputs = true;
   }
 
-  onTimeRangeChange() {
-    switch (this.selectedTimeRange) {
-      case 'day':
-        this.hours = ['Live', '1 Hour', '2 Hours', '8 Hours', '24 Hours'];
-        this.selectedHour = 'Live';
-        break;
+  // onTimeRangeChange() {
+  //   switch (this.selectedTimeRange) {
+  //     case 'day':
+  //       this.hours = ['Live', '1 Hour', '2 Hours', '8 Hours', '24 Hours'];
+  //       this.selectedHour = 'Live';
+  //       break;
 
-      case 'week':
-        this.hours = ['1 Day', '2 Days', '5 Days', '7 Days'];
-        this.selectedHour = '1 Day';
-        break;
+  //     case 'week':
+  //       this.hours = ['1 Day', '2 Days', '5 Days', '7 Days'];
+  //       this.selectedHour = '1 Day';
+  //       break;
 
-      case 'month':
-        this.hours = ['15 Days', '30 Days'];
-        this.selectedHour = '15 Days';
-        break;
+  //     case 'month':
+  //       this.hours = ['15 Days', '30 Days'];
+  //       this.selectedHour = '15 Days';
+  //       break;
 
-      default:
-        this.showHourInputs = false;
-        break;
-    }
+  //     default:
+  //       this.showHourInputs = false;
+  //       break;
+  //   }
 
-    this.showHourInputs = true;
-  }
+  //   this.showHourInputs = true;
+  // }
 
   onHourChange() {
     console.log(`Selected: ${this.selectedTimeRange} → ${this.selectedHour}`);
@@ -1388,7 +1406,7 @@ applyDevice() {
   connectWebSocket() {
     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
 
-    // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+    //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.ws.onopen = () => console.log('✅ WebSocket Connected');
 
@@ -1561,7 +1579,29 @@ applyDevice() {
 selectedDays: number = 1;  // default 1 day
 daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
 
-  loadZoneCounts() {
+//   loadZoneCounts() {
+//   if (!this.selectedZoneName) return;
+
+//   const numericHour = this.hourMap[this.selectedHour];
+//   if (numericHour == null) return;
+
+//   this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
+//     .subscribe({
+//       next: (res: any) => {
+//         // ✅ Update zoneVisitorCounts from API
+//         this.zoneVisitorCounts = {};
+//         this.zoneVisitorCounts[res.zone] = res.count;
+
+//         // ✅ Redraw canvas with updated values
+//         this.redrawCanvas();
+//       },
+//       error: (err) => console.error('API Error:', err)
+//     });
+// }
+
+
+
+loadZoneCounts() {
   if (!this.selectedZoneName) return;
 
   const numericHour = this.hourMap[this.selectedHour];
@@ -1570,11 +1610,10 @@ daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
   this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
     .subscribe({
       next: (res: any) => {
-        // ✅ Update zoneVisitorCounts from API
-        this.zoneVisitorCounts = {};
-        this.zoneVisitorCounts[res.zone] = res.count;
 
-        // ✅ Redraw canvas with updated values
+        // 👇 Store the response using zoneName as the key
+        this.zoneVisitorCounts[res.zoneName] = res.totalCount;
+
         this.redrawCanvas();
       },
       error: (err) => console.error('API Error:', err)
@@ -1582,31 +1621,90 @@ daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
 }
 
 
+// loadZoneCountsByDate() {
+//   if (!this.selectedZoneName) {
+//     console.warn("No zone selected");
+//     return;
+//   }
+
+//   if (this.selectedDays == null) {
+//     console.warn("No days selected");
+//     return;
+//   }
+
+//   this.device.getVisitorsByDate(this.selectedZoneName, this.selectedDays)
+//     .subscribe({
+//       next: (res: any) => {
+//         // reset old counts
+//         this.zoneVisitorCounts = {};
+
+//         // assuming API returns { zone: "...", count: 10 }
+//         this.zoneVisitorCounts[res.zone] = res.count;
+
+//         // redraw canvas
+//         this.redrawCanvas();
+//       },
+//       error: (err) => console.error("API Error:", err)
+//     });
+// }
+
 loadZoneCountsByDate() {
-  if (!this.selectedZoneName) {
-    console.warn("No zone selected");
-    return;
-  }
+  if (!this.selectedZoneName) return;
 
-  if (this.selectedDays == null) {
-    console.warn("No days selected");
-    return;
-  }
+  const numericDays = this.hourMap[this.selectedHour];
+  if (numericDays == null) return;
 
-  this.device.getVisitorsByDate(this.selectedZoneName, this.selectedDays)
+  this.device.getVisitorsByDate(this.selectedZoneName, numericDays)
     .subscribe({
       next: (res: any) => {
-        // reset old counts
-        this.zoneVisitorCounts = {};
 
-        // assuming API returns { zone: "...", count: 10 }
-        this.zoneVisitorCounts[res.zone] = res.count;
+        // 👇 Store the response
+        this.zoneVisitorCounts[res.zoneName] = res.totalCount;
 
-        // redraw canvas
         this.redrawCanvas();
       },
       error: (err) => console.error("API Error:", err)
     });
 }
+
+
+
+
+
+
+onTimeRangeChange() {
+  switch (this.selectedTimeRange) {
+    case 'day':
+      this.hours = ['Live', '1 Hour', '2 Hours', '8 Hours', '24 Hours'];
+      this.selectedHour = 'Live';
+      break;
+
+    case 'week':
+      this.hours = ['1 Day', '2 Days', '5 Days', '7 Days'];
+      this.selectedHour = '1 Day';
+      break;
+
+    case 'month':
+      this.hours = ['15 Days', '30 Days'];
+      this.selectedHour = '15 Days';
+      break;
+
+    default:
+      this.showHourInputs = false;
+      return;
+  }
+
+  this.showHourInputs = true;
+
+  // 🔥 Auto-call correct API after setting first option
+  if (this.selectedTimeRange === 'day') {
+    this.loadZoneCounts();   // calls hour API
+  } else {
+    this.loadZoneCountsByDate(); // calls day API
+  }
+}
+
+
+
 
 }

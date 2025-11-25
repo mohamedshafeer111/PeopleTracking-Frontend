@@ -415,3 +415,101 @@ font-weight: bolder;
   text-align: left;
   letter-spacing: 0.5px;
 }
+
+
+
+
+
+
+
+
+
+
+
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: backdropFade 0.3s ease-out;
+}
+
+@keyframes backdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.popup-box {
+  background: #fff;
+   font-family: 'RedHatDisplay-Regular';
+  width: 320px;
+  padding: 22px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+  animation: fadeInScale 0.25s ease-out;
+}
+
+.popup-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-apply {
+  background: #6a0dad;
+  color: white;
+  padding: 9px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  width: 48%;
+  transition: 0.2s;
+   font-family: 'RedHatDisplay-Regular';
+}
+
+.btn-cancel {
+  background: #c7c7c7;
+  color: #000;
+  padding: 9px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  width: 48%;
+  transition: 0.2s;
+   font-family: 'RedHatDisplay-Regular';
+}
+
+.btn-apply:hover {
+  background: #5500a8;
+}
+
+.btn-cancel:hover {
+  background: #a0a0a0;
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Prevent scroll when popup is open */
+body.popup-open {
+  overflow: hidden;
+}
+
+
+

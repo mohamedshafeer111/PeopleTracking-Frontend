@@ -10,7 +10,7 @@ export class Device {
   constructor(private http: HttpClient) { }
 
    private baseUrl = 'https://phcc.purpleiq.ai/api';
-   // private baseUrl = 'http://172.16.100.26:5202/api';
+   //private baseUrl = 'http://172.16.100.26:5202/api';
 
 
   getDevicesByProject(projectId: string) {
@@ -145,21 +145,27 @@ getZoneMapping(zoneId: string): Observable<any[]> {
   }
 
 
-  ProcessedEvetbyHours(zone: string, hours: number) {
-    return this.http.get<any>(
-      `${this.baseUrl}/ProcessedEventReport/zone-count`,
-      { params: { zone, hours } }
-    );
-  }
+ProcessedEvetbyHours(zone: string, hours: number): Observable<any> {
+  return this.http.get<any>(
+    `${this.baseUrl}/ProcessedEventReport/zone-count`,
+    { params: { zone, hours } }
+  );
+}
 
 
 
-  getVisitorsByDate(zone: string, days: number) {
-    return this.http.get<any>(`${this.baseUrl}/ProcessedEventReport/zone-count-by-days`, {
-      params: {
-        zone: zone,
-        days: days.toString()
-      }
-    });
-  }
+getVisitorsByDate(zone: string, days: number) {
+  return this.http.get<any>(`${this.baseUrl}/ProcessedEventReport/zone-count-by-days`, {
+    params: {
+      zone: zone,
+      days: days.toString()
+    }
+  });
+}
+
+
+
+deleteWidget(id:any){
+  return this.http.delete(`${this.baseUrl}/zonesensor/${id}`)
+}
 }

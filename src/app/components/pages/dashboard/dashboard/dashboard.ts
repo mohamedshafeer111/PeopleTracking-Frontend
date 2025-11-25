@@ -724,44 +724,79 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
   private ws!: WebSocket;
- // private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
+ //private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
 
-  private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
-
-
+ private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();
   }
 
   // ✅ Fetch all widgets (from API)
+  // loadZoneSensors() {
+  //   this.device.getAllZoneSensors().subscribe(
+  //     (response: any) => {
+  //       const dataArray = Array.isArray(response) ? response : [response];
+  //       const allSensors = dataArray.flatMap(zone => zone.zoneSensors || []);
+
+  //       const deviceMap = new Map<string, any>();
+
+  //       for (const sensor of allSensors) {
+  //         if (!deviceMap.has(sensor.deviceId)) {
+  //           deviceMap.set(sensor.deviceId, {
+  //             deviceId: sensor.deviceId,
+  //             deviceName: sensor.deviceName,
+  //             params: sensor.params.map((p: any) => ({
+  //               name: p.paramName,
+  //               value: '-' // default placeholder until updated
+  //             }))
+  //           });
+  //         }
+  //       }
+
+  //       this.widgets = Array.from(deviceMap.values());
+  //       this.cdr.detectChanges();
+  //     },
+  //     (error) => console.error('❌ Error fetching zone sensors:', error)
+  //   );
+  // }
+
   loadZoneSensors() {
-    this.device.getAllZoneSensors().subscribe(
-      (response: any) => {
-        const dataArray = Array.isArray(response) ? response : [response];
-        const allSensors = dataArray.flatMap(zone => zone.zoneSensors || []);
+  this.device.getAllZoneSensors().subscribe(
+    (response: any) => {
+      const dataArray = Array.isArray(response) ? response : [response];
 
-        const deviceMap = new Map<string, any>();
+      // Attach mainId to every zonesensor
+      const allSensors = dataArray.flatMap(zone =>
+        (zone.zoneSensors || []).map((sensor: any) => ({
+          ...sensor,
+          mainId: zone.id     // <-- ADD mainId from parent
+        }))
+      );
 
-        for (const sensor of allSensors) {
-          if (!deviceMap.has(sensor.deviceId)) {
-            deviceMap.set(sensor.deviceId, {
-              deviceId: sensor.deviceId,
-              deviceName: sensor.deviceName,
-              params: sensor.params.map((p: any) => ({
-                name: p.paramName,
-                value: '-' // default placeholder until updated
-              }))
-            });
-          }
+      const deviceMap = new Map<string, any>();
+
+      for (const sensor of allSensors) {
+        if (!deviceMap.has(sensor.deviceId)) {
+          deviceMap.set(sensor.deviceId, {
+            deviceId: sensor.deviceId,
+            deviceName: sensor.deviceName,
+            mainId: sensor.mainId,    // <-- ADD mainId HERE
+            params: sensor.params.map((p: any) => ({
+              name: p.paramName,
+              value: '-'  // your default logic remains
+            }))
+          });
         }
+      }
 
-        this.widgets = Array.from(deviceMap.values());
-        this.cdr.detectChanges();
-      },
-      (error) => console.error('❌ Error fetching zone sensors:', error)
-    );
-  }
+      this.widgets = Array.from(deviceMap.values());
+      this.cdr.detectChanges();
+    },
+    (error) => console.error('❌ Error fetching zone sensors:', error)
+  );
+}
+
 
   //✅ Connect to WebSocket and update matching widgets
   //   connectWebSocket() {
@@ -877,96 +912,139 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
   connectWebSocket() {
-  this.ws = new WebSocket(this.wsUrl);
+    this.ws = new WebSocket(this.wsUrl);
 
-  this.ws.onopen = () => {
-    console.log('✅ WebSocket Connected');
+    this.ws.onopen = () => {
+      console.log('✅ WebSocket Connected');
 
-    // 🔥 HARD-CODE status = online for all widgets
-    this.widgets.forEach((widget) => {
-      let statusParam = widget.params.find(
-        (p: any) => p.name.toLowerCase() === 'status'
-      );
-
-      if (statusParam) {
-        statusParam.value = 'online';
-      } else {
-        widget.params.push({ name: 'Status', value: 'online' });
-      }
-    });
-
-    this.cdr.detectChanges();
-  };
-
-  this.ws.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-
-      // 🔥 Empty array → PeopleCount = 0 for all widgets
-      if (Array.isArray(data) && data.length === 0) {
-        console.log("📭 Empty update received. Setting PeopleCount = 0");
-
-        this.widgets.forEach((widget) => {
-          let countParam = widget.params.find(
-            (p: any) => p.name.toLowerCase() === 'peoplecount'
-          );
-
-          if (countParam) countParam.value = 0;
-          else widget.params.push({ name: 'PeopleCount', value: 0 });
-        });
-
-        this.cdr.detectChanges();
-        return;
-      }
-
-      const updates = Array.isArray(data) ? data : [data];
-
-      updates.forEach((update: any) => {
-        const zoneId = (update.ZoneId || '').trim().toLowerCase();
-        const count = update.Count ?? 0; // default 0
-
-        console.log('📨 Received update:', update);
-
-        const widget = this.widgets.find(
-          (w) => w.deviceName.trim().toLowerCase() === zoneId
-        );
-
-        if (!widget?.params) return;
-
-        // ZoneName
-        let zoneParam = widget.params.find(
-          (p: any) => p.name.toLowerCase() === 'zonename'
-        );
-        if (zoneParam) zoneParam.value = update.ZoneId;
-        else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
-
-        // PeopleCount
-        let countParam = widget.params.find(
-          (p: any) => p.name.toLowerCase() === 'peoplecount'
-        );
-        if (countParam) countParam.value = count;
-        else widget.params.push({ name: 'PeopleCount', value: count });
-
-        // 🔥 HARD-CODE status = online (always)
+      // 🔥 HARD-CODE status = online for all widgets
+      this.widgets.forEach((widget) => {
         let statusParam = widget.params.find(
           (p: any) => p.name.toLowerCase() === 'status'
         );
-        if (statusParam) statusParam.value = 'online';
-        else widget.params.push({ name: 'Status', value: 'online' });
+
+        if (statusParam) {
+          statusParam.value = 'online';
+        } else {
+          widget.params.push({ name: 'Status', value: 'online' });
+        }
       });
 
       this.cdr.detectChanges();
-    } catch (err) {
-      console.error('⚠️ WebSocket message parse error:', err);
+    };
+
+    this.ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        // 🔥 Empty array → PeopleCount = 0 for all widgets
+        if (Array.isArray(data) && data.length === 0) {
+          console.log("📭 Empty update received. Setting PeopleCount = 0");
+
+          this.widgets.forEach((widget) => {
+            let countParam = widget.params.find(
+              (p: any) => p.name.toLowerCase() === 'peoplecount'
+            );
+
+            if (countParam) countParam.value = 0;
+            else widget.params.push({ name: 'PeopleCount', value: 0 });
+          });
+
+          this.cdr.detectChanges();
+          return;
+        }
+
+        const updates = Array.isArray(data) ? data : [data];
+
+        updates.forEach((update: any) => {
+          const zoneId = (update.ZoneId || '').trim().toLowerCase();
+          const count = update.Count ?? 0; // default 0
+
+          console.log('📨 Received update:', update);
+
+          const widget = this.widgets.find(
+            (w) => w.deviceName.trim().toLowerCase() === zoneId
+          );
+
+          if (!widget?.params) return;
+
+          // ZoneName
+          let zoneParam = widget.params.find(
+            (p: any) => p.name.toLowerCase() === 'zonename'
+          );
+          if (zoneParam) zoneParam.value = update.ZoneId;
+          else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
+
+          // PeopleCount
+          let countParam = widget.params.find(
+            (p: any) => p.name.toLowerCase() === 'peoplecount'
+          );
+          if (countParam) countParam.value = count;
+          else widget.params.push({ name: 'PeopleCount', value: count });
+
+          // 🔥 HARD-CODE status = online (always)
+          let statusParam = widget.params.find(
+            (p: any) => p.name.toLowerCase() === 'status'
+          );
+          if (statusParam) statusParam.value = 'online';
+          else widget.params.push({ name: 'Status', value: 'online' });
+        });
+
+        this.cdr.detectChanges();
+      } catch (err) {
+        console.error('⚠️ WebSocket message parse error:', err);
+      }
+    };
+
+    this.ws.onerror = (err) => console.error('❌ WebSocket Error:', err);
+
+    this.ws.onclose = () => {
+      console.warn('🔌 WebSocket Disconnected — retrying in 1s...');
+      setTimeout(() => this.connectWebSocket(), 1000);
+    };
+  }
+
+  selectedWidgetId = ""
+  showDeleteWidjet: boolean = false;
+  cancelDelete() {
+    this.showDeleteWidjet = false;
+  }
+  openDeleteWidget(widget: any) {
+    this.selectedWidgetId = widget.mainId;
+    this.showDeleteWidjet = true;
+  }
+
+
+
+deleteWidget() {
+  this.device.deleteWidget(this.selectedWidgetId).subscribe({
+    next: (res: any) => {
+      console.log('Response:', res);
+
+      // Accept both text and JSON
+      if (typeof res === 'string' || res?.message === 'Deleted successfully') {
+        alert("Deleted successfully");
+        this.showDeleteWidjet = false;
+        this.loadZoneSensors();
+      }
+    },
+    error: (err) => {
+      console.error(err);
+
+      // Sometimes backend returns 200 with empty body → Angular treats as error
+      if (err.status === 200) {
+        alert("Deleted successfully");
+        this.showDeleteWidjet = false;
+        this.loadZoneSensors();
+        return;
+      }
+
+      alert("Error deleting widget");
     }
-  };
-
-  this.ws.onerror = (err) => console.error('❌ WebSocket Error:', err);
-
-  this.ws.onclose = () => {
-    console.warn('🔌 WebSocket Disconnected — retrying in 1s...');
-    setTimeout(() => this.connectWebSocket(), 1000);
-  };
+  });
 }
+
+
+
 
 }

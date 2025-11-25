@@ -645,3 +645,98 @@ p {
 .map-controls select:focus {
   border-color: #7030a0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+.map-controls {
+    display: flex;
+    flex-wrap: wrap;              /* Allow wrapping when needed */
+    align-items: center;          /* Vertically center elements */
+    gap: 12px;                    /* Space between items */
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 8px;
+}
+
+/* All selects same style */
+.map-controls select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+}
+
+/* Label styling */
+.map-controls label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+/* Hours group container */
+.hours-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Hour Buttons */
+.hour-button {
+    padding: 4px 10px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    background: #f5f5f5;
+}
+
+.hour-button.active {
+    background: #7030a0;
+    color: white;
+    border-color: #7030a0;
+}
+
+/* Make entire control bar stay on one line on medium screens */
+@media (max-width: 1100px) {
+    .map-controls {
+        flex-wrap: wrap; /* still allows wrapping, but keeps items compact */
+        gap: 8px;
+    }
+
+    .map-controls select {
+        width: 180px;   /* reduce width on laptops */
+    }
+}
+
+/* Tablet & small laptop screens */
+@media (max-width: 900px) {
+    .map-controls select {
+        width: 160px;
+    }
+}
+
+/* Mobile fallback */
+@media (max-width: 600px) {
+    .map-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .map-controls select {
+        width: 100%;
+    }
+}
+
+
+
