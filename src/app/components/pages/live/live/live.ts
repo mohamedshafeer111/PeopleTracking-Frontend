@@ -6,7 +6,7 @@ import * as L from 'leaflet';
 
 import { FormsModule } from '@angular/forms';
 import { Device } from '../../../service/device/device';
-import 'leaflet/dist/leaflet.css'; 
+
 
 @Component({
   selector: 'app-live',
@@ -548,10 +548,10 @@ ngAfterViewInit(): void {
   //   this.showHourInputs = true;
   // }
 
-  onHourChange() {
-    console.log(`Selected: ${this.selectedTimeRange} → ${this.selectedHour}`);
-    // 🔥 You can load map data dynamically here
-  }
+  // onHourChange() {
+  //   console.log(`Selected: ${this.selectedTimeRange} → ${this.selectedHour}`);
+  //   // 🔥 You can load map data dynamically here
+  // }
 
   @ViewChild('drawingCanvas') drawingCanvas!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
@@ -1406,7 +1406,7 @@ applyDevice() {
   connectWebSocket() {
     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
 
-    //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+   // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.ws.onopen = () => console.log('✅ WebSocket Connected');
 
@@ -1705,6 +1705,20 @@ onTimeRangeChange() {
 }
 
 
+  onHourChange() {
+    console.log(`Selected: ${this.selectedTimeRange} → ${this.selectedHour}`);
+
+    if (!this.selectedZoneName) return;
+
+    if (this.selectedTimeRange === 'day') {
+      // These are hour options, so call hour API
+      this.loadZoneCounts();
+    }
+    else if (this.selectedTimeRange === 'week' || this.selectedTimeRange === 'month') {
+      // These are day-based, so call day API
+      this.loadZoneCountsByDate();
+    }
+  }
 
 
 }
