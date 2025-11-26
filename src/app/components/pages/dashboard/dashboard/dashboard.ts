@@ -15,7 +15,7 @@ import { environment } from '../../../../../environments/environment.prod';
 })
 export class Dashboard implements OnInit, OnDestroy {
 
-private wsUrl = environment.wsUrl;
+// private wsUrl = environment.wsUrl;
 
   ngOnInit(): void {
     this.loadProject();
@@ -727,7 +727,7 @@ private wsUrl = environment.wsUrl;
   private ws!: WebSocket;
 // private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
 
- //private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
+ private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();

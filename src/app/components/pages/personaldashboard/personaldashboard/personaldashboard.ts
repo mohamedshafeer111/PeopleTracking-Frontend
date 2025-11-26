@@ -135,7 +135,7 @@ export class Personaldashboard implements OnInit {
 
 
   connectWS() {
-   // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+   //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
 
     this.ws.onmessage = (event) => {
