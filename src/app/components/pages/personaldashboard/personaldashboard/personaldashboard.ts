@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import Chart from 'chart.js/auto';
+
 
 @Component({
   selector: 'app-personaldashboard',
@@ -9,7 +11,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './personaldashboard.html',
   styleUrl: './personaldashboard.css'
 })
-export class Personaldashboard {
+export class Personaldashboard implements OnInit {
 
 
 
@@ -44,4 +46,74 @@ export class Personaldashboard {
     { name: 'Top Exit Point', selected: false }
   ];
 
+
+
+
+ ws!: WebSocket;
+  chart!: Chart;
+
+  zoneColorMap: any = {
+    "Zone1": "#4caf50",
+    "Zone2": "#f44336",
+    "Zone3": "#2196f3",
+    "Zone4": "#ff9800"
+  };
+
+  ngOnInit() {
+    this.createChart();
+    this.connectWS();
+  }
+
+  createChart() {
+    const canvas = document.getElementById('zoneChart') as HTMLCanvasElement;
+
+    this.chart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'People Count',
+          data: [],
+          borderRadius: 12,
+          backgroundColor: []
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }},
+        scales: {
+          x: { grid: { display: false }},
+          y: { grid: { color: '#e0e0e0' }}
+        }
+      }
+    });
+  }
+
+  connectWS() {
+    //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+
+    this.ws.onmessage = (event) => {
+      if (event.data.includes('ping')) return;
+
+      const zones = JSON.parse(event.data);
+
+      const labels = zones.map((z: any) => z.ZoneId);
+      const values = zones.map((z: any) => z.Count);
+      const colors = zones.map((z: any) =>
+        this.zoneColorMap[z.ZoneId] || this.randomColor()
+      );
+
+      this.chart.data.labels = labels;
+      this.chart.data.datasets[0].data = values;
+      this.chart.data.datasets[0].backgroundColor = colors;
+
+      this.chart.update();
+    };
+  }
+
+  randomColor() {
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
 }

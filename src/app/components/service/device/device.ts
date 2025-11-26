@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -9,27 +10,26 @@ export class Device {
 
   constructor(private http: HttpClient) { }
 
-   private baseUrl = 'https://phcc.purpleiq.ai/api';
-   //private baseUrl = 'http://172.16.100.26:5202/api';
+   private baseUrl = environment.apiUrl;
 
 
   getDevicesByProject(projectId: string) {
-    return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}`)
+    return this.http.get(`${this.baseUrl}deviceadd/project/${projectId}`)
   }
 
   getDevicesByCountry(projectId: string, countryId: string) {
-    return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}`)
+    return this.http.get(`${this.baseUrl}deviceadd/project/${projectId}/country/${countryId}`)
   }
 
   getDevicesByArea(projectId: string, countryId: string, areaId: string) {
-    return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}`)
+    return this.http.get(`${this.baseUrl}deviceadd/project/${projectId}/country/${countryId}/area/${areaId}`)
   }
 
   getDevicesByBuilding(projectId: string, countryId: string, areaId: string, buildingId: string) {
-    return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}`);
+    return this.http.get(`${this.baseUrl}deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}`);
   }
   getDevicesByFloor(projectId: string, countryId: string, areaId: string, buildingId: string, floorId: string) {
-    return this.http.get(`${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}`);
+    return this.http.get(`${this.baseUrl}deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}`);
   }
   // getDevicesByZone(
   //   projectId: string,
@@ -51,7 +51,7 @@ export class Device {
     floorId: string,
     zoneId: string
   ) {
-    const url = `${this.baseUrl}/deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}/zone/${zoneId}`;
+    const url = `${this.baseUrl}deviceadd/project/${projectId}/country/${countryId}/area/${areaId}/building/${buildingId}/floor/${floorId}/zone/${zoneId}`;
     return this.http.get(url);
   }
 
@@ -61,32 +61,32 @@ export class Device {
   // }
 
    getAllDeviceParameters() {
-    return this.http.get(`${this.baseUrl}/device-parameters/all`);
+    return this.http.get(`${this.baseUrl}device-parameters/all`);
   }
 
   addNewPara(payload: any) {
-    return this.http.post(`${this.baseUrl}/device-parameters/create`, payload);
+    return this.http.post(`${this.baseUrl}device-parameters/create`, payload);
   }
 
   updateDeviceParametersById(id: string, payload: any) {
-    return this.http.put(`${this.baseUrl}/device-parameters/update/${id}`, payload)
+    return this.http.put(`${this.baseUrl}device-parameters/update/${id}`, payload)
   }
 
   deleteDevicePara(id: string) {
-    return this.http.delete(`${this.baseUrl}/device-parameters/delete/${id}`, { responseType: 'text' })
+    return this.http.delete(`${this.baseUrl}device-parameters/delete/${id}`, { responseType: 'text' })
   }
 
 
   getDeviceParametersByDeviceId(deviceId: string) {
-    return this.http.get(`${this.baseUrl}/device-parameters/bydevice/${deviceId}`);
+    return this.http.get(`${this.baseUrl}device-parameters/bydevice/${deviceId}`);
   }
 
   getAllZoneSensors() {
-    return this.http.get(`${this.baseUrl}/zonesensor/all`)
+    return this.http.get(`${this.baseUrl}zonesensor/all`)
   }
 
   createZoneSensor(payload: any) {
-    return this.http.post(`${this.baseUrl}/zonesensor/create`, payload);
+    return this.http.post(`${this.baseUrl}zonesensor/create`, payload);
   }
 
 
@@ -97,12 +97,12 @@ export class Device {
   // }
 
     saveZoneMapping(data: any) {
-    return this.http.post(`${this.baseUrl}/ZoneMapping`, data);
+    return this.http.post(`${this.baseUrl}ZoneMapping`, data);
   }
 
 
   getZoneMappingById(zoneId: string) {
-    return this.http.get(`${this.baseUrl}/ZoneMapping/by-zone/${zoneId}`);
+    return this.http.get(`${this.baseUrl}ZoneMapping/by-zone/${zoneId}`);
   }
 
   // device.service.ts
@@ -111,7 +111,7 @@ export class Device {
   // }
 
     saveDeviceGeoJson(payload: any) {
-    return this.http.post(`${this.baseUrl}/DeviceGeoJsonMapping`, payload);
+    return this.http.post(`${this.baseUrl}DeviceGeoJsonMapping`, payload);
   }
 
 
@@ -120,12 +120,12 @@ export class Device {
   // }
 
 getZoneMapping(zoneId: string): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}/DeviceGeoJsonMapping/zone/${zoneId}`);
+  return this.http.get<any[]>(`${this.baseUrl}DeviceGeoJsonMapping/zone/${zoneId}`);
 }
 
 
   getZoneMappingByFloor(floorId: string) {
-    return this.http.get<any[]>(`${this.baseUrl}/ZoneMapping/by-Floor/${floorId}`);
+    return this.http.get<any[]>(`${this.baseUrl}ZoneMapping/by-Floor/${floorId}`);
   }
 
   // getZoneImageByZoneId(zoneId: string) {
@@ -133,21 +133,21 @@ getZoneMapping(zoneId: string): Observable<any[]> {
   // }
 
     getZoneImageByZoneId(zoneId: string) {
-    return this.http.get(`${this.baseUrl}/zones/${zoneId}/map`);
+    return this.http.get(`${this.baseUrl}zones/${zoneId}/map`);
   }
 
   getDevicesByZoneId(zoneId: string) {
-    return this.http.get(`${this.baseUrl}/deviceadd/by-zone/${zoneId}`);
+    return this.http.get(`${this.baseUrl}deviceadd/by-zone/${zoneId}`);
   }
 
   getDeviceGeoJsonByFloor(floorId: string) {
-    return this.http.get(`${this.baseUrl}/DeviceGeoJsonMapping/Floor/${floorId}`);
+    return this.http.get(`${this.baseUrl}DeviceGeoJsonMapping/Floor/${floorId}`);
   }
 
 
 ProcessedEvetbyHours(zone: string, hours: number): Observable<any> {
   return this.http.get<any>(
-    `${this.baseUrl}/ProcessedEventReport/zone-count`,
+    `${this.baseUrl}ProcessedEventReport/zone-count`,
     { params: { zone, hours } }
   );
 }
@@ -155,7 +155,7 @@ ProcessedEvetbyHours(zone: string, hours: number): Observable<any> {
 
 
 getVisitorsByDate(zone: string, days: number) {
-  return this.http.get<any>(`${this.baseUrl}/ProcessedEventReport/zone-count-by-days`, {
+  return this.http.get<any>(`${this.baseUrl}ProcessedEventReport/zone-count-by-days`, {
     params: {
       zone: zone,
       days: days.toString()
@@ -166,6 +166,6 @@ getVisitorsByDate(zone: string, days: number) {
 
 
 deleteWidget(id:any){
-  return this.http.delete(`${this.baseUrl}/zonesensor/${id}`)
+  return this.http.delete(`${this.baseUrl}zonesensor/${id}`)
 }
 }

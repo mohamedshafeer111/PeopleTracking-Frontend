@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { Device } from '../../../service/device/device';
 
 
+
 @Component({
   selector: 'app-live',
   imports: [CommonModule, FormsModule],
@@ -15,6 +16,8 @@ import { Device } from '../../../service/device/device';
   styleUrl: './live.css'
 })
 export class Live implements OnInit, AfterViewInit {
+
+
 
 
 
@@ -40,7 +43,7 @@ export class Live implements OnInit, AfterViewInit {
   //   '30 Days': 720
   // };
 
-    hourMap: { [key: string]: number } = {
+  hourMap: { [key: string]: number } = {
     // Day options
     // 'Live': 0,
     '1 Hour': 1,
@@ -63,6 +66,15 @@ export class Live implements OnInit, AfterViewInit {
     this.setDefaultTimeRange();
     this.savedMappingId = localStorage.getItem("savedMappingId") || "";
     this.connectWebSocket();
+
+
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'assets/leaflet/marker-icon-2x.png',
+      iconUrl: 'assets/leaflet/marker-icon.png',
+      shadowUrl: 'assets/leaflet/marker-shadow.png',
+    });
   }
 
   projects: any[] = [];
@@ -95,17 +107,28 @@ export class Live implements OnInit, AfterViewInit {
   //   }
   // }
 
+  // moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void {
+  //   if (!this.map) return;
+
+  //   this.map.flyTo([lat, lng], zoom, { animate: true, duration: 1.5 });
+
+  //   L.marker([lat, lng])
+  //     .addTo(this.map)
+  //     .bindPopup(name ? `<b>${name}</b>` : `Lat: ${lat}, Lng: ${lng}`)
+  //     .openPopup();
+  // }
+
 moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void {
   if (!this.map) return;
 
   this.map.flyTo([lat, lng], zoom, { animate: true, duration: 1.5 });
 
+  // Default icon will now work in production
   L.marker([lat, lng])
     .addTo(this.map)
     .bindPopup(name ? `<b>${name}</b>` : `Lat: ${lat}, Lng: ${lng}`)
     .openPopup();
 }
-
 
 
   // async ngAfterViewInit() {
@@ -121,17 +144,17 @@ moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void
 
   //   this.initializeCanvas();
   // }
-ngAfterViewInit(): void {
-  if (typeof window === 'undefined') return; // SSR safe
+  ngAfterViewInit(): void {
+    if (typeof window === 'undefined') return; // SSR safe
 
-  this.map = L.map('map').setView([13.0827, 80.2707], 13);
+    this.map = L.map('map').setView([13.0827, 80.2707], 13);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
-  }).addTo(this.map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(this.map);
 
-  this.initializeCanvas();
-}
+    this.initializeCanvas();
+  }
 
   // Store parent-level coordinates for reverse movement
   locationCache: {
@@ -412,7 +435,7 @@ ngAfterViewInit(): void {
           floorId
         );
         this.loadPolygonsByFloor(floorId);
-        
+
         this.loadDevicesByFloor(floorId);
 
         this.cdr.detectChanges();
@@ -1287,64 +1310,64 @@ ngAfterViewInit(): void {
   //   this.showDevicePopup = false;
   // }
 
-applyDevice() {
-  if (!this.selectedDeviceId || this.placedDevices.length === 0) return;
+  applyDevice() {
+    if (!this.selectedDeviceId || this.placedDevices.length === 0) return;
 
-  let selectedDevice = null;
+    let selectedDevice = null;
 
-  switch (this.activeLevel) {
-    case 'project': selectedDevice = this.projectDevices.find(d => d.id === this.selectedDeviceId); break;
-    case 'country': selectedDevice = this.countryDevices.find(d => d.id === this.selectedDeviceId); break;
-    case 'area': selectedDevice = this.areaDevices.find(d => d.id === this.selectedDeviceId); break;
-    case 'building': selectedDevice = this.buildingDevices.find(d => d.id === this.selectedDeviceId); break;
-    case 'floor': selectedDevice = this.floorDevices.find(d => d.id === this.selectedDeviceId); break;
-    case 'zone': selectedDevice = this.zoneDevices.find(d => d.id === this.selectedDeviceId); break;
+    switch (this.activeLevel) {
+      case 'project': selectedDevice = this.projectDevices.find(d => d.id === this.selectedDeviceId); break;
+      case 'country': selectedDevice = this.countryDevices.find(d => d.id === this.selectedDeviceId); break;
+      case 'area': selectedDevice = this.areaDevices.find(d => d.id === this.selectedDeviceId); break;
+      case 'building': selectedDevice = this.buildingDevices.find(d => d.id === this.selectedDeviceId); break;
+      case 'floor': selectedDevice = this.floorDevices.find(d => d.id === this.selectedDeviceId); break;
+      case 'zone': selectedDevice = this.zoneDevices.find(d => d.id === this.selectedDeviceId); break;
+    }
+
+    if (!selectedDevice) return;
+
+    // Save only last dropped device
+    const d = this.placedDevices[this.placedDevices.length - 1];
+
+    const payload = {
+      id: "",
+      areaId: this.selectedAreaId,
+      assemblyPoint: false,
+      buildingId: this.selectedBuildingId,
+      clientId: "YOUR_CLIENT_ID",
+      countryId: this.selectedCountryId,
+      createdAt: new Date().toISOString(),
+      createdBy: "admin",
+      deviceGeoJsonData: {
+        type: "FeatureCollection",
+        features: [
+          { type: "Feature", geometry: { type: "Point", coordinates: [d.x, d.y] }, properties: {} }
+        ]
+      },
+      deviceName: d.name,
+      deviceReferenceId: d.id,
+      exit: "",
+      floorId: this.selectedFloorId,
+      priority: "normal",
+      projectId: this.selectedProjectId,
+      status: true,
+      topZone: "",
+      userId: "loggedInUserId",
+      zoneId: this.selectedZoneId,
+      zoneName: ""
+    };
+
+    this.device.saveDeviceGeoJson(payload).subscribe({
+      next: (res) => {
+        console.log("Device saved", res);
+        this.fetchZoneMapping(this.selectedZoneId);
+      },
+      error: err => console.error("Error saving device", err)
+    });
+
+    this.placedDevices = [];
+    this.showDevicePopup = false;
   }
-
-  if (!selectedDevice) return;
-
-  // Save only last dropped device
-  const d = this.placedDevices[this.placedDevices.length - 1];
-
-  const payload = {
-    id: "",
-    areaId: this.selectedAreaId,
-    assemblyPoint: false,
-    buildingId: this.selectedBuildingId,
-    clientId: "YOUR_CLIENT_ID",
-    countryId: this.selectedCountryId,
-    createdAt: new Date().toISOString(),
-    createdBy: "admin",
-    deviceGeoJsonData: {
-      type: "FeatureCollection",
-      features: [
-        { type: "Feature", geometry: { type: "Point", coordinates: [d.x, d.y] }, properties: {} }
-      ]
-    },
-    deviceName: d.name,
-    deviceReferenceId: d.id,
-    exit: "",
-    floorId: this.selectedFloorId,
-    priority: "normal",
-    projectId: this.selectedProjectId,
-    status: true,
-    topZone: "",
-    userId: "loggedInUserId",
-    zoneId: this.selectedZoneId,
-    zoneName: ""
-  };
-
-  this.device.saveDeviceGeoJson(payload).subscribe({
-    next: (res) => {
-      console.log("Device saved", res);
-      this.fetchZoneMapping(this.selectedZoneId);
-    },
-    error: err => console.error("Error saving device", err)
-  });
-
-  this.placedDevices = [];
-  this.showDevicePopup = false;
-}
 
   placedDevicesByZone: { [zoneId: string]: any[] } = {};
 
@@ -1369,33 +1392,33 @@ applyDevice() {
 
 
   fetchZoneMapping(zoneId: string) {
-  this.device.getZoneMapping(zoneId).subscribe({
-    next: (response: any[]) => {
+    this.device.getZoneMapping(zoneId).subscribe({
+      next: (response: any[]) => {
 
-      if (!Array.isArray(response)) {
-        console.warn("Invalid response format");
-        return;
+        if (!Array.isArray(response)) {
+          console.warn("Invalid response format");
+          return;
+        }
+
+        // Flatten all devices
+        const devices = response.flatMap((item: any) =>
+          item.deviceGeoJsonData?.features?.map((f: any) => ({
+            id: item.deviceReferenceId,
+            name: item.deviceName,
+            x: f.geometry.coordinates[0],
+            y: f.geometry.coordinates[1]
+          })) || []
+        );
+
+        this.placedDevicesByZone[zoneId] = devices;
+        this.placedDevices = devices;
+
+        console.log("🟢 All devices loaded:", devices);
+
+        this.cdr.detectChanges();
       }
-
-      // Flatten all devices
-      const devices = response.flatMap((item: any) =>
-        item.deviceGeoJsonData?.features?.map((f: any) => ({
-          id: item.deviceReferenceId,
-          name: item.deviceName,
-          x: f.geometry.coordinates[0],
-          y: f.geometry.coordinates[1]
-        })) || []
-      );
-
-      this.placedDevicesByZone[zoneId] = devices;
-      this.placedDevices = devices;
-
-      console.log("🟢 All devices loaded:", devices);
-
-      this.cdr.detectChanges();
-    }
-  });
-}
+    });
+  }
 
 
 
@@ -1406,7 +1429,7 @@ applyDevice() {
   connectWebSocket() {
     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
 
-   // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+    //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.ws.onopen = () => console.log('✅ WebSocket Connected');
 
@@ -1576,133 +1599,133 @@ applyDevice() {
   }
 
 
-selectedDays: number = 1;  // default 1 day
-daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
+  selectedDays: number = 1;  // default 1 day
+  daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
 
-//   loadZoneCounts() {
-//   if (!this.selectedZoneName) return;
+  //   loadZoneCounts() {
+  //   if (!this.selectedZoneName) return;
 
-//   const numericHour = this.hourMap[this.selectedHour];
-//   if (numericHour == null) return;
+  //   const numericHour = this.hourMap[this.selectedHour];
+  //   if (numericHour == null) return;
 
-//   this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
-//     .subscribe({
-//       next: (res: any) => {
-//         // ✅ Update zoneVisitorCounts from API
-//         this.zoneVisitorCounts = {};
-//         this.zoneVisitorCounts[res.zone] = res.count;
+  //   this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
+  //     .subscribe({
+  //       next: (res: any) => {
+  //         // ✅ Update zoneVisitorCounts from API
+  //         this.zoneVisitorCounts = {};
+  //         this.zoneVisitorCounts[res.zone] = res.count;
 
-//         // ✅ Redraw canvas with updated values
-//         this.redrawCanvas();
-//       },
-//       error: (err) => console.error('API Error:', err)
-//     });
-// }
-
-
-
-loadZoneCounts() {
-  if (!this.selectedZoneName) return;
-
-  const numericHour = this.hourMap[this.selectedHour];
-  if (numericHour == null) return;
-
-  this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
-    .subscribe({
-      next: (res: any) => {
-
-        // 👇 Store the response using zoneName as the key
-        this.zoneVisitorCounts[res.zoneName] = res.totalCount;
-
-        this.redrawCanvas();
-      },
-      error: (err) => console.error('API Error:', err)
-    });
-}
-
-
-// loadZoneCountsByDate() {
-//   if (!this.selectedZoneName) {
-//     console.warn("No zone selected");
-//     return;
-//   }
-
-//   if (this.selectedDays == null) {
-//     console.warn("No days selected");
-//     return;
-//   }
-
-//   this.device.getVisitorsByDate(this.selectedZoneName, this.selectedDays)
-//     .subscribe({
-//       next: (res: any) => {
-//         // reset old counts
-//         this.zoneVisitorCounts = {};
-
-//         // assuming API returns { zone: "...", count: 10 }
-//         this.zoneVisitorCounts[res.zone] = res.count;
-
-//         // redraw canvas
-//         this.redrawCanvas();
-//       },
-//       error: (err) => console.error("API Error:", err)
-//     });
-// }
-
-loadZoneCountsByDate() {
-  if (!this.selectedZoneName) return;
-
-  const numericDays = this.hourMap[this.selectedHour];
-  if (numericDays == null) return;
-
-  this.device.getVisitorsByDate(this.selectedZoneName, numericDays)
-    .subscribe({
-      next: (res: any) => {
-
-        // 👇 Store the response
-        this.zoneVisitorCounts[res.zoneName] = res.totalCount;
-
-        this.redrawCanvas();
-      },
-      error: (err) => console.error("API Error:", err)
-    });
-}
+  //         // ✅ Redraw canvas with updated values
+  //         this.redrawCanvas();
+  //       },
+  //       error: (err) => console.error('API Error:', err)
+  //     });
+  // }
 
 
 
+  loadZoneCounts() {
+    if (!this.selectedZoneName) return;
 
+    const numericHour = this.hourMap[this.selectedHour];
+    if (numericHour == null) return;
 
+    this.device.ProcessedEvetbyHours(this.selectedZoneName, numericHour)
+      .subscribe({
+        next: (res: any) => {
 
-onTimeRangeChange() {
-  switch (this.selectedTimeRange) {
-    case 'day':
-      this.hours = ['Live', '1 Hour', '2 Hours', '8 Hours', '24 Hours'];
-      this.selectedHour = 'Live';
-      break;
+          // 👇 Store the response using zoneName as the key
+          this.zoneVisitorCounts[res.zoneName] = res.totalCount;
 
-    case 'week':
-      this.hours = ['1 Day', '2 Days', '5 Days', '7 Days'];
-      this.selectedHour = '1 Day';
-      break;
-
-    case 'month':
-      this.hours = ['15 Days', '30 Days'];
-      this.selectedHour = '15 Days';
-      break;
-
-    default:
-      this.showHourInputs = false;
-      return;
+          this.redrawCanvas();
+        },
+        error: (err) => console.error('API Error:', err)
+      });
   }
 
-  this.showHourInputs = true;
 
-  // 🔥 Auto-call correct API after setting first option
-  if (this.selectedTimeRange === 'day') {
-    this.loadZoneCounts();   // calls hour API
-  } else {
-    this.loadZoneCountsByDate(); // calls day API
+  // loadZoneCountsByDate() {
+  //   if (!this.selectedZoneName) {
+  //     console.warn("No zone selected");
+  //     return;
+  //   }
+
+  //   if (this.selectedDays == null) {
+  //     console.warn("No days selected");
+  //     return;
+  //   }
+
+  //   this.device.getVisitorsByDate(this.selectedZoneName, this.selectedDays)
+  //     .subscribe({
+  //       next: (res: any) => {
+  //         // reset old counts
+  //         this.zoneVisitorCounts = {};
+
+  //         // assuming API returns { zone: "...", count: 10 }
+  //         this.zoneVisitorCounts[res.zone] = res.count;
+
+  //         // redraw canvas
+  //         this.redrawCanvas();
+  //       },
+  //       error: (err) => console.error("API Error:", err)
+  //     });
+  // }
+
+  loadZoneCountsByDate() {
+    if (!this.selectedZoneName) return;
+
+    const numericDays = this.hourMap[this.selectedHour];
+    if (numericDays == null) return;
+
+    this.device.getVisitorsByDate(this.selectedZoneName, numericDays)
+      .subscribe({
+        next: (res: any) => {
+
+          // 👇 Store the response
+          this.zoneVisitorCounts[res.zoneName] = res.totalCount;
+
+          this.redrawCanvas();
+        },
+        error: (err) => console.error("API Error:", err)
+      });
   }
-}
+
+
+
+
+
+
+  onTimeRangeChange() {
+    switch (this.selectedTimeRange) {
+      case 'day':
+        this.hours = ['Live', '1 Hour', '2 Hours', '8 Hours', '24 Hours'];
+        this.selectedHour = 'Live';
+        break;
+
+      case 'week':
+        this.hours = ['1 Day', '2 Days', '5 Days', '7 Days'];
+        this.selectedHour = '1 Day';
+        break;
+
+      case 'month':
+        this.hours = ['15 Days', '30 Days'];
+        this.selectedHour = '15 Days';
+        break;
+
+      default:
+        this.showHourInputs = false;
+        return;
+    }
+
+    this.showHourInputs = true;
+
+    // 🔥 Auto-call correct API after setting first option
+    if (this.selectedTimeRange === 'day') {
+      this.loadZoneCounts();   // calls hour API
+    } else {
+      this.loadZoneCountsByDate(); // calls day API
+    }
+  }
 
 
   onHourChange() {

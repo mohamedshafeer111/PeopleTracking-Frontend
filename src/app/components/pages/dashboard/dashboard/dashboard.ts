@@ -5,6 +5,7 @@ import { RouterLink, RouterModule } from '@angular/router';
 import { Device } from '../../../service/device/device';
 import { HttpClient } from '@angular/common/http';
 import { Websocket } from '../../../service/websocket/websocket';
+import { environment } from '../../../../../environments/environment.prod';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,7 +15,7 @@ import { Websocket } from '../../../service/websocket/websocket';
 })
 export class Dashboard implements OnInit, OnDestroy {
 
-
+private wsUrl = environment.wsUrl;
 
   ngOnInit(): void {
     this.loadProject();
@@ -724,9 +725,9 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
   private ws!: WebSocket;
- //private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
+// private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
 
- private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
+ //private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();
