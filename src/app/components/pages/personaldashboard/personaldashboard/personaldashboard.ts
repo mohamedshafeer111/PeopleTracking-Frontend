@@ -64,35 +64,79 @@ export class Personaldashboard implements OnInit {
     this.connectWS();
   }
 
-  createChart() {
-    const canvas = document.getElementById('zoneChart') as HTMLCanvasElement;
+  // createChart() {
+  //   const canvas = document.getElementById('zoneChart') as HTMLCanvasElement;
 
-    this.chart = new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'People Count',
-          data: [],
-          borderRadius: 12,
-          backgroundColor: []
-        }]
+  //   this.chart = new Chart(canvas, {
+  //     type: 'bar',
+  //     data: {
+  //       labels: [],
+  //       datasets: [{
+  //         label: 'People Count',
+  //         data: [],
+  //         borderRadius: 12,
+  //         backgroundColor: []
+  //       }]
+  //     },
+  //     options: {
+  //       responsive: true,
+  //       maintainAspectRatio: false,
+  //       plugins: { legend: { display: false }},
+  //       scales: {
+  //         x: { grid: { display: false }},
+  //         y: { grid: { color: '#e0e0e0' }}
+  //       }
+  //     }
+  //   });
+  // }
+
+  createChart() {
+  const canvas = document.getElementById('zoneChart') as HTMLCanvasElement;
+
+  this.chart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'People Count',
+        data: [],
+        borderRadius: 10,
+        backgroundColor: []
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }},
-        scales: {
-          x: { grid: { display: false }},
-          y: { grid: { color: '#e0e0e0' }}
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Zone',        // X-Axis Name
+            font: { size: 14, weight: 'bold' }
+          },
+          grid: { display: false }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'People Count', // Y-Axis Name
+            font: { size: 14, weight: 'bold' }
+          },
+          beginAtZero: true,
+          grid: { color: '#e0e0e0' }
         }
       }
-    });
-  }
+    }
+  });
+}
+
 
   connectWS() {
-    //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
-     this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+   // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+    this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
 
     this.ws.onmessage = (event) => {
       if (event.data.includes('ping')) return;
