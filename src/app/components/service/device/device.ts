@@ -168,4 +168,9 @@ getVisitorsByDate(zone: string, days: number) {
 deleteWidget(id:any){
   return this.http.delete(`${this.baseUrl}zonesensor/${id}`)
 }
+
+deleteDashboardWidget(id:any){
+  return this.http.delete(`${this.baseUrl}zonesensor/delete/${id}`)
+}
+
 }

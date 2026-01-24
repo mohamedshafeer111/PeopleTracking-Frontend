@@ -277,39 +277,44 @@ prevPage() {
 
 
 
-async loadAllPages() {
-  let page = 1;
-  let pageSize = 100;
-  let allVisits: any[] = [];
-  let total = 0;
+// async loadAllPages() {
+//   let page = 1;
+//   let pageSize = 100;
+//   let allVisits: any[] = [];
+//   let total = 0;
 
-  while (true) {
-    const res: any = await this.api.getReportByID(this.reportId, page, pageSize).toPromise();
+//   while (true) {
+//     const res: any = await this.api.getReportByID(this.reportId, page, pageSize).toPromise();
 
-    if (!res || !res.visits) break;
+//     if (!res || !res.visits) break;
 
-    // First page → set report and total
-    if (page === 1) {
-      this.reportData = res.report;
-      total = res.totalRecords || res.report.totalVisits || 0;
-    }
+//     // First page → set report and total
+//     if (page === 1) {
+//       this.reportData = res.report;
+//       total = res.totalRecords || res.report.totalVisits || 0;
+//     }
 
-    allVisits.push(...res.visits);
+//     allVisits.push(...res.visits);
 
-    if (allVisits.length >= total) break; // STOP when full data collected
+//     if (allVisits.length >= total) break; // STOP when full data collected
 
-    page++;
-  }
+//     page++;
+//   }
 
-  this.visits = allVisits; // FULL dataset here
+//   this.visits = allVisits; // FULL dataset here
+// }
+
+
+
+
+
+
+
+async loadAll() {
+  const res: any = await this.api.getReportByID(this.reportId, 1, 1000000).toPromise();
+  this.reportData = res.report;
+  this.visits = res.visits;
 }
-
-
-
-
-
-
-
 
 
 
@@ -317,7 +322,7 @@ async loadAllPages() {
 
 async onDownloadClick() {
 
-  await this.loadAllPages();
+  await this.loadAll();
 
   const wb = XLSX.utils.book_new();
   

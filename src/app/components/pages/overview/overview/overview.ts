@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-overview',
-  imports: [RouterModule, CommonModule,FormsModule],
+  imports: [RouterModule, CommonModule,FormsModule,ReactiveFormsModule],
   templateUrl: './overview.html',
   styleUrl: './overview.css'
 })
@@ -25,6 +25,12 @@ selectedHour = 'Live';
 
 ngOnInit() {
   this.setDefaultHours();
+
+      this.filterForm = this.fb.group({
+      fromDate: [''],
+      toDate: [''],
+      zone: ['Zone A']
+    });
 }
 
 onTimeRangeChange() {
@@ -56,5 +62,26 @@ selectHour(hour: string) {
 }
 
 
+
+
+ filterForm!: FormGroup;
+
+  zones = ['Zone A', 'Zone B', 'Zone C', 'Zone D'];
+
+  tableData = [
+    { name: 'Vishak', zone: 'Zone A', timeOut: '10:55 AM', timeSpend: '00:20:25', timeIn: '10:15 AM' },
+    { name: 'Vishak', zone: 'Zone A', timeOut: '11:40 AM', timeSpend: '00:20:25', timeIn: '11:30 AM' },
+    { name: 'Vishak', zone: 'Zone A', timeOut: '01:40 PM', timeSpend: '00:20:25', timeIn: '01:10 PM' }
+  ];
+
+  constructor(private fb: FormBuilder) {}
+
+
+  applyFilter() {
+    console.log(this.filterForm.value);
+
+    // 👉 API call here
+    // fromDate, toDate, zone
+  }
 
 }

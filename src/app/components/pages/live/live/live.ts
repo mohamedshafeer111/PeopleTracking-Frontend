@@ -670,7 +670,7 @@ moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void
         centroid.y /= poly.points.length;
 
         const zoneText = poly.label;
-        const visitorText = `Total Visitors: ${this.zoneVisitorCounts[zoneText] || 0}`;
+        const visitorText = `Total Assets: ${this.zoneVisitorCounts[zoneText] || 0}`;
 
         this.ctx.font = '10px Arial';
         const zoneTextWidth = this.ctx.measureText(zoneText).width;
@@ -1427,9 +1427,9 @@ moveToLocation(lat: number, lng: number, zoom: number = 10, name?: string): void
 
   ws!: WebSocket;
   connectWebSocket() {
-    this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+    //this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
 
-    //this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+    this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.ws.onopen = () => console.log('✅ WebSocket Connected');
 

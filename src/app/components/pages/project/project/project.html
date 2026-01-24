@@ -22,7 +22,7 @@
 
 
 
-        <!-- Project row -->
+
 
         <tr>
           <td class="tabledata">{{ project.projectName }}
@@ -38,14 +38,14 @@
         </tr>
 
 
-        <!-- Countries row -->
+
         <tr *ngIf="expandedProjects.has(project.id)">
           <td colspan="2">
             <table>
               <tbody>
                 <ng-container *ngFor="let country of countriesByProject[project.id]">
 
-                  <!-- Country row -->
+
                   <tr>
                     <td class="tabledata">{{ country.countryName }}
                       <span class="icons">
@@ -58,13 +58,13 @@
                     </td>
                   </tr>
 
-                  <!-- Areas -->
+
                   <ng-container *ngFor="let area of areaByCountry[country.id]">
                     <tr *ngIf="expandedCountry.has(country.id)">
                       <td colspan="2">
                         <table>
                           <tbody>
-                            <!-- Area row -->
+              
                             <tr>
                               <td class="tabledata">{{ area.areaName }}
                                 <span class="icons">
@@ -77,14 +77,14 @@
                               </td>
                             </tr>
 
-                            <!-- Buildings -->
+         
                             <tr *ngIf="expandedArea.has(area.id)">
                               <td colspan="2">
                                 <table>
                                   <tbody>
                                     <ng-container *ngFor="let building of buildingByArea[area.id]">
 
-                                      <!-- Building row -->
+                           
                                       <tr>
                                         <td class="tabledata">{{ building.buildingName }}
                                           <span class="icons">
@@ -101,14 +101,14 @@
                                         </td>
                                       </tr>
 
-                                      <!-- Floors -->
-                                      <!-- Floors -->
+               
+                 
                                       <tr *ngIf="expandedBuilding.has(building.id)">
                                         <td colspan="2">
                                           <table>
                                             <tbody>
                                               <ng-container *ngFor="let floor of floorByBuilding[building.id]">
-                                                <!-- Floor row -->
+                               
                                                 <tr>
                                                   <td class="tabledata">{{ floor.floorName }}
                                                     <span class="icons">
@@ -125,13 +125,13 @@
                                                   </td>
                                                 </tr>
 
-                                                <!-- ✅ Zones are nested INSIDE this floor -->
+                                 
                                                 <tr *ngIf="expandedFloor.has(floor.id)">
                                                   <td colspan="2">
                                                     <table>
                                                       <tbody>
                                                         <ng-container *ngFor="let zone of zoneByFloor[floor.id]">
-                                                          <!-- Zone row -->
+                                            
                                                           <tr>
                                                             <td class="tabledata">{{ zone.zoneName }}
                                                               <span class="icons">
@@ -148,7 +148,7 @@
                                                             </td>
                                                           </tr>
 
-                                                          <!-- SubZones under this zone -->
+                                     
                                                           <tr *ngIf="expandedZone.has(zone.id)">
                                                             <td colspan="2">
                                                               <table>
@@ -205,6 +205,8 @@
       </ng-container>
     </tbody>
   </table>
+
+
 </div>
 
 

@@ -270,7 +270,7 @@ export class Reports implements OnInit {
   customStartDate: string = '';
   customEndDate: string = '';
   isCustomStartFocused: boolean = false;
-isCustomEndFocused: boolean = false;
+  isCustomEndFocused: boolean = false;
 
 
   onTimeRangeChange() {
@@ -331,8 +331,8 @@ isCustomEndFocused: boolean = false;
 
 
 
-selectedZoneName: string | null = null;
- // ✅ Keep this inside the class
+  selectedZoneName: string | null = null;
+  // ✅ Keep this inside the class
   private saveReport(reportDetails: any) {
     const existingReports = JSON.parse(localStorage.getItem('reports') || '[]');
     existingReports.push(reportDetails);
@@ -341,103 +341,43 @@ selectedZoneName: string | null = null;
   }
 
 
-generateReport() {
-  if (this.selectedTimeRange === 'custom') {
-    // 🛑 Validate required fields
-    if (!this.customStartDate || !this.customEndDate) {
-      alert('⚠️ Please select both From and To dates before generating a report.');
-      return;
+
+  getHoursFromSelection(selectedHour: string): number {
+    if (!selectedHour) return 0;
+
+    const value = selectedHour.toLowerCase().trim();
+
+    // Optional: handle Live
+    if (value === 'live') {
+      return 0;
     }
 
-    if (!this.reportName || this.reportName.trim() === '') {
-      alert('⚠️ Please enter a report name.');
-      return;
+    // Only allow hours
+    if (value.includes('hour')) {
+      const hours = parseInt(value, 10);
+      return isNaN(hours) ? 0 : hours;
     }
 
-    // ✅ Decide which API to call
-    let apiCall;
-if (this.selectedZoneName) {
-  apiCall = this.api.getGenerateReportZone(
-    this.customStartDate,
-    this.customEndDate,
-    this.selectedZoneName,
-    this.reportName,
-    this.shareEmails // now properly sent in POST body
-  );
-} else {
-  apiCall = this.api.getGenerateReport(
-    this.customStartDate,
-    this.customEndDate,
-    this.reportName,
-    this.shareEmails // POST body as well
-  );
-}
-
-
-
-    // ✅ Subscribe to the chosen API
-    apiCall.subscribe({
-      next: (res: any) => {
-        console.log('Report API Response:', res);
-
-        const reportDetails: any = {
-          id: res.id || Date.now(),
-          reportName: this.reportName.trim(),
-          timeRange: this.selectedTimeRange,
-          template: this.selectedTemplate,
-          format: this.selectedFormat,
-          includeCSV: this.includeCSV,
-          recurrence: this.recurrence,
-          shareWith: this.shareEmails,
-          createdOn: new Date().toLocaleString(),
-          customRange: {
-            from: this.customStartDate,
-            to: this.customEndDate,
-          },
-          ...(this.selectedZoneName ? { zoneName: this.selectedZoneName } : {})
-        };
-
-        // ✅ Save report locally
-        this.saveReport(reportDetails);
-
-        if (res && res.visits && res.visits.length > 0) {
-          alert(`✅ Report "${this.reportName}" generated successfully!`);
-        } else {
-          alert(`ℹ️ Report "${this.reportName}" generated.`);
-        }
-
-        this.router.navigate(['/createreport']);
-      },
-      error: (err) => {
-        console.error('Error while generating report:', err);
-        alert('⚠️ Failed to generate report. Please try again.');
-      }
-    });
-
-  } else {
-    // Handle non-custom (day, week, month)
-    if (!this.reportName || this.reportName.trim() === '') {
-      alert('⚠️ Please enter a report name.');
-      return;
-    }
-
-    const reportDetails: any = {
-      id: Date.now(),
-      reportName: this.reportName.trim(),
-      timeRange: this.selectedTimeRange,
-      template: this.selectedTemplate,
-      format: this.selectedFormat,
-      includeCSV: this.includeCSV,
-      recurrence: this.recurrence,
-      shareWith: this.shareEmails,
-      createdOn: new Date().toLocaleString(),
-    };
-
-    this.saveReport(reportDetails);
-    alert(`✅ Report "${this.reportName}" generated successfully!`);
-    this.router.navigate(['/createreport']);
+    // ❌ Ignore day/week/month completely
+    return 0;
   }
-}
+
+
+
+
+  getDaysFromSelection(selection: string): number {
+    if (!selection) return 0;
+
+    if (selection.includes('Day')) {
+      return parseInt(selection); // "1 Day" → 1, "5 Days" → 5
+    }
+
+    if (selection.includes('Week')) {
+      return parseInt(selection) * 7; // "2 Weeks" → 14
+    }
+
+    return 0;
+  }
 
 
 
@@ -445,14 +385,183 @@ if (this.selectedZoneName) {
 
 
 
-selectZone(zone: any) {
-  this.selectedItemId = zone.id;
-  this.selectedZoneName = zone.zoneName;
-  console.log('✅ Selected Zone:', this.selectedZoneName);
-}
 
 
-today: string = new Date().toISOString().split('T')[0];
+  generateReport() {
+
+    /* =========================
+       🟣 CUSTOM DATE RANGE
+       ========================= */
+    if (this.selectedTimeRange === 'custom') {
+
+      if (!this.customStartDate || !this.customEndDate) {
+        alert('⚠️ Please select both From and To dates.');
+        return;
+      }
+
+      if (!this.reportName?.trim()) {
+        alert('⚠️ Please enter a report name.');
+        return;
+      }
+
+      let apiCall;
+
+      if (this.selectedZoneName) {
+        apiCall = this.api.getGenerateReportZone(
+          this.customStartDate,
+          this.customEndDate,
+          this.selectedZoneName,
+          this.reportName.trim(),
+          this.shareEmails
+        );
+      } else {
+        apiCall = this.api.getGenerateReport(
+          this.customStartDate,
+          this.customEndDate,
+          this.reportName.trim(),
+          this.shareEmails
+        );
+      }
+
+      apiCall.subscribe({
+        next: (res: any) => {
+          this.saveReport({
+            id: res.id || Date.now(),
+            reportName: this.reportName.trim(),
+            timeRange: 'custom',
+            createdOn: new Date().toLocaleString(),
+            recurrence: `${this.customStartDate} → ${this.customEndDate}`,
+            shareWith: this.shareEmails,
+            template: this.selectedTemplate,   // ✅ ADD THIS
+            customRange: {
+              from: this.customStartDate,
+              to: this.customEndDate
+            },
+            zoneName: this.selectedZoneName
+          });
+
+
+
+
+          alert(`✅ Report "${this.reportName}" generated successfully!`);
+          this.router.navigate(['/createreport']);
+        },
+        error: () => alert('⚠️ Failed to generate report.')
+      });
+
+      return;
+    }
+
+
+
+    /* =========================
+      🕒 HOUR-BASED REPORT
+      ========================= */
+    const hoursValue = this.getHoursFromSelection(this.selectedHour);
+
+    if (hoursValue > 0) {
+
+      if (!this.reportName?.trim()) {
+        alert('⚠️ Please enter a report name.');
+        return;
+      }
+
+      this.api.getGenerateReportZoneByHours(
+        hoursValue,
+        this.reportName.trim(),
+        this.shareEmails,
+        this.selectedZoneName ?? undefined   // ✅ FIX
+      )
+        .subscribe({
+          next: (res: any) => {
+            this.saveReport({
+              id: res.id || Date.now(),
+              reportName: this.reportName.trim(),
+              timeRange: 'hours',
+              createdOn: new Date().toLocaleString(),
+              recurrence: `Last ${this.selectedHour}`,
+              shareWith: this.shareEmails,
+              template: this.selectedTemplate,   // ✅ ADD THIS
+              ...(this.selectedZoneName ? { zoneName: this.selectedZoneName } : {})
+            });
+
+
+
+            alert(`✅ Report generated for last ${this.selectedHour}`);
+            this.router.navigate(['/createreport']);
+          },
+          error: () => alert('⚠️ Failed to generate hour-based report.')
+        });
+
+      return;
+    }
+
+
+
+    /* =========================
+       📅 DAY-BASED REPORT
+       ========================= */
+    const daysValue = this.getDaysFromSelection(this.selectedHour);
+
+    if (daysValue > 0 && this.selectedTimeRange !== 'custom') {
+
+      if (!this.reportName?.trim()) {
+        alert('⚠️ Please enter a report name.');
+        return;
+      }
+
+      this.api.getGenerateReportZoneByDays(
+        daysValue,
+        this.reportName.trim(),
+        this.shareEmails,
+        this.selectedZoneName ?? undefined
+      ).subscribe({
+        next: (res: any) => {
+
+          this.saveReport({
+            id: res.id || Date.now(),
+            reportName: this.reportName.trim(),
+            timeRange: 'days',
+            createdOn: new Date().toLocaleString(),
+            recurrence: `${daysValue} Days`,
+            shareWith: this.shareEmails,
+            template: this.selectedTemplate,   // ✅ ADD THIS
+            ...(this.selectedZoneName ? { zoneName: this.selectedZoneName } : {})
+          });
+
+
+          alert(`✅ Report generated for last ${this.selectedHour}`);
+          this.router.navigate(['/createreport']);
+        },
+        error: () => alert('⚠️ Failed to generate day-based report.')
+      });
+
+      return;
+    }
+
+
+
+    /* =========================
+       ❌ INVALID SELECTION
+       ========================= */
+    alert('⚠️ Please select a valid time range or hour option.');
+  }
+
+
+
+
+
+
+
+
+  selectZone(zone: any) {
+    this.selectedItemId = zone.id;
+    this.selectedZoneName = zone.zoneName;
+    console.log('✅ Selected Zone:', this.selectedZoneName);
+  }
+
+
+  today: string = new Date().toISOString().split('T')[0];
 
 
 
@@ -489,23 +598,23 @@ today: string = new Date().toISOString().split('T')[0];
 
 
 
-  
-dailyTime: string = "";
+
+  dailyTime: string = "";
   isDailyTimeFocused: boolean = false;  // ✅ ADD THIS
 
 
 
-weeklyDay: string = '';
-weeklyTime: string = '';
-isWeeklyDayFocused: boolean = false;
-isWeeklyTimeFocused: boolean = false;
+  weeklyDay: string = '';
+  weeklyTime: string = '';
+  isWeeklyDayFocused: boolean = false;
+  isWeeklyTimeFocused: boolean = false;
 
 
 
-monthlyDay: number | null = null;
-monthlyTime: string = "";
-isMonthlyDateFocused: boolean = false;
-isMonthlyTimeFocused: boolean = false;
+  monthlyDay: number | null = null;
+  monthlyTime: string = "";
+  isMonthlyDateFocused: boolean = false;
+  isMonthlyTimeFocused: boolean = false;
 
 
 }

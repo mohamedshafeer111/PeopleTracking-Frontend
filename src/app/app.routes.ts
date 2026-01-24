@@ -22,6 +22,8 @@ import { Overview } from './components/pages/overview/overview/overview';
 import { Detailed } from './components/pages/detailed/detailed/detailed';
 import { Personaldashboard } from './components/pages/personaldashboard/personaldashboard/personaldashboard';
 import { Customerdashboard } from './components/pages/customerdashboard/customerdashboard/customerdashboard';
+import { Newuser } from './components/pages/newuser/newuser/newuser';
+import { Projecthierarchy } from './components/pages/projecthierarchy/projecthierarchy/projecthierarchy';
 
 
 
@@ -55,7 +57,10 @@ export const routes: Routes = [
       {path:'overview', component:Overview},
       {path:'detailed', component:Detailed},
       {path:'personalDashboard', component:Personaldashboard},
-      {path:'customerdashboard', component:Customerdashboard}
+      {path:'customerdashboard', component:Customerdashboard},
+      {
+        path:'projecthierarchy',component:Projecthierarchy
+      }
     ]
   }
 

@@ -30,7 +30,7 @@ export class Historicals implements OnInit {
       employeeCode: 'Gemini',
       employeeName: 'Vishak',
       department: 'IT',
-      uid: '670d1790182850c60752bab2',
+      uid: '001',
       project: '',
       country: '',
       location: '',
@@ -41,7 +41,7 @@ export class Historicals implements OnInit {
       employeeCode: 'Anto',
       employeeName: 'Titus',
       department: 'PIQ Dept',
-      uid: '670d1a34182850c60752bb7b',
+      uid: '002',
       project: '',
       country: '',
       location: '',
@@ -52,14 +52,14 @@ export class Historicals implements OnInit {
       employeeCode: '1',
       employeeName: 'Emp',
       department: 'IT',
-      uid: '671392cf445962346b4bae7b'
+      uid: '003'
     },
     {
       objectId: '671392ee445962346b4bae84',
       employeeCode: '2',
       employeeName: 'Emp',
       department: 'IT',
-      uid: '671392ee445962346b4bae84'
+      uid: '004'
     }
   ];
 

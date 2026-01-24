@@ -7,125 +7,124 @@ import { environment } from '../../../../environments/environment.prod';
 })
 export class Roleservice {
 
-   private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient) { }
 
-  getRole(){
-  return this.http.get(`${this.apiUrl}role/summary`)
-}
+  getRole() {
+    return this.http.get(`${this.apiUrl}role/summary`)
+  }
 
-createNewRole(createRoles:any){
-  return this.http.post(`${this.apiUrl}role/create`,createRoles)
-}
-  
+  createNewRole(createRoles: any) {
+    return this.http.post(`${this.apiUrl}role/create`, createRoles)
+  }
 
 
-updateRole(updateRole:any,id:string){
-  return this.http.put(`${this.apiUrl}Role/update/${id}`,updateRole)
-}
 
-DeleteRole(roleId:string){
-  return this.http.delete(`${this.apiUrl}Role/delete/${roleId}`)
-}
+  updateRole(updateRole: any, id: string) {
+    return this.http.put(`${this.apiUrl}Role/update/${id}`, updateRole)
+  }
 
-//project
-createnewProject(createProject:any){
-  return this.http.post(`${this.apiUrl}projects/create`,createProject)
-}
+  DeleteRole(roleId: string) {
+    return this.http.delete(`${this.apiUrl}Role/delete/${roleId}`)
+  }
 
+  //project
+  createnewProject(createProject: any) {
+    return this.http.post(`${this.apiUrl}projects/create`, createProject)
+  }
 
-getProject(){
-  return this.http.get(`${this.apiUrl}projects/projects/summary`)
-}
 
-updateProject(updateProject:any,id:string){
-  return this.http.put(`${this.apiUrl}projects/update/${id}`,updateProject)
-}
+  getProject() {
+    return this.http.get(`${this.apiUrl}projects/projects/summary`)
+  }
 
+  updateProject(updateProject: any, id: string) {
+    return this.http.put(`${this.apiUrl}projects/update/${id}`, updateProject)
+  }
 
-DeleteProject(id:string){
- return this.http.delete(`${this.apiUrl}projects/delete/${id}`)
-}
 
+  DeleteProject(id: string) {
+    return this.http.delete(`${this.apiUrl}projects/delete/${id}`)
+  }
 
 
 
-//country create
-CountryCreate(projectId: string,countryData: any) {
-  return this.http.post(`${this.apiUrl}countries/create?projectId=${projectId}`, countryData);
-}
 
-//country summary
-countryGetById(id:any) {
-  return this.http.get(`${this.apiUrl}countries/Summary?projectId=${id}`);
-}
+  //country create
+  CountryCreate(projectId: string, countryData: any) {
+    return this.http.post(`${this.apiUrl}countries/create?projectId=${projectId}`, countryData);
+  }
 
+  //country summary
+  countryGetById(id: any) {
+    return this.http.get(`${this.apiUrl}countries/Summary?projectId=${id}`);
+  }
 
 
-//area
-getSummary(id:any) {
-  return this.http.get(`${this.apiUrl}areas/summary?countryId=${id}`,);
-}
 
+  //area
+  getSummary(id: any) {
+    return this.http.get(`${this.apiUrl}areas/summary?countryId=${id}`,);
+  }
 
 
 
-createNewArea(createArea:any){
-  return this.http.post(`${this.apiUrl}projects/create`,createArea)
-}
 
+  createNewArea(createArea: any) {
+    return this.http.post(`${this.apiUrl}projects/create`, createArea)
+  }
 
 
 
 
 
-CountryArea(countryId: string,areaData: any) {
-  return this.http.post(`${this.apiUrl}areas/create?countryId=${countryId}`, areaData);
-}
 
+  CountryArea(countryId: string, areaData: any) {
+    return this.http.post(`${this.apiUrl}areas/create?countryId=${countryId}`, areaData);
+  }
 
-//edit country
 
-updateCountry(updateCountry:any,id:string){
-  return this.http.put(`${this.apiUrl}countries/update/${id}`,updateCountry)
-}
+  //edit country
 
+  updateCountry(updateCountry: any, id: string) {
+    return this.http.put(`${this.apiUrl}countries/update/${id}`, updateCountry)
+  }
 
-//delete country
 
-DeleteCountry(id:string){
- return this.http.delete(`${this.apiUrl}countries/delete/${id}`)
-}
+  //delete country
 
+  DeleteCountry(id: string) {
+    return this.http.delete(`${this.apiUrl}countries/delete/${id}`)
+  }
 
-//area update
 
-updatearea(updateArea:any,id:string){
-  return this.http.put(`${this.apiUrl}areas/update/${id}`,updateArea)
-}
+  //area update
 
-//delete area
+  updatearea(updateArea: any, id: string) {
+    return this.http.put(`${this.apiUrl}areas/update/${id}`, updateArea)
+  }
 
-Deletearea(id:string){
- return this.http.delete(`${this.apiUrl}areas/delete/${id}`)
-}
+  //delete area
 
+  Deletearea(id: string) {
+    return this.http.delete(`${this.apiUrl}areas/delete/${id}`)
+  }
 
-//create building
 
-createNewBuilding(areaId: string,createBuilding:any){
-  return this.http.post(`${this.apiUrl}buildings/create?areaId=${areaId}`,createBuilding)
-}
+  //create building
 
+  createNewBuilding(areaId: string, createBuilding: any) {
+    return this.http.post(`${this.apiUrl}buildings/create?areaId=${areaId}`, createBuilding)
+  }
 
 
 
-//area
-getBuilding(id:any) {
-  return this.http.get(`${this.apiUrl}buildings/summary?areaId=${id}`);
-}
 
+  //area
+  getBuilding(id: any) {
+    return this.http.get(`${this.apiUrl}buildings/summary?areaId=${id}`);
+  }
 
 
 
@@ -133,94 +132,120 @@ getBuilding(id:any) {
 
 
 
-updatebuilding(updateBuilding:any,id:string){
-  return this.http.put(`${this.apiUrl}buildings/update/${id}`,updateBuilding)
-}
 
+  updatebuilding(updateBuilding: any, id: string) {
+    return this.http.put(`${this.apiUrl}buildings/update/${id}`, updateBuilding)
+  }
 
-Deletebuilding(id:string){
- return this.http.delete(`${this.apiUrl}buildings/delete/${id}`)
-}
 
+  Deletebuilding(id: string) {
+    return this.http.delete(`${this.apiUrl}buildings/delete/${id}`)
+  }
 
 
-//create floor
-createNewFloor(buildingId: string, floorData: any) {
-  return this.http.post(`${this.apiUrl}floors/create?buildingId=${buildingId}`,floorData);
-}
 
+  //create floor
+  createNewFloor(buildingId: string, floorData: any) {
+    return this.http.post(`${this.apiUrl}floors/create?buildingId=${buildingId}`, floorData);
+  }
 
-//foor summary
-getFloor(id:any) {
-  return this.http.get(`${this.apiUrl}floors/summary?buildingId=${id}`);
-}
 
+  //foor summary
+  getFloor(id: any) {
+    return this.http.get(`${this.apiUrl}floors/summary?buildingId=${id}`);
+  }
 
 
 
-//update floor
 
-updatefloor(updateFloor:any,id:string){
-  return this.http.put(`${this.apiUrl}floors/update/${id}`,updateFloor)
-}
+  //update floor
 
+  updatefloor(updateFloor: any, id: string) {
+    return this.http.put(`${this.apiUrl}floors/update/${id}`, updateFloor)
+  }
 
 
-//delete floor
 
-Deletefloor(id:string){
- return this.http.delete(`${this.apiUrl}floors/delete/${id}`)
-}
+  //delete floor
 
+  Deletefloor(id: string) {
+    return this.http.delete(`${this.apiUrl}floors/delete/${id}`)
+  }
 
 
 
-//create floor
-createNewZone(floorId: string, zoneData: any) {
-  return this.http.post(`${this.apiUrl}zones/create?floorId=${floorId}`,zoneData);
-}
 
+  //create floor
+  createNewZone(floorId: string, zoneData: any) {
+    return this.http.post(`${this.apiUrl}zones/create?floorId=${floorId}`, zoneData);
+  }
 
-getZones(id:any) {
-  return this.http.get(`${this.apiUrl}zones/summary?floorId=${id}`);
-}
 
+  getZones(id: any) {
+    return this.http.get(`${this.apiUrl}zones/summary?floorId=${id}`);
+  }
 
 
-//update zone
-updatezone(updateZone:any,id:string){
-  return this.http.put(`${this.apiUrl}zones/update/${id}`,updateZone)
-}
 
+  //update zone
+  updatezone(updateZone: any, id: string) {
+    return this.http.put(`${this.apiUrl}zones/update/${id}`, updateZone)
+  }
 
-//delete zone
-Deletezone(id:string){
- return this.http.delete(`${this.apiUrl}zones/delete/${id}`)
-}
 
+  //delete zone
+  Deletezone(id: string) {
+    return this.http.delete(`${this.apiUrl}zones/delete/${id}`)
+  }
 
 
-getSubZones(id:any) {
-  return this.http.get(`${this.apiUrl}subzones/summary?zoneId=${id}`);
-}
 
+  getSubZones(id: any) {
+    return this.http.get(`${this.apiUrl}subzones/summary?zoneId=${id}`);
+  }
 
-createSubZone(zoneId: string, subzoneData: any) {
-  return this.http.post(`${this.apiUrl}subzones/create?zoneId=${zoneId}`,subzoneData);
-}
 
-//update zone
-updateSubZone(updateSubZone:any,id:string){
-  return this.http.put(`${this.apiUrl}subzones/update/${id}`,updateSubZone)
-}
+  createSubZone(zoneId: string, subzoneData: any) {
+    return this.http.post(`${this.apiUrl}subzones/create?zoneId=${zoneId}`, subzoneData);
+  }
 
+  //update zone
+  updateSubZone(updateSubZone: any, id: string) {
+    return this.http.put(`${this.apiUrl}subzones/update/${id}`, updateSubZone)
+  }
 
 
-//delete subzone
-Deletesubzone(id:string){
- return this.http.delete(`${this.apiUrl}subzones/delete/${id}`)
-}
 
+  //delete subzone
+  Deletesubzone(id: string) {
+    return this.http.delete(`${this.apiUrl}subzones/delete/${id}`)
+  }
+
+
+
+
+
+  getDashboard(id: any) {
+    return this.http.get(`${this.apiUrl}zonesensor/dashboardsummary`);
+  }
+
+
+  DeleteDashboard(id: string) {
+    return this.http.delete(`${this.apiUrl}zonesensor/${id}`)
+  }
+
+
+  getDashboardID(id: any) {
+    return this.http.get(`${this.apiUrl}zonesensor/by-dashboard/${id}`);
+  }
+
+
+
+  CreateDashboardName(dashboardName: string) {
+    return this.http.post(`${this.apiUrl}zonesensor/createdashboard`, {
+      dashboardName: dashboardName
+    });
+  }
 
 }
 

@@ -1,7 +1,8 @@
 <nav class="navbar">
   <h3>User</h3>
   <div>
-    <button class="rolebutton" routerLink="/role">Role</button>
+    <!-- <button class="rolebutton" routerLink="/role">Role</button> -->
+    <button class="rolebutton" routerLink="/newUser">NewUser</button>
   </div>
   <div class="nav-icons">
     <img src="assets/add.png" alt="Add" (click)="openCreateUserPopup()">
@@ -13,7 +14,7 @@
 </nav>
 
 <div class="table-container">
-  <table>
+  <!-- <table>
     <thead>
       <tr>
 
@@ -42,7 +43,15 @@
         </td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
+
+
+  <app-newuser
+  [users]="users"
+  (editUser)="openUpdateUserPopup($event)"
+  (deleteUser)="openDeleteUserPopup($event)">
+</app-newuser>
+
 </div>
 <!-- </div> -->
 

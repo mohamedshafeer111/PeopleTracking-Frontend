@@ -225,3 +225,166 @@
     left: 12px;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.page-layout {
+  display: flex;
+  gap: 20px;              /* 👈 space between 75% & 25% */
+  padding: 10px;
+}
+
+/* LEFT = 75% */
+.left-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+/* RIGHT = 25% */
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  background-color: #ddd;
+  padding: 5px;
+  height: 40px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+.content-box {
+  margin-top: 12px;
+  background: #f8f9fb;
+  border-radius: 10px;
+  padding: 15px;
+  min-height: calc(100vh - 120px); /* 👈 auto height */
+  border: 1px solid #7030a0;
+  border-radius: 5px;
+}
+
+
+
+
+
+
+
+
+
+.page-layout {
+  display: flex;
+  gap: 20px;
+  padding: 15px;
+  background: #f6f4ff;
+  height: 100%;
+}
+
+/* LEFT 75% */
+.left-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* RIGHT 25% */
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* FILTER BAR */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #a98bff;
+  padding: 12px;
+  border-radius: 20px;
+  color: #fff;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+}
+
+.apply-btn {
+  background: #fff;
+  color: #7030a0;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* TABLE */
+.table-container {
+  background: #e9e4ff;
+  border-radius: 20px;
+  padding: 15px;
+  overflow: auto;
+  min-height: calc(100vh - 180px);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th {
+  background: #7c3aed;
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background: #f8f3ff;
+}
+
+/* OVERVIEW */
+.overview-bar {
+  background: #a98bff;
+  padding: 12px;
+  border-radius: 20px;
+  text-align: center;
+  font-weight: 600;
+  color: #fff;
+}
+
+.summary-box {
+  background: #e9e4ff;
+  border-radius: 20px;
+  padding: 15px;
+  font-size: 14px;
+  line-height: 1.8;
+}

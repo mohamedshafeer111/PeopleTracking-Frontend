@@ -16,11 +16,12 @@
         <table>
             <thead>
                 <tr>
-                    <th>Object Id</th>
-                    <th>Person Code</th>
+                    <!-- <th>Object Id</th> -->
+                    <!-- <th>Person Code</th> -->
                     <th>Employee Name</th>
                     <th>Department</th>
-                    <th>UID</th>
+                    <!-- <th>UID</th> -->
+                     <th>Id Number</th>
                     <th>Project</th>
                     <th>Country</th>
                     <th>Location</th>
@@ -31,25 +32,27 @@
 
             <tbody>
                 <tr *ngFor="let emp of filteredEmployees">
-                    <td>{{ emp.objectId }}</td>
-                    <td>{{ emp.employeeCode }}</td>
+                    <!-- <td>{{ emp.objectId }}</td> -->
+                    <!-- <td>{{ emp.employeeCode }}</td> -->
                     <td>{{ emp.employeeName }}</td>
                     <td>{{ emp.department }}</td>
-                    <td>{{ emp.uid }}</td>
+                    <!-- <td>{{ emp.uid }}</td> -->
+                     <td>{{emp.uid}}</td>
                     <td>{{ emp.project || '—' }}</td>
                     <td>{{ emp.country || '—' }}</td>
                     <td>{{ emp.location || '—' }}</td>
                     <td>{{ emp.area || '—' }}</td>
                     <td>
-                        <div class="dropdown-container">
+                        <div class="dropdown-container tooltip-container">
                             <button class="history-btn" (click)="toggleDropdown(emp, $event)">
                                 <img src="assets/historical.png" alt="history" />
-                                <span class="dropdown-icon">▼</span>
+                                  <span class="tooltip-text">View History</span>
+                                <!-- <span class="dropdown-icon">▼</span> -->
                             </button>
 
                             <div class="dropdown-menu" *ngIf="emp.showDropdown" (click)="$event.stopPropagation()">
                                 <button (click)="selectOption(emp, 'overview')" routerLink="/overview">Overview</button>
-                                <button (click)="selectOption(emp, 'detailed')" routerLink="/detailed">Detailed</button>
+                                <!-- <button (click)="selectOption(emp, 'detailed')" routerLink="/detailed">Detailed</button> -->
                             </div>
 
                         </div>

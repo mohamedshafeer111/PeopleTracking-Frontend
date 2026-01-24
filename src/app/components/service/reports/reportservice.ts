@@ -116,4 +116,64 @@ getGenerateReportZone(
   }
 
 
+
+
+
+
+getGenerateReportZoneByHours(
+  hours: number,
+  reportName: string,
+  shareWithEmail?: string,
+  zoneName?: string
+) {
+  const params: any = {
+    hours: hours.toString(),
+    reportName
+  };
+
+  if (zoneName) {
+    params.zoneName = zoneName;
+  }
+
+  if (shareWithEmail) {
+    params.shareWithEmail = shareWithEmail;
+  }
+
+  return this.http.get(
+    `${this.apiUrl}Reports/generate/hours`,
+    { params }
+  );
+}
+
+
+
+
+
+
+getGenerateReportZoneByDays(
+  days: number,
+  reportName: string,
+  shareWithEmail?: string,
+  zoneName?: string
+) {
+  const params: any = {
+    days: days.toString(),
+    reportName
+  };
+
+  if (zoneName) {
+    params.zoneName = zoneName;
+  }
+
+  if (shareWithEmail) {
+    params.shareWithEmail = shareWithEmail;
+  }
+
+  return this.http.get(
+    `${this.apiUrl}Reports/generate/days`,
+    { params }
+  );
+}
+
+
 }

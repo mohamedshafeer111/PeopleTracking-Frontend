@@ -29,7 +29,7 @@ button:hover {
   background: #5a257f;
 }
 
-.table-container {
+/* .table-container {
   overflow-x: auto;
 }
 
@@ -49,7 +49,7 @@ td {
 
 th {
   background: #f4f4f4;
-}
+} */
 
 .navbar {
   background-color: white;
