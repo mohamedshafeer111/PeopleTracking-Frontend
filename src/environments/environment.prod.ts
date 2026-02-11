@@ -10,5 +10,5 @@ export const environment = {
   production: true,
   apiUrl: 'https://phcc.purpleiq.ai/api/',
   wsUrl: 'wss://phcc.purpleiq.ai/ws/ZoneCount', 
-  imageBaseUrl: 'https://phcc.purpleiq.ai/uploads/' 
+  imageBaseUrl: 'https://phcc.purpleiq.ai/api/uploads/' 
 };
