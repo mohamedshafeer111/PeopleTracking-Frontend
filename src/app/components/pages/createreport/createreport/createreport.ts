@@ -16,9 +16,7 @@ export class Createreport implements OnInit {
 
 
   constructor(
-    private reportService: Reportservice,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private reportService: Reportservice, private cdr: ChangeDetectorRef ) {}
 
 
 
@@ -46,79 +44,59 @@ deleteReport(index: number) {
 
   if (!confirm("Are you sure you want to delete this report?")) return;
 
-  if (report.id && typeof report.id === 'string') {
-    this.reportService.DeleteReport(report.id).subscribe({
-      next: () => {
-        alert("Report deleted successfully.");
+  // support id OR _id
+  const id = report.id || report._id;
 
-        // Remove from list
-        this.reports.splice(index, 1);
-
-        // Refresh UI immediately
-        this.reports = [...this.reports];
-
-        // 🔥 Force Angular to update view
-        this.cdr.detectChanges();
-
-        localStorage.setItem('reports', JSON.stringify(this.reports));
-      },
-      error: (err) => {
-        console.error("Backend delete failed:", err);
-
-        alert("Failed to delete from server, removing locally.");
-
-        this.reports.splice(index, 1);
-
-        this.reports = [...this.reports];
-
-        // 🔥 Force Angular to update UI
-        this.cdr.detectChanges();
-
-        localStorage.setItem('reports', JSON.stringify(this.reports));
-      }
-    });
-  } else {
-
-    this.reports.splice(index, 1);
-    this.reports = [...this.reports];
-
-    // 🔥 UI update
-    this.cdr.detectChanges();
-
-    localStorage.setItem('reports', JSON.stringify(this.reports));
-    alert("Report deleted locally.");
+  if (!id) {
+    alert("No valid report ID found.");
+    return;
   }
+
+  this.reportService.DeleteReport(id).subscribe({
+    next: () => {
+
+      alert("Report deleted successfully.");
+
+      // remove from list only on success
+      this.reports.splice(index, 1);
+      this.reports = [...this.reports];
+
+      // 🔥 Force Angular UI refresh
+      this.cdr.detectChanges();
+
+      localStorage.setItem('reports', JSON.stringify(this.reports));
+    },
+
+    error: (err) => {
+      console.error("Delete failed:", err);
+      alert("Server delete failed. Report was NOT removed from list.");
+    }
+  });
 }
 
 
 
 
-  //   ✅ ADD THIS METHOD
-  // deleteReport(index: number) {
-  //   this.reports.splice(index, 1);
-  //   localStorage.setItem('reports', JSON.stringify(this.reports));
-  // }
 
 
-// deleteReport(id: string) {
-//   if (!confirm("Are you sure you want to delete this report?")) return;
 
-//   this.reportService.DeleteReport(id).subscribe({
-//     next: () => {
-//       alert("Report deleted successfully.");
+showColumnPicker = false;
 
-//       // Refresh list after delete (optional)
-//       // this.loadReports();
-//     },
-//     error: (err) => {
-//       console.error("Delete error:", err);
-//       alert("Failed to delete report.");
-//     }
-//   });
-// }
+columns = [
+  { key: 'slno', label: 'Sl No', visible: true },
+  { key: 'reportName', label: 'Reports', visible: true },
+  { key: 'timeRange', label: 'Time Range', visible: true },
+  { key: 'recurrence', label: 'Recurrence', visible: true },
+  { key: 'createdOn', label: 'Created On', visible: true },
+  { key: 'template', label: 'Type', visible: true },
+  { key: 'shareWith', label: 'Share With', visible: true },
+  // { key: 'action', label: 'Action', visible: true }
+];
 
-//   viewReport(report: any) {
-//   localStorage.setItem('selectedReport', JSON.stringify(report));
-// }
+toggleColumnPicker() {
+  this.showColumnPicker = !this.showColumnPicker;
+}
+
+
 
 }

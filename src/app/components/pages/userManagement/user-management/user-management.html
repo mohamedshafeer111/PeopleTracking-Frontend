@@ -1,10 +1,33 @@
+
+
 <nav class="navbar">
-  <h3>User</h3>
-  <div>
-    <!-- <button class="rolebutton" routerLink="/role">Role</button> -->
-    <button class="rolebutton" routerLink="/newUser">NewUser</button>
+  <!-- <h3>User Management</h3> -->
+  
+  <!-- Navigation buttons container -->
+  <div class="nav-buttons">
+    <button class="nav-button active" routerLink="/user-management">User</button>
+    <button class="nav-button" routerLink="/role">Role</button>
   </div>
+
   <div class="nav-icons">
+    <!-- Expandable Search -->
+    <div class="search-container" [ngClass]="{'search-open': searchOpen}">
+      <img 
+        src="assets/search.png" 
+        alt="Search" 
+        (click)="toggleSearch()"
+        class="search-icon"
+      />
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        (input)="filterUsers()"
+        placeholder="Search users..."
+        class="search-input"
+        [ngClass]="{'visible': searchOpen}"
+      />
+    </div>
+
     <img src="assets/add.png" alt="Add" (click)="openCreateUserPopup()">
     <img src="assets/upload.png" alt="upload">
     <img src="assets/download.png" alt="download">
@@ -14,52 +37,35 @@
 </nav>
 
 <div class="table-container">
-  <!-- <table>
+  <table>
     <thead>
       <tr>
-
         <th>User Name</th>
         <th>Contact No</th>
         <th>Email Id</th>
         <th>Role</th>
         <th>Action</th>
-
-
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let user of users">
+      <tr *ngFor="let user of filteredUsers">
         <td>{{ user.userName }}</td>
         <td>{{ user.contactNumber }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.roleName }}</td>
-
-
         <td>
-
           <img src="assets/pencil.png" alt="Edit" (click)="openUpdateUserPopup(user)" class="action-icon edit" />
-
           <img src="assets/trash.png" alt="Delete" class="action-icon delete" (click)="openDeleteUserPopup(user)" />
         </td>
       </tr>
     </tbody>
-  </table> -->
-
-
-  <app-newuser
-  [users]="users"
-  (editUser)="openUpdateUserPopup($event)"
-  (deleteUser)="openDeleteUserPopup($event)">
-</app-newuser>
-
+  </table>
 </div>
-<!-- </div> -->
 
-
+<!-- Popups remain the same -->
 <div class="overlay" *ngIf="openNewUser">
   <div class="popup">
     <h2>Create New User</h2>
-
     <div class="user-input-container">
       <div class="user-data">
         <label>User Name</label>
@@ -68,14 +74,10 @@
       <div class="user-data">
         <label>Email</label>
         <input type="email" [(ngModel)]="NewUser.email">
-
-
-
       </div>
       <div class="user-data">
         <label>Password</label>
         <input type="password" [(ngModel)]="NewUser.password">
-
       </div>
       <div class="user-data">
         <label>Contact Number</label>
@@ -88,11 +90,8 @@
             {{ r.roleName }}
           </option>
         </select>
-
       </div>
-
     </div>
-
     <div class="user-button">
       <button class="btn create" (click)="createUser()">Create</button>
       <button class="btn cancel" (click)="closeCreateUserPopup()">Cancel</button>
@@ -100,17 +99,9 @@
   </div>
 </div>
 
-
-
-
-
-
-<!-- update user -->
-
 <div class="overlay" *ngIf="openUpdateUser">
   <div class="popup">
     <h2>Update User</h2>
-
     <div class="user-input-container">
       <div class="user-data">
         <label>User Name</label>
@@ -135,10 +126,8 @@
             {{ r.roleName }}
           </option>
         </select>
-
       </div>
     </div>
-
     <div class="user-button">
       <button class="btn create" (click)="updateUser()">update</button>
       <button class="btn cancel" (click)="closeUpdateUserPopup()">Cancel</button>
@@ -146,16 +135,9 @@
   </div>
 </div>
 
-
-<!-- delete user -->
-
-
 <div class="overlaydel" *ngIf="openDeleteUser">
   <div class="popupdel">
     <p>Are You Sure You Want To delete this User?</p>
-
-
-    <!-- <div class="user-button"> -->
     <button class="btn delete" (click)="deleteUser()">yes</button>
     <button class="btn cancel" (click)="closeDeleteUserPopup()">No</button>
   </div>

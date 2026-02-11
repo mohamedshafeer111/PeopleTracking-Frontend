@@ -111,7 +111,12 @@ export class Device {
   // }
 
     saveDeviceGeoJson(payload: any) {
-    return this.http.post(`${this.baseUrl}DeviceGeoJsonMapping`, payload);
+    return this.http.post(`${this.baseUrl}DeviceGeoJsonMapping/create-device-on-zone`, payload);
+  }
+
+
+      saveDeviceGeoJsonMap(payload: any) {
+    return this.http.post(`${this.baseUrl}DeviceGeoJsonMappingController1`, payload);
   }
 
 
@@ -172,5 +177,108 @@ deleteWidget(id:any){
 deleteDashboardWidget(id:any){
   return this.http.delete(`${this.baseUrl}zonesensor/delete/${id}`)
 }
+
+
+getDevicesByAreaId(areaId: string) {
+  return this.http.get<any[]>(
+    `http://172.16.100.29:5202/api/DeviceGeoJsonMappingController1/area/${areaId}`
+  );
+}
+
+
+
+
+
+
+deleteDeviceGeoJsonMap(id: string) {
+  return this.http.delete(
+    `http://172.16.100.29:5202/api/DeviceGeoJsonMappingController1/${id}`
+  );
+}
+
+
+deleteIndoorDevice(id: string) {
+  return this.http.delete(
+    `http://172.16.100.29:5202/api/DeviceGeoJsonMapping/${id}`
+  );
+}
+
+
+
+
+
+getZoneReportByHours(floorId: string, hours: number) {
+  return this.http.get(
+    `${this.baseUrl}zone-report/floor/hours`,
+    {
+      params: {
+        floorId: floorId,      // ✅ Changed from zoneId to floorId
+        hours: hours.toString()
+      }
+    }
+  );
+}
+
+// Day-based API (floorId + days)
+getZoneReportByDays(floorId: string, days: number) {
+  return this.http.get(
+    `${this.baseUrl}zone-report/floor`,
+    {
+      params: {
+        floorId: floorId,      // ✅ Changed from zoneId to floorId
+        days: days.toString()
+      }
+    }
+  );
+}
+
+
+
+
+
+
+// getOutdoorZoneMapping(outdoorZoneId: string): Observable<any[]> {
+//   return this.http.get<any[]>(
+//     `${this.baseUrl}zones/Zone1/${outdoorZoneId}`
+//   );
+// }
+
+
+
+
+
+
+getRecentProcessedEvents(tagIds: any[] | any) {
+  let params: any = {};
+
+  if (Array.isArray(tagIds)) {
+    if (tagIds.length === 1) {
+      params.tagIds = tagIds[0];          // ?tagIds=5
+    } else if (tagIds.length > 1) {
+      params.tagIds = tagIds.join(',');   // ?tagIds=1,2,3
+    }
+  } else if (tagIds) {
+    params.tagIds = tagIds;               // ?tagIds=5
+  }
+
+  return this.http.get<any>(
+    `${this.baseUrl}processedevents/recent`,
+    { params }
+  );
+}
+
+getMappedDevice(uniqueid:string){
+  return this.http.get(`${this.baseUrl}Asset/MappedDevice/${uniqueid}`)
+}
+
+getActiveAsset(){
+  return this.http.get(`${this.baseUrl}Asset/active`)
+}
+
+
+getMappedDeviceByTagId(tagId: string) {
+  return this.http.get(`${this.baseUrl}Asset/MappedDevice/${tagId}`);
+}
+
 
 }

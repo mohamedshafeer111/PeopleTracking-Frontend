@@ -1,7 +1,7 @@
 <div class="content1">
   <img class="menu-icon" data-tooltip="Menu" data-tooltip="Menu" src="assets/menu.png" alt="Menu"
     (click)="toggleSidebar()">
-  <h1>People Tracking</h1>
+  <h1>Asset Tracking</h1>
   <div class="right-icons">
      <!-- <span class="icon-wrapper" data-tooltip="Notifications">
       <img class="last" src="assets/navclock.png" alt="Notification icon">
@@ -93,12 +93,12 @@
           </div>
 
           <!-- Historicals -->
-          <div class="submenu-item" [class.open]="isHistoricalsOpen">
+          <!-- <div class="submenu-item" [class.open]="isHistoricalsOpen">
             <a class="one-sub" [routerLink]="'/historicals'" href="javascript:void(0)"
               (click)="toggleHistoricalsMenu()">
               Historicals
             </a>
-          </div>
+          </div> -->
 
         </div>
       </div>
@@ -107,20 +107,20 @@
 
 
 
-      <a class="main tooltip" href="#" data-tooltip="Events" routerLink="/events">
+      <!-- <a class="main tooltip" href="#" data-tooltip="Events" routerLink="/events">
         <img src="assets/event.png" alt="Events" class="white-icon">
         <span class="link-text">Events</span>
-      </a>
+      </a> -->
 
       <a class="main tooltip" href="#" data-tooltip="Reports" routerLink="/createreport">
         <img src="assets/reports.png" alt="Reports" class="white-icon">
         <span class="link-text">Reports</span>
       </a>
 
-      <a class="main tooltip" href="#" data-tooltip="Process & Automation" routerLink="/processautomation">
+      <!-- <a class="main tooltip" href="#" data-tooltip="Process & Automation" routerLink="/processautomation">
         <img src="assets/automation.png" alt="Automation">
         <span class="link-text">Process & Automation</span>
-      </a>
+      </a> -->
 
 
       <!-- Administration with submenu -->
@@ -138,8 +138,8 @@
             </span>
             Administration
           </a>
-          <a class="one-sub" routerLink="/people" (click)="closeAdminMenu()"> Configuration</a>
-          <a class="one-sub" href="#" routerLink="/licensemanagement" (click)="closeAdminMenu()">License Management</a>
+          <a class="one-sub" routerLink="/project" (click)="closeAdminMenu()"> Configuration</a>
+          <!-- <a class="one-sub" href="#" routerLink="/licensemanagement" (click)="closeAdminMenu()">License Management</a> -->
           <a class="one-sub" href="#" routerLink="/user-management" (click)="closeAdminMenu()">User Management</a>
         </div>
       </div>

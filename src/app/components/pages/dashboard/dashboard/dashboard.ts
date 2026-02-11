@@ -5,7 +5,6 @@ import { RouterLink, RouterModule } from '@angular/router';
 import { Device } from '../../../service/device/device';
 import { HttpClient } from '@angular/common/http';
 import { Websocket } from '../../../service/websocket/websocket';
-import { environment } from '../../../../../environments/environment.prod';
 import { FormsModule } from '@angular/forms';
 import { ClockWidget } from '../../clock-widget/clock-widget/clock-widget';
 import { Widget } from '../../../service/widget/widget';
@@ -23,7 +22,7 @@ export class Dashboard implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadProject();
     this.loadZoneSensors();
-    this.connectWebSocket();
+    //this.connectWebSocket();
     this.loadDashboard();
     this.getDashboards();
   }
@@ -466,6 +465,30 @@ export class Dashboard implements OnInit, OnDestroy {
 
   zoneDevices: any[] = [];
 
+  // devicesGetByZoneId(
+  //   projectId: string,
+  //   countryId: string,
+  //   areaId: string,
+  //   buildingId: string,
+  //   floorId: string,
+  //   zoneId: string
+  // ) {
+  //   this.device.getDevicesByZone(projectId, countryId, areaId, buildingId, floorId, zoneId).subscribe({
+  //     next: (res: any) => {
+  //       this.zoneDevices = res;
+  //       this.projectDevices = [];
+  //       this.countryDevices = [];
+  //       this.areaDevices = [];
+  //       this.buildingDevices = [];
+  //       this.floorDevices = [];
+  //       this.activeLevel = 'zone';
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: () => {
+  //       console.log("Error loading devices by zone");
+  //     }
+  //   });
+  // }
   devicesGetByZoneId(
     projectId: string,
     countryId: string,
@@ -476,21 +499,17 @@ export class Dashboard implements OnInit, OnDestroy {
   ) {
     this.device.getDevicesByZone(projectId, countryId, areaId, buildingId, floorId, zoneId).subscribe({
       next: (res: any) => {
-        this.zoneDevices = res;
-        this.projectDevices = [];
-        this.countryDevices = [];
-        this.areaDevices = [];
-        this.buildingDevices = [];
-        this.floorDevices = [];
+        this.zoneDevices = (Array.isArray(res) ? res : []).map(d => ({
+          id: d.id,
+          deviceName: d.deviceName,
+          deviceUniqueId: d.deviceUniqueId  // ✅
+        }));
         this.activeLevel = 'zone';
         this.cdr.detectChanges();
       },
-      error: () => {
-        console.log("Error loading devices by zone");
-      }
+      error: (err) => console.error('❌ Error loading devices by zone:', err)
     });
   }
-
 
 
 
@@ -613,23 +632,47 @@ export class Dashboard implements OnInit, OnDestroy {
 
   selectedDeviceName: string = '';
 
+  // onDeviceCheckboxChange(event: any, device: any) {
+  //   if (event.target.checked) {
+  //     // ✅ When checkbox is checked
+  //     this.selectedDeviceId = device.id;
+  //     this.selectedDeviceName = device.deviceName;
+
+  //     console.log("✅ Selected Device:", device.deviceName);
+  //     this.loadDeviceParametersByDevice(device.id);
+  //   } else {
+  //     // ✅ When checkbox is unchecked
+  //     if (this.selectedDeviceId === device.id) {
+  //       this.selectedDeviceId = '';
+  //       this.selectedDeviceName = '';
+  //     }
+  //   }
+  // }
+  selectedDeviceUniqueId: string = ''; // ✅ Add this property at the top of your component
+
   onDeviceCheckboxChange(event: any, device: any) {
     if (event.target.checked) {
       // ✅ When checkbox is checked
       this.selectedDeviceId = device.id;
       this.selectedDeviceName = device.deviceName;
+      this.selectedDeviceUniqueId = device.deviceUniqueId || device.uniqueId || ''; // ✅ CAPTURE UNIQUE ID
 
-      console.log("✅ Selected Device:", device.deviceName);
+      console.log("✅ Selected Device:", {
+        id: this.selectedDeviceId,
+        name: device.deviceName,
+        uniqueId: this.selectedDeviceUniqueId // ✅ LOG IT
+      });
+
       this.loadDeviceParametersByDevice(device.id);
     } else {
       // ✅ When checkbox is unchecked
       if (this.selectedDeviceId === device.id) {
         this.selectedDeviceId = '';
         this.selectedDeviceName = '';
+        this.selectedDeviceUniqueId = ''; // ✅ CLEAR UNIQUE ID
       }
     }
   }
-
 
   resetDeviceSelection() {
     this.selectedDeviceId = '';
@@ -638,67 +681,10 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
 
+
+
+
   // createWidgets() {
-  //   if (!this.selectedDeviceId || this.selectedParameters.size === 0) {
-  //     alert("Please select at least one device and one parameter.");
-  //     return;
-  //   }
-
-  //   const selectedDeviceName = this.getDeviceNameById(this.selectedDeviceId);
-
-  //   const selectedParams = Array.from(this.selectedParameters)
-  //     .map(paramId => this.deviceParameters.find(p => p.id === paramId))
-  //     .filter(p => !!p)
-  //     .map(p => ({ paramId: p!.id, paramName: p!.name }));
-
-  //   // ✅ Build one widget that contains up to 3 parameters
-  //   this.widgets = [
-  //     {
-  //       deviceName: selectedDeviceName,
-  //       params: selectedParams
-  //     }
-  //   ];
-
-  //   // ✅ Build payload for API
-  //   const payload = {
-  //     id: "",
-  //     projectId: this.selectedProjectId,
-  //     countryId: this.selectedCountryId,
-  //     areaId: this.selectedAreaId,
-  //     buildingId: this.selectedBuildingId,
-  //     floorId: this.selectedFloorId,
-  //     zoneId: this.selectedFloorId ?? "",
-  //     createdAt: new Date().toISOString(),
-  //     updatedAt: new Date().toISOString(),
-  //     zoneSensors: [
-  //       {
-  //         deviceId: this.selectedDeviceId,
-  //         deviceName: selectedDeviceName,
-  //         params: selectedParams
-  //       }
-  //     ]
-  //   };
-
-  //   console.log("🟢 Zone Sensor Payload:", payload);
-
-  //   this.device.createZoneSensor(payload).subscribe({
-  //     next: (res) => {
-  //       console.log("✅ ZoneSensor Created Successfully:", res);
-  //       alert("Zone Sensor created successfully!");
-  //       this.closeAddWidgetPopup();
-  //       this.loadZoneSensors();
-  //     },
-  //     error: (err) => {
-  //       console.error("❌ Error creating zone sensor:", err);
-  //       alert("Failed to create zone sensor");
-  //     }
-  //   });
-  // }
-
-
-
-
-  //  createWidgets() {
   //   if (!this.selectedDeviceId || this.selectedParameters.size === 0) {
   //     alert("Please select at least one device and one parameter.");
   //     return;
@@ -714,7 +700,6 @@ export class Dashboard implements OnInit, OnDestroy {
   //       paramName: p!.name
   //     }));
 
-
   //   // UI widget data
   //   this.widgets = [
   //     {
@@ -724,34 +709,34 @@ export class Dashboard implements OnInit, OnDestroy {
   //   ];
 
   //   // ✅ New API Payload (matches your updated request body)
-  //  const payload = {
-  //   id: "",
+  //   const payload = {
+  //     id: "",
 
-  //   projectId: this.selectedProjectId,
-  //   countryId: this.selectedCountryId,
-  //   areaId: this.selectedAreaId,
-  //   buildingId: this.selectedBuildingId,
-  //   floorId: this.selectedFloorId,
+  //     projectId: this.selectedProjectId,
+  //     countryId: this.selectedCountryId,
+  //     areaId: this.selectedAreaId,
+  //     buildingId: this.selectedBuildingId,
+  //     floorId: this.selectedFloorId,
 
-  //   // ✅ Zone (mapped from floor)
-  //   zoneId: this.selectedFloorId ?? "",
-  //   zone: "",
+  //     // ✅ Zone (mapped from floor)
+  //     zoneId: this.selectedFloorId ?? "",
+  //     zone: "",
 
-  //   // ✅ Dashboard (from selectedDashboard object)
-  //   dashboardId: this.selectedDashboard?.id ?? "",
-  //   dashboardName: this.selectedDashboard?.name ?? "",
+  //     // ✅ Dashboard (from selectedDashboard object)
+  //     dashboardId: this.selectedDashboard?.id ?? "",
+  //     dashboardName: this.selectedDashboard?.name ?? "",
 
-  //   zoneSensors: [
-  //     {
-  //       deviceId: this.selectedDeviceId,
-  //       deviceName: selectedDeviceName,
-  //       params: selectedParams
-  //     }
-  //   ],
+  //     zoneSensors: [
+  //       {
+  //         deviceId: this.selectedDeviceId,
+  //         deviceName: selectedDeviceName,
+  //         params: selectedParams
+  //       }
+  //     ],
 
-  //   createdAt: new Date().toISOString(),
-  //   updatedAt: new Date().toISOString()
-  // };
+  //     createdAt: new Date().toISOString(),
+  //     updatedAt: new Date().toISOString()
+  //   };
 
 
   //   console.log("🟢 Zone Sensor Payload:", payload);
@@ -759,16 +744,25 @@ export class Dashboard implements OnInit, OnDestroy {
   //   this.device.createZoneSensor(payload).subscribe({
   //     next: (res) => {
   //       console.log("✅ ZoneSensor Created Successfully:", res);
-  //       alert("Zone Sensor created successfully!");
+
+  //       // ✅ CLOSE POPUP FIRST
   //       this.closeAddWidgetPopup();
+  //       // ✅ REFRESH DASHBOARD WIDGETS IMMEDIATELY
+  //       if (this.selectedDashboard?.id) {
+  //         this.loadDashboardContent(this.selectedDashboard.id);
+  //       }
 
-
+  //       // ✅ OPTIONAL: show alert AFTER UI updates
+  //       setTimeout(() => {
+  //         alert("Zone Sensor created successfully!");
+  //       }, 0);
   //     },
   //     error: (err) => {
   //       console.error("❌ Error creating zone sensor:", err);
   //       alert("Failed to create zone sensor");
   //     }
   //   });
+
   // }
 
 
@@ -778,8 +772,14 @@ export class Dashboard implements OnInit, OnDestroy {
       return;
     }
 
-    const selectedDeviceName = this.getDeviceNameById(this.selectedDeviceId);
+    // ✅ ADD THIS DEBUG LOG
+    console.log('🔍 Creating widget with:', {
+      deviceId: this.selectedDeviceId,
+      deviceName: this.selectedDeviceName,
+      deviceUniqueId: this.selectedDeviceUniqueId  // ✅ Check this value
+    });
 
+    const selectedDeviceName = this.getDeviceNameById(this.selectedDeviceId);
     const selectedParams = Array.from(this.selectedParameters)
       .map(paramId => this.deviceParameters.find(p => p.id === paramId))
       .filter(p => !!p)
@@ -788,7 +788,6 @@ export class Dashboard implements OnInit, OnDestroy {
         paramName: p!.name
       }));
 
-    // UI widget data
     this.widgets = [
       {
         deviceName: selectedDeviceName,
@@ -796,51 +795,41 @@ export class Dashboard implements OnInit, OnDestroy {
       }
     ];
 
-    // ✅ New API Payload (matches your updated request body)
     const payload = {
       id: "",
-
       projectId: this.selectedProjectId,
       countryId: this.selectedCountryId,
       areaId: this.selectedAreaId,
       buildingId: this.selectedBuildingId,
       floorId: this.selectedFloorId,
-
-      // ✅ Zone (mapped from floor)
       zoneId: this.selectedFloorId ?? "",
       zone: "",
-
-      // ✅ Dashboard (from selectedDashboard object)
       dashboardId: this.selectedDashboard?.id ?? "",
       dashboardName: this.selectedDashboard?.name ?? "",
-
       zoneSensors: [
         {
           deviceId: this.selectedDeviceId,
           deviceName: selectedDeviceName,
+          deviceUniqueId: this.selectedDeviceUniqueId, // ✅ THIS SHOULD HAVE VALUE NOW
           params: selectedParams
         }
       ],
-
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-
-    console.log("🟢 Zone Sensor Payload:", payload);
+    console.log("🟢 Final Zone Sensor Payload:", payload);
+    console.log("🔍 DeviceUniqueId in payload:", payload.zoneSensors[0].deviceUniqueId); // ✅ VERIFY
 
     this.device.createZoneSensor(payload).subscribe({
       next: (res) => {
         console.log("✅ ZoneSensor Created Successfully:", res);
-
-        // ✅ CLOSE POPUP FIRST
         this.closeAddWidgetPopup();
-        // ✅ REFRESH DASHBOARD WIDGETS IMMEDIATELY
+
         if (this.selectedDashboard?.id) {
           this.loadDashboardContent(this.selectedDashboard.id);
         }
 
-        // ✅ OPTIONAL: show alert AFTER UI updates
         setTimeout(() => {
           alert("Zone Sensor created successfully!");
         }, 0);
@@ -850,7 +839,6 @@ export class Dashboard implements OnInit, OnDestroy {
         alert("Failed to create zone sensor");
       }
     });
-
   }
   resetPopupData() {
     // Clear selected items
@@ -889,42 +877,15 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
   private ws!: WebSocket;
-  private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
+  //private wsUrl = 'ws://172.16.100.29:5202/ws/ZoneCount';
 
-  //private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
+  private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();
   }
 
-  // ✅ Fetch all widgets (from API)
-  // loadZoneSensors() {
-  //   this.device.getAllZoneSensors().subscribe(
-  //     (response: any) => {
-  //       const dataArray = Array.isArray(response) ? response : [response];
-  //       const allSensors = dataArray.flatMap(zone => zone.zoneSensors || []);
 
-  //       const deviceMap = new Map<string, any>();
-
-  //       for (const sensor of allSensors) {
-  //         if (!deviceMap.has(sensor.deviceId)) {
-  //           deviceMap.set(sensor.deviceId, {
-  //             deviceId: sensor.deviceId,
-  //             deviceName: sensor.deviceName,
-  //             params: sensor.params.map((p: any) => ({
-  //               name: p.paramName,
-  //               value: '-' // default placeholder until updated
-  //             }))
-  //           });
-  //         }
-  //       }
-
-  //       this.widgets = Array.from(deviceMap.values());
-  //       this.cdr.detectChanges();
-  //     },
-  //     (error) => console.error('❌ Error fetching zone sensors:', error)
-  //   );
-  // }
 
   loadZoneSensors() {
 
@@ -966,68 +927,34 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
 
-  //✅ Connect to WebSocket and update matching widgets
-  //   connectWebSocket() {
-  //   this.ws = new WebSocket(this.wsUrl);
-
-  //   this.ws.onopen = () => console.log('✅ WebSocket Connected');
-
-  //   this.ws.onmessage = (event) => {
-  //     try {
-  //       const data = JSON.parse(event.data);
-  //       const updates = Array.isArray(data) ? data : [data];
-
-  //       updates.forEach((update: any) => {
-  //         const zoneId = (update.ZoneId || '').trim().toLowerCase();
-  //         const count = update.Count;
-
-  //         console.log('📨 Received update:', update);
-
-  //         const widget = this.widgets.find(
-  //           (w) => w.deviceName.trim().toLowerCase() === zoneId
-  //         );
-
-  //         if (!widget?.params) return;
-
-  //         // update or add params dynamically
-  //         let zoneParam = widget.params.find((p: any) => p.name.toLowerCase() === 'zonename');
-  //         let countParam = widget.params.find((p: any) => p.name.toLowerCase() === 'peoplecount');
-
-  //         if (zoneParam) zoneParam.value = update.ZoneId;
-  //         else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
-
-  //         if (countParam) countParam.value = count;
-  //         else widget.params.push({ name: 'PeopleCount', value: count });
-
-
-  //       });
-
-  //       this.cdr.detectChanges();
-  //     } catch (err) {
-  //       console.error('⚠️ WebSocket message parse error:', err);
-  //     }
-  //   };
-
-  //   this.ws.onerror = (err) => console.error('❌ WebSocket Error:', err);
-
-  //   this.ws.onclose = () => {
-  //     console.warn('🔌 WebSocket Disconnected — retrying in 1s...');
-  //     setTimeout(() => this.connectWebSocket(), 1000);
-  //   };
-  // }
-
-
 
   // connectWebSocket() {
   //   this.ws = new WebSocket(this.wsUrl);
 
-  //   this.ws.onopen = () => console.log('✅ WebSocket Connected');
+  //   this.ws.onopen = () => {
+  //     console.log('✅ WebSocket Connected');
+
+  //     // 🔥 HARD-CODE status = online for all widgets
+  //     this.widgets.forEach((widget) => {
+  //       let statusParam = widget.params.find(
+  //         (p: any) => p.name.toLowerCase() === 'status'
+  //       );
+
+  //       if (statusParam) {
+  //         statusParam.value = 'online';
+  //       } else {
+  //         widget.params.push({ name: 'Status', value: 'online' });
+  //       }
+  //     });
+
+  //     this.cdr.detectChanges();
+  //   };
 
   //   this.ws.onmessage = (event) => {
   //     try {
   //       const data = JSON.parse(event.data);
 
-  //       // 🔥 If empty array -> set default PeopleCount = 0
+  //       // 🔥 Empty array → PeopleCount = 0 for all widgets
   //       if (Array.isArray(data) && data.length === 0) {
   //         console.log("📭 Empty update received. Setting PeopleCount = 0");
 
@@ -1050,24 +977,34 @@ export class Dashboard implements OnInit, OnDestroy {
   //         const zoneId = (update.ZoneId || '').trim().toLowerCase();
   //         const count = update.Count ?? 0; // default 0
 
+  //         console.log('📨 Received update:', update);
+
   //         const widget = this.widgets.find(
   //           (w) => w.deviceName.trim().toLowerCase() === zoneId
   //         );
 
   //         if (!widget?.params) return;
 
+  //         // ZoneName
   //         let zoneParam = widget.params.find(
   //           (p: any) => p.name.toLowerCase() === 'zonename'
   //         );
-  //         let countParam = widget.params.find(
-  //           (p: any) => p.name.toLowerCase() === 'peoplecount'
-  //         );
-
   //         if (zoneParam) zoneParam.value = update.ZoneId;
   //         else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
 
+  //         // PeopleCount
+  //         let countParam = widget.params.find(
+  //           (p: any) => p.name.toLowerCase() === 'peoplecount'
+  //         );
   //         if (countParam) countParam.value = count;
   //         else widget.params.push({ name: 'PeopleCount', value: count });
+
+  //         // 🔥 HARD-CODE status = online (always)
+  //         let statusParam = widget.params.find(
+  //           (p: any) => p.name.toLowerCase() === 'status'
+  //         );
+  //         if (statusParam) statusParam.value = 'online';
+  //         else widget.params.push({ name: 'Status', value: 'online' });
   //       });
 
   //       this.cdr.detectChanges();
@@ -1076,28 +1013,32 @@ export class Dashboard implements OnInit, OnDestroy {
   //     }
   //   };
 
+  //   this.ws.onerror = (err) => console.error('❌ WebSocket Error:', err);
+
+  //   this.ws.onclose = () => {
+  //     console.warn('🔌 WebSocket Disconnected — retrying in 1s...');
+  //     setTimeout(() => this.connectWebSocket(), 1000);
+  //   };
   // }
 
 
   connectWebSocket() {
+    console.log("🚀 connectWebSocket() called");
     this.ws = new WebSocket(this.wsUrl);
 
     this.ws.onopen = () => {
       console.log('✅ WebSocket Connected');
 
-      // 🔥 HARD-CODE status = online for all widgets
       this.widgets.forEach((widget) => {
         let statusParam = widget.params.find(
           (p: any) => p.name.toLowerCase() === 'status'
         );
-
         if (statusParam) {
           statusParam.value = 'online';
         } else {
           widget.params.push({ name: 'Status', value: 'online' });
         }
       });
-
       this.cdr.detectChanges();
     };
 
@@ -1105,19 +1046,15 @@ export class Dashboard implements OnInit, OnDestroy {
       try {
         const data = JSON.parse(event.data);
 
-        // 🔥 Empty array → PeopleCount = 0 for all widgets
         if (Array.isArray(data) && data.length === 0) {
-          console.log("📭 Empty update received. Setting PeopleCount = 0");
-
+          console.log("📭 Empty update received. Setting Asset Count = 0");
           this.widgets.forEach((widget) => {
             let countParam = widget.params.find(
-              (p: any) => p.name.toLowerCase() === 'peoplecount'
+              (p: any) => p.name.toLowerCase().includes('asset count')
             );
-
             if (countParam) countParam.value = 0;
-            else widget.params.push({ name: 'PeopleCount', value: 0 });
+            else widget.params.push({ name: 'Asset Count (IN)', value: 0 });
           });
-
           this.cdr.detectChanges();
           return;
         }
@@ -1125,37 +1062,59 @@ export class Dashboard implements OnInit, OnDestroy {
         const updates = Array.isArray(data) ? data : [data];
 
         updates.forEach((update: any) => {
-          const zoneId = (update.ZoneId || '').trim().toLowerCase();
-          const count = update.Count ?? 0; // default 0
+          const wsZoneId = (update.ZoneId || '').trim().toUpperCase();
+          const count = update.Count ?? 0;
 
-          console.log('📨 Received update:', update);
+          console.log('📨 Received update:', { ZoneId: wsZoneId, Count: count });
 
-          const widget = this.widgets.find(
-            (w) => w.deviceName.trim().toLowerCase() === zoneId
-          );
+          // ✅ Match by deviceUniqueId (case-insensitive)
+          const widget = this.widgets.find((w) => {
+            const deviceUniqueId = (w.deviceUniqueId || '').trim().toUpperCase();
+            return deviceUniqueId === wsZoneId;
+          });
 
-          if (!widget?.params) return;
+          if (!widget) {
+            console.warn(`⚠️ No widget found for ZoneId: ${wsZoneId}`);
+            return;
+          }
 
-          // ZoneName
+          console.log(`✅ Matched widget: ${widget.deviceName}`);
+
+          if (!widget.params) return;
+
+          // Update Zone Name
           let zoneParam = widget.params.find(
-            (p: any) => p.name.toLowerCase() === 'zonename'
+            (p: any) => p.name.toLowerCase().includes('zone name')
           );
-          if (zoneParam) zoneParam.value = update.ZoneId;
-          else widget.params.push({ name: 'ZoneName', value: update.ZoneId });
+          if (zoneParam) {
+            zoneParam.value = widget.deviceName || update.ZoneId;
+          } else {
+            widget.params.push({
+              name: 'Zone Name',
+              value: widget.deviceName || update.ZoneId
+            });
+          }
 
-          // PeopleCount
+          // Update Asset Count (IN)
           let countParam = widget.params.find(
-            (p: any) => p.name.toLowerCase() === 'peoplecount'
+            (p: any) => p.name.toLowerCase().includes('asset count')
           );
-          if (countParam) countParam.value = count;
-          else widget.params.push({ name: 'PeopleCount', value: count });
+          if (countParam) {
+            countParam.value = count;
+          } else {
+            widget.params.push({ name: 'Asset Count (IN)', value: count });
+          }
 
-          // 🔥 HARD-CODE status = online (always)
+          // Update Status
           let statusParam = widget.params.find(
             (p: any) => p.name.toLowerCase() === 'status'
           );
-          if (statusParam) statusParam.value = 'online';
-          else widget.params.push({ name: 'Status', value: 'online' });
+          const statusValue = count > 0 ? 'Active' : 'Inactive';
+          if (statusParam) {
+            statusParam.value = statusValue;
+          } else {
+            widget.params.push({ name: 'Status', value: statusValue });
+          }
         });
 
         this.cdr.detectChanges();
@@ -1375,6 +1334,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
 
+
   selectDashboard(item: any) {
     this.selectedDashboard = item;
     this.activeDashboardName = item.name;
@@ -1400,13 +1360,28 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
 
+        // this.widgets = data
+        //   .filter(d => d.dashboardId === dashboardId)
+        //   .flatMap(d =>
+        //     d.zoneSensors.map((sensor: any) => ({
+        //       widgetId: d.id,                // ✅ REQUIRED
+        //       deviceId: sensor.deviceId,
+        //       deviceName: sensor.deviceName,
+        //        deviceUniqueId: sensor.deviceUniqueId,
+        //       params: sensor.params.map((p: any) => ({
+        //         name: p.paramName,
+        //         value: '-'
+        //       }))
+        //     }))
+        //   );
         this.widgets = data
           .filter(d => d.dashboardId === dashboardId)
           .flatMap(d =>
             d.zoneSensors.map((sensor: any) => ({
-              widgetId: d.id,                // ✅ REQUIRED
+              widgetId: d.id,
               deviceId: sensor.deviceId,
               deviceName: sensor.deviceName,
+              deviceUniqueId: sensor.deviceUniqueId,  // ✅ ADD THIS LINE
               params: sensor.params.map((p: any) => ({
                 name: p.paramName,
                 value: '-'
@@ -1414,7 +1389,9 @@ export class Dashboard implements OnInit, OnDestroy {
             }))
           );
 
+
         this.cdr.detectChanges();
+          this.connectWebSocket();
       },
       error: (err) => {
         this.widgets = [];
@@ -1423,9 +1400,18 @@ export class Dashboard implements OnInit, OnDestroy {
 
   }
 
+
+
+
+
+
   activeTab: string = 'zone';
-
-
+  deviceCounts: { [deviceUniqueId: string]: number } = {};
+  getDeviceCount(deviceUniqueId: string): number {
+    if (!deviceUniqueId) return 0;
+    const normalizedId = deviceUniqueId.toUpperCase();
+    return this.deviceCounts[normalizedId] || 0;
+  }
   onTabClick(tabname: string) {
     this.activeTab = tabname;
 
@@ -1464,7 +1450,7 @@ export class Dashboard implements OnInit, OnDestroy {
       next: (res: any) => {
         alert("Clock Widget Created Successfully")
         this.closeAddWidgetPopup();
-         this.loadPersonalWidgets(this.activeDashboardId);
+        this.loadPersonalWidgets(this.activeDashboardId);
       },
       error: err => {
         console.error('Clock widget add failed', err);
@@ -1475,54 +1461,54 @@ export class Dashboard implements OnInit, OnDestroy {
 
   personalWidgets: any[] = [];
 
-loadPersonalWidgets(dashboardId: string) {
-  this.widget.getPersonalDashboard(dashboardId).subscribe({
-    next: (res: any) => {
-      this.personalWidgets = res.personals || [];
-      this.cdr.detectChanges();
-    },
-    error: () => {
-      this.personalWidgets = [];
-    }
-  });
-}
+  loadPersonalWidgets(dashboardId: string) {
+    this.widget.getPersonalDashboard(dashboardId).subscribe({
+      next: (res: any) => {
+        this.personalWidgets = res.personals || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.personalWidgets = [];
+      }
+    });
+  }
 
 
 
-showClockWidgetDeletePopup:boolean=false;
+  showClockWidgetDeletePopup: boolean = false;
 
 
 
-selectedWidgetidToDelete:string="";
+  selectedWidgetidToDelete: string = "";
 
-selectedDashboardId:string='';
+  selectedDashboardId: string = '';
 
-openClockDeletePopup(widgetid:string,dashboardId:string){
+  openClockDeletePopup(widgetid: string, dashboardId: string) {
 
-this.showClockWidgetDeletePopup=true;
-this.selectedWidgetidToDelete=widgetid;
-this.selectedDashboardId=dashboardId;
+    this.showClockWidgetDeletePopup = true;
+    this.selectedWidgetidToDelete = widgetid;
+    this.selectedDashboardId = dashboardId;
 
-}
+  }
 
-closeClockDeletePopup(){
-  this.showClockWidgetDeletePopup=false;
-}
+  closeClockDeletePopup() {
+    this.showClockWidgetDeletePopup = false;
+  }
 
-deleteClockWidget(){
-  this.widget.deleteClockWidget(this.selectedWidgetidToDelete,this.selectedDashboardId).subscribe({
-    next:(res:any)=>{
-     alert(res.message);
-     this.closeClockDeletePopup();
-      this.loadPersonalWidgets(this.activeDashboardId);
-     
-    
-    },
-    error:()=>{
-      console.log("error deleting clock widget")
-    }
-  })
-}
+  deleteClockWidget() {
+    this.widget.deleteClockWidget(this.selectedWidgetidToDelete, this.selectedDashboardId).subscribe({
+      next: (res: any) => {
+        alert(res.message);
+        this.closeClockDeletePopup();
+        this.loadPersonalWidgets(this.activeDashboardId);
+
+
+      },
+      error: () => {
+        console.log("error deleting clock widget")
+      }
+    })
+  }
 
 
 }

@@ -24,6 +24,7 @@ import { Personaldashboard } from './components/pages/personaldashboard/personal
 import { Customerdashboard } from './components/pages/customerdashboard/customerdashboard/customerdashboard';
 import { Newuser } from './components/pages/newuser/newuser/newuser';
 import { Projecthierarchy } from './components/pages/projecthierarchy/projecthierarchy/projecthierarchy';
+import { Asset } from './components/pages/asset/asset/asset';
 
 
 
@@ -37,12 +38,13 @@ export const routes: Routes = [
     component: Navbar,   // 👈 Parent (Navbar)
     children: [
       { path: 'dashboard', component: Dashboard },
-      { path: '', redirectTo: 'people', pathMatch: 'full' },
+      { path: '', redirectTo: 'project', pathMatch: 'full' },
+      { path: 'project', component: Project },
       { path: 'people', component: People },
       { path: 'events', component: Events },
       { path: 'user-management', component: UserManagement },
       { path: 'role', component: Role },
-      { path: 'project', component: Project },
+
       { path: 'devices', component: Devices },
       { path: 'live', component: Live },
       { path: 'reports', component: Reports },
@@ -54,13 +56,14 @@ export const routes: Routes = [
       { path: 'licensemanagement', component: Licensemanagement },
       { path: 'viewreport', component: Viewreport },
       { path: 'viewreport/:id', component: Viewreport },//new
-      {path:'overview', component:Overview},
-      {path:'detailed', component:Detailed},
-      {path:'personalDashboard', component:Personaldashboard},
-      {path:'customerdashboard', component:Customerdashboard},
+      { path: 'overview', component: Overview },
+      { path: 'detailed', component: Detailed },
+      { path: 'personalDashboard', component: Personaldashboard },
+      { path: 'customerdashboard', component: Customerdashboard },
       {
-        path:'projecthierarchy',component:Projecthierarchy
-      }
+        path: 'projecthierarchy', component: Projecthierarchy
+      },
+      { path: 'asset', component: Asset },
     ]
   }
 

@@ -1,10 +1,128 @@
 <nav class="navbar">
     <h3>Process&Automation</h3>
-    <div class="nav-icons">
-        <img src="assets/add.png" alt="Add" routerLink="/createprocessautomation">
-        <img src="assets/refresh.png" alt="Refresh">
-        <img src="assets/download.png" alt="download">
-        <img src="assets/filter.png" alt="filter">
-    </div>
+
+
+
+    <div class="search-container" [class.open]="isSearchOpen">
+  <input
+    type="text"
+    placeholder="Search by text or date (Y-M-D)"
+    [(ngModel)]="searchQuery"
+    (input)="applyUnifiedSearch()"
+    class="search-input"
+  />
+
+  <img
+    src="assets/search.png"
+    alt="Search"
+    class="icon-img"
+    (click)="toggleSearch()"
+  />
+
+
+  <img src="assets/add.png" alt="Add" routerLink="/createprocessautomation" class="icon-img">
+        <img src="assets/refresh.png" alt="Refresh" class="icon-img">
+        <img src="assets/download.png" alt="download" class="icon-img">
+        <img src="assets/filter.png" alt="filter" class="icon-img">
+</div>
+
+
+    <!-- <div class="nav-icons">
+        
+    </div> -->
 
 </nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 9-2-26 -->
+
+
+<div class="rule-table-wrapper">
+  <table class="rule-table">
+    <thead>
+      <tr>
+        <th>Rule Name</th>
+        <th>Type</th>
+        <th>Last Activated</th>
+        <th>Created On</th>
+        <th>Status</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>Rule 1</td>
+        <td>Standard</td>
+        <td>09-02-2026 18:50:210</td>
+        <td>09-02-2026 18:50:210</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" checked />
+            <span class="slider"></span>
+          </label>
+        </td>
+        <td class="actions">
+          <button class="icon-btn edit">
+            ✎
+          </button>
+          <button class="icon-btn delete">
+            🗑
+          </button>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Rule 2</td>
+        <td>Standard</td>
+        <td>09-02-2026 18:50:210</td>
+        <td>09-02-2026 18:50:210</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" checked />
+            <span class="slider"></span>
+          </label>
+        </td>
+        <td class="actions">
+          <button class="icon-btn edit">✎</button>
+          <button class="icon-btn delete">🗑</button>
+        </td>
+      </tr>
+
+         <tr>
+        <td>Rule 3</td>
+        <td>Standard</td>
+        <td>09-02-2026 18:50:210</td>
+        <td>09-02-2026 18:50:210</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" checked />
+            <span class="slider"></span>
+          </label>
+        </td>
+        <td class="actions">
+          <button class="icon-btn edit">
+            ✎
+          </button>
+          <button class="icon-btn delete">
+            🗑
+          </button>
+        </td>
+      </tr>
+
+
+    </tbody>
+  </table>
+</div>

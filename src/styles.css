@@ -51,3 +51,28 @@ html, body {
 
 
 
+/* wrapper ring */
+.device-ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(112, 48, 160, 0.15);
+  border: 2px solid #7030a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(112, 48, 160, 0.6);
+}
+
+/* inner icon */
+.device-core {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #7030a0;
+}

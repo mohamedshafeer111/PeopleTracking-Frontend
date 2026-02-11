@@ -384,9 +384,6 @@ export class Reports implements OnInit {
 
 
 
-
-
-
   generateReport() {
 
     /* =========================
@@ -419,7 +416,8 @@ export class Reports implements OnInit {
           this.customStartDate,
           this.customEndDate,
           this.reportName.trim(),
-          this.shareEmails
+          this.shareEmails,
+            this.selectedTemplate ?? '' 
         );
       }
 
@@ -466,12 +464,14 @@ export class Reports implements OnInit {
         return;
       }
 
-      this.api.getGenerateReportZoneByHours(
-        hoursValue,
-        this.reportName.trim(),
-        this.shareEmails,
-        this.selectedZoneName ?? undefined   // ✅ FIX
-      )
+this.api.getGenerateReportZoneByHours(
+  hoursValue,
+  this.reportName.trim(),
+  this.shareEmails,
+  this.selectedZoneName ?? undefined,
+  this.selectedTemplate ?? ''   // ✅ ADD THIS
+)
+
         .subscribe({
           next: (res: any) => {
             this.saveReport({
@@ -618,7 +618,6 @@ export class Reports implements OnInit {
 
 
 }
-
 
 
 

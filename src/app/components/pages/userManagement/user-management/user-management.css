@@ -1,7 +1,6 @@
 .container {
   padding: 20px;
   background: #f8f9fa;
-
 }
 
 .form-container {
@@ -29,7 +28,7 @@ button:hover {
   background: #5a257f;
 }
 
-/* .table-container {
+.table-container {
   overflow-x: auto;
 }
 
@@ -49,15 +48,15 @@ td {
 
 th {
   background: #f4f4f4;
-} */
+}
 
 .navbar {
   background-color: white;
   height: 35px;
   color: #7030a0;
   margin-top: 0%;
-
-
+   display: flex;
+  align-items: center;
 }
 
 .navbar h3 {
@@ -81,33 +80,28 @@ th {
   transform: scale(1.2);
 }
 
-/* .action-icon.edit {
-  filter: hue-rotate(200deg);
-}
-
-.action-icon.delete {
-  filter: hue-rotate(280deg); 
-} */
-
-
-
 .navbar {
   display: flex;
   justify-content: space-between;
-  /* space between title and icons */
   align-items: center;
-  padding: 10px 20px;
+  padding: 8px 20px;
   background: #ddd;
-  /* border: 1px solid rgb(206, 201, 201); */
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  gap: 15px;
 }
 
+/* .navbar > div:nth-child(2) {
+  margin-right: auto;
+} */
+
 .nav-icons {
+  margin-left: auto;   /* THIS PUSHES IT TO THE RIGHT */
   display: flex;
   gap: 15px;
-  /* spacing between icons */
+  align-items: center;
 }
+
 
 .nav-icons img {
   width: 24px;
@@ -115,6 +109,44 @@ th {
   cursor: pointer;
 }
 
+/* ✅ NEW SEARCH STYLES */
+.search-container {
+  display: inline-flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+  width: 40px;
+  overflow: hidden;
+}
+
+.search-container.search-open {
+  width: 250px;
+}
+
+.search-icon {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  padding: 0 10px;
+  width: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.search-input.visible {
+  width: 180px;
+  opacity: 1;
+}
 
 /* Overlay background */
 .overlay {
@@ -218,8 +250,6 @@ th {
   }
 }
 
-
-
 /* Dark overlay */
 .overlaydel {
   position: fixed;
@@ -255,29 +285,10 @@ th {
 }
 
 /* Buttons */
-.btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: 0 8px;
-  font-size: 14px;
-  transition: background 0.3s;
-}
-
 .btn.delete {
   background-color: #7030a0;
   color: white;
   margin-top: 25px;
-}
-
-/* .btn.delete:hover {
-  background-color: #c0392b;
-} */
-
-.btn.cancel {
-  background-color: #bdc3c7;
-  color: #2c3e50;
 }
 
 .btn.cancel:hover {
@@ -298,12 +309,10 @@ th {
 }
 
 .rolebutton {
-  margin-left: 800%;
   padding: 8px;
   border-radius: 10px;
   height: 35px;
   width: 70px;
-
 }
 
 .user-data select {
@@ -320,3 +329,59 @@ th {
   cursor: pointer;
 }
 
+
+
+
+
+
+
+/* 20-01-2026 */
+
+
+/* Navigation container for buttons */
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Base button styles (converted from .events) */
+.nav-button {
+  position: relative;
+  padding: 6px 18px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.nav-button:hover {
+  background-color: #e6e8f0;
+  color: #333;
+}
+
+/* Active state */
+.nav-button.active {
+  background-color: #ffffff;
+  color: #7030a0;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Bottom indicator line (same as events) */
+.nav-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 15%;
+  width: 70%;
+  height: 3px;
+  background-color: #af77da;
+  border-radius: 2px;
+}

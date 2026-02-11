@@ -33,3 +33,189 @@
   height: 24px;
   cursor: pointer;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* search */
+
+
+
+
+
+
+.events-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+
+
+
+.search-input {
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  margin-right: 0;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: linear-gradient(to bottom, #ffffff, #f3f4f6);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 2px 6px rgba(0,0,0,0.12);
+
+  transition: all 0.35s ease;
+  overflow: hidden;
+}
+.search-container.open .search-input {
+  width: 260px;
+  opacity: 1;
+  padding: 8px 12px;
+  margin-right: 8px;
+}
+.icon-img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.icon-img:hover {
+  transform: scale(1.1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* 9-2-26 */
+
+
+.rule-table-wrapper {
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 5px;
+}
+
+.rule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.rule-table thead th {
+  text-align: left;
+  font-size: 14px;
+  color: #555;
+  padding: 12px 10px;
+  background: #f8f8f8;
+}
+
+.rule-table tbody td {
+  padding: 14px 10px;
+  font-size: 14px;
+  color: #333;
+  border-top: 1px solid #eee;
+}
+
+/* ---------- Toggle Switch ---------- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.switch input:checked + .slider {
+  background: linear-gradient(90deg, #9b4dff, #4a6cf7);
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* ---------- Action Buttons ---------- */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #9b4dff;
+  background: transparent;
+  color: #9b4dff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: #f3e9ff;
+}
+
+.icon-btn.delete {
+  border-color: #ff4d6d;
+  color: #ff4d6d;
+}
+
+.icon-btn.delete:hover {
+  background: #ffe9ee;
+}

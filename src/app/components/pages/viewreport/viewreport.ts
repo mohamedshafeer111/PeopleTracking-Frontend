@@ -57,31 +57,51 @@ totalRecords: number = 0;
 
 
 
-ngOnInit(): void {
+// ngOnInit(): void {
     
+//   this.reportId = this.route.snapshot.paramMap.get("id")!;
+//   console.log("📄 Viewing report ID:", this.reportId);
+
+//   this.api.getReportByID(this.reportId, 1, 100).subscribe({
+//     next: (res: any) => {
+//       console.log("🔍 API RESPONSE:", res);
+
+//       if (res) {
+//         this.reportData = res.report;      // <-- Report meta data
+//         this.visits = res.visits || [];    // <-- Visit list (IMPORTANT!)
+//       }
+
+//       this.cdr.detectChanges();
+//       this.loadReport();
+//     },
+//     error: err => {
+//       console.error("❌ Error:", err);
+//       alert("Report not found.");
+//     }
+//   });
+// }
+
+
+ngOnInit(): void {
   this.reportId = this.route.snapshot.paramMap.get("id")!;
   console.log("📄 Viewing report ID:", this.reportId);
 
-  this.api.getReportByID(this.reportId, 1, 100).subscribe({
+  // Load report metadata first
+  this.api.getReportByID(this.reportId, 1, 1).subscribe({
     next: (res: any) => {
-      console.log("🔍 API RESPONSE:", res);
-
-      if (res) {
-        this.reportData = res.report;      // <-- Report meta data
-        this.visits = res.visits || [];    // <-- Visit list (IMPORTANT!)
-      }
-
+      console.log("🔍 Report Meta Response:", res);
+      this.reportData = res.report;
       this.cdr.detectChanges();
-      this.loadReport();
+
+      // Then load asset live summary
+      this.loadAssetLiveSummary();
     },
     error: err => {
-      console.error("❌ Error:", err);
+      console.error("❌ Error loading report:", err);
       alert("Report not found.");
     }
   });
 }
-
-
 
 
 
@@ -128,20 +148,27 @@ loadReport() {
 
 changePageSize() {
   this.page = 1;
-  this.loadReport();
+  // this.loadReport();
+    this.loadAssetLiveSummary();
 }
 
 nextPage() {
   if ((this.page * this.pageSize) < this.totalRecords) {
     this.page++;
-    this.loadReport();
+      // this.loadReport();
+  this.loadAssetLiveSummary();
   }
 }
+
+
+
+
 
 prevPage() {
   if (this.page > 1) {
     this.page--;
-    this.loadReport();
+    // this.loadReport();
+     this.loadAssetLiveSummary();
   }
 }
 
@@ -310,18 +337,80 @@ prevPage() {
 
 
 
+// async loadAll() {
+//   const res: any = await this.api.getReportByID(this.reportId, 1, 1000000).toPromise();
+//   this.reportData = res.report;
+//   this.visits = res.visits;
+// }
 async loadAll() {
-  const res: any = await this.api.getReportByID(this.reportId, 1, 1000000).toPromise();
-  this.reportData = res.report;
-  this.visits = res.visits;
+  try {
+    const res: any = await this.api.getAssetLiveSummary(this.reportId, 1, 1000000).toPromise();
+    
+    if (Array.isArray(res)) {
+      this.visits = res;
+    } else {
+      this.visits = res.assets || res.data || res.results || [];
+    }
+    
+    console.log("📥 Downloaded all assets:", this.visits.length);
+  } catch (error) {
+    console.error("❌ Error loading all assets:", error);
+    throw error;
+  }
 }
 
 
 
 
+// async onDownloadClick() {
+
+//   await this.loadAll();
+
+//   const wb = XLSX.utils.book_new();
+  
+//   const wsData = [
+//     [`Report Name: ${this.reportData.reportName}`],
+//     [`Start Time: ${new Date(this.reportData.startTime).toLocaleString()}`],
+//     [`End Time: ${new Date(this.reportData.endTime).toLocaleString()}`],
+//     [`Total Visits: ${this.visits.length}`],
+//     [],  // blank row
+//     ["S.No", "BLE Tag ID", "Zone ID", "Check-In Time", "Check-Out Time", "Time Spent (mins)"]
+//   ];
+
+//   this.visits.forEach((v: any, i: number) => {
+//     const checkIn = new Date(v.checkInTime);
+//     const checkOut = new Date(v.checkOutTime);
+//     const dur = ((checkOut.getTime() - checkIn.getTime()) / 60000).toFixed(2);
+
+//     wsData.push([
+//       i + 1,
+//       v.bleTagId,
+//       v.zoneId,
+//       checkIn.toLocaleString(),
+//       checkOut.toLocaleString(),
+//       dur
+//     ]);
+//   });
+
+//   const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+//   // Optional: merge first header row A1:F1
+//   ws['!merges'] = [
+//     { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }
+//   ];
+
+//   XLSX.utils.book_append_sheet(wb, ws, 'Report');
+
+//   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+//   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `${this.reportData.reportName}.xlsx`);
+// }
+
+
+
+// 9-2-2026
 
 async onDownloadClick() {
-
   await this.loadAll();
 
   const wb = XLSX.utils.book_new();
@@ -330,38 +419,72 @@ async onDownloadClick() {
     [`Report Name: ${this.reportData.reportName}`],
     [`Start Time: ${new Date(this.reportData.startTime).toLocaleString()}`],
     [`End Time: ${new Date(this.reportData.endTime).toLocaleString()}`],
-    [`Total Visits: ${this.visits.length}`],
+    [`Total Assets: ${this.visits.length}`],
     [],  // blank row
-    ["S.No", "BLE Tag ID", "Zone ID", "Check-In Time", "Check-Out Time", "Time Spent (mins)"]
+    ["S.No", "Asset Name", "Unique ID", "Project", "Department", "Category", "Brand", "Model", "Status", "Check-In Time", "Check-Out Time"]
   ];
 
   this.visits.forEach((v: any, i: number) => {
-    const checkIn = new Date(v.checkInTime);
-    const checkOut = new Date(v.checkOutTime);
-    const dur = ((checkOut.getTime() - checkIn.getTime()) / 60000).toFixed(2);
+    const checkIn = v.checkInTime ? new Date(v.checkInTime).toLocaleString() : '—';
+    const checkOut = v.checkOutTime ? new Date(v.checkOutTime).toLocaleString() : '—';
 
     wsData.push([
       i + 1,
-      v.bleTagId,
-      v.zoneId,
-      checkIn.toLocaleString(),
-      checkOut.toLocaleString(),
-      dur
+      v.assetName || '—',
+      v.uniqueId || '—',
+      v.projectName || '—',
+      v.department || '—',
+      v.mainCategory || '—',
+      v.brand || '—',
+      v.model || '—',
+      v.status || '—',
+      checkIn,
+      checkOut
     ]);
   });
 
   const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }];
 
-  // Optional: merge first header row A1:F1
-  ws['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }
-  ];
-
-  XLSX.utils.book_append_sheet(wb, ws, 'Report');
+  XLSX.utils.book_append_sheet(wb, ws, 'Asset Report');
 
   const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
   saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `${this.reportData.reportName}.xlsx`);
+}
+
+
+
+
+
+// 9-2-2026
+
+
+loadAssetLiveSummary() {
+  console.log("🔵 Loading asset summary for reportId:", this.reportId);
+  
+  this.api.getAssetLiveSummary(this.reportId, this.page, this.pageSize)
+    .subscribe({
+      next: (res: any) => {
+        console.log("🟢 Asset Live Summary Response:", res);
+
+        // The response is directly an array
+        if (Array.isArray(res)) {
+          this.visits = res;
+          this.totalRecords = res.length;
+        } else {
+          // In case the response has a wrapper object
+          this.visits = res.assets || res.data || res.results || [];
+          this.totalRecords = res.totalRecords || res.total || this.visits.length;
+        }
+
+        console.log("✅ Assets loaded:", this.visits.length);
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.error("❌ Asset Summary Error:", err);
+        alert("Failed to load asset summary.");
+      }
+    });
 }
 
 

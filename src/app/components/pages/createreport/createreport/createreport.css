@@ -110,3 +110,65 @@ tbody tr {
 td, th {
   padding: 10px 12px; /* adjust padding as needed */
 }
+
+
+
+
+
+.column-icon {
+  width: 22px;
+  cursor: pointer;
+}
+
+.column-popup {
+  position: absolute;
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  z-index: 10;
+}
+
+
+
+
+
+
+
+
+
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;           /* space between icons */
+  justify-content: center;
+
+  /* margin-left: -10px;  */
+}
+
+.action-icon {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.action-icon:hover {
+  transform: scale(1.2); /* slight zoom */
+  opacity: 0.8;
+}
+
+.action-icon:active {
+  transform: scale(1.05);
+}
+
+td.action-buttons {
+  min-width: 110px;   /* keeps column width stable */
+}
+
+
+.action-buttons {
+  justify-content: flex-start;
+}

@@ -811,17 +811,36 @@ export class Project implements OnInit {
   //building summary
 
   // Store building per area
-  buildingByArea: { [areaId: string]: any[] } = {};
+  // buildingByArea: { [areaId: string]: any[] } = {};
 
   expandedArea: Set<string> = new Set(); // track open dropdowns
 
+  // toggleArea(areaId: string) {
+  //   if (this.expandedArea.has(areaId)) {
+  //     // Collapse
+  //     this.expandedArea.delete(areaId);
+  //   } else {
+  //     // Expand + load buildings
+  //     this.expandedArea.add(areaId);
+  //     this.loadBuilding(areaId);
+  //   }
+  // }
+
+
+  buildingByArea: { [key: string]: any[] } = {};
+
   toggleArea(areaId: string) {
     if (this.expandedArea.has(areaId)) {
-      // Collapse
       this.expandedArea.delete(areaId);
     } else {
-      // Expand + load buildings
       this.expandedArea.add(areaId);
+
+      // 🔥 Initialize empty arrays for both zones and buildings
+      this.zoneByArea[areaId] = [];
+      this.buildingByArea[areaId] = [];
+
+      // Load both zones and buildings for this area
+      this.getAreaBasedZone(areaId);
       this.loadBuilding(areaId);
     }
   }
@@ -830,26 +849,41 @@ export class Project implements OnInit {
 
 
 
-  loadBuilding(areaId: string) {
-    // toggle open/close
-    if (this.expandedArea.has(areaId)) {
-      this.expandedArea.delete(areaId);
-      return;
-    }
 
+  // loadBuilding(areaId: string) {
+  //   // toggle open/close
+  //   if (this.expandedArea.has(areaId)) {
+  //     this.expandedArea.delete(areaId);
+  //     return;
+  //   }
+
+  //   this.role.getBuilding(areaId).subscribe({
+  //     next: (res: any) => {
+  //       // ✅ assign areas of this country
+  //       this.buildingByArea[areaId] = Array.isArray(res) ? res : [];
+
+  //       this.expandedArea.add(areaId);
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: () => {
+  //       console.log("Error loading building");
+  //     }
+  //   });
+  // }
+
+  loadBuilding(areaId: string) {
     this.role.getBuilding(areaId).subscribe({
       next: (res: any) => {
-        // ✅ assign areas of this country
-        this.buildingByArea[areaId] = Array.isArray(res) ? res : [];
-
-        this.expandedArea.add(areaId);
+        this.buildingByArea[areaId] = res;
         this.cdr.detectChanges();
       },
-      error: () => {
-        console.log("Error loading building");
+      error: (error) => {
+        console.log('Error loading buildings for area', error);
+        this.buildingByArea[areaId] = [];
       }
     });
   }
+
 
 
 
@@ -1727,7 +1761,7 @@ export class Project implements OnInit {
       }
     });
   }
- 
+
 
 
 
@@ -1904,36 +1938,162 @@ export class Project implements OnInit {
 
 
 
-todayString = new Date().toISOString().split('T')[0];
-validateWeeks() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  todayString = new Date().toISOString().split('T')[0];
+  validateWeeks() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const start = new Date(this.createproject.weekStart);
-  const end = new Date(this.createproject.weekEnd);
+    const start = new Date(this.createproject.weekStart);
+    const end = new Date(this.createproject.weekEnd);
 
-  if (start < today) {
-    alert("Week start cannot be earlier than today");
-    return false;
+    if (start < today) {
+      alert("Week start cannot be earlier than today");
+      return false;
+    }
+    if (end < today) {
+      alert("Week end cannot be earlier than today");
+      return false;
+    }
+    if (end < start) {
+      alert("Week end cannot be earlier than start date");
+      return false;
+    }
+
+    return true;
   }
-  if (end < today) {
-    alert("Week end cannot be earlier than today");
-    return false;
-  }
-  if (end < start) {
-    alert("Week end cannot be earlier than start date");
-    return false;
+  onSubmit() {
+    if (!this.validateWeeks()) return;
+
+    // Continue form submission
   }
 
-  return true;
-}
-onSubmit() {
-  if (!this.validateWeeks()) return;
-
-  // Continue form submission
-}
 
 
+
+
+  openCreateAreaZone: boolean = false;
+
+  zoneAreaData: any = {
+    zoneName: "",
+    description: "",
+    topZone: true,
+    priority: "",
+    status: true,
+  }
+
+
+  createAreaZone() {
+    this.role.createAreaZone(this.selectedAreaId, this.zoneAreaData).subscribe({
+      next: (res: any) => {
+        alert("Area based Zone Created Successfully");
+        this.closeAreaZone();
+
+        // reload zones
+        this.getAreaBasedZone(this.selectedAreaId);
+
+        // ensure area stays expanded
+        this.expandedArea.add(this.selectedAreaId);
+      },
+      error: () => {
+        alert("error creating zone");
+      }
+    });
+  }
+
+
+  closeAreaZone() {
+    this.openCreateAreaZone = false;
+  }
+
+  openAreaZone(areaId: string) {
+    this.selectedAreaId = areaId;
+    this.openCreateAreaZone = true;
+
+    this.zoneAreaData = {
+      zoneName: "",
+      description: "",
+      topZone: true,
+      priority: "",
+      status: true,
+    }
+  }
+
+
+  zoneByArea: { [areaId: string]: any[] } = {};
+  getAreaBasedZone(areaId: string) {
+    this.role.getAreaZone(areaId).subscribe({
+      next: (res: any) => {
+        console.log('Area Zones for', areaId, ':', res);
+        this.zoneByArea[areaId] = res;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.log('Error loading area based zones', error);
+        this.zoneByArea[areaId] = [];
+      }
+    });
+  }
+
+
+  openDeleteAreaZone: boolean = false;
+  selectedAreaBasedZoneid = "";
+
+  cancelDeleteAreaZone() {
+    this.openDeleteAreaZone = false;
+  }
+
+  openDeleteAreaZonePopup(zoneid: string) {
+    this.selectedAreaBasedZoneid = zoneid
+    this.openDeleteAreaZone = true;
+  }
+
+  deleteAreaZone() {
+    this.role.deleteAreaBasedZone(this.selectedAreaBasedZoneid).subscribe({
+      next: (res: any) => {
+        alert("Area Baes Zone Deleted Successfully");
+        this.cancelDeleteAreaZone();
+        this.getAreaBasedZone(this.selectedAreaId);
+      },
+      error: () => {
+        console.log("error deleting Area Based Zone")
+
+      }
+    })
+  }
+
+
+  openUpdateAreaZone: boolean = false;
+
+  cancelAreaZone() {
+    this.openUpdateAreaZone = false;
+  }
+
+  openUpdateAreaZonePopup(zone: any) {
+    this.selectedZoneId = zone.id;
+    this.openUpdateAreaZone = true;
+    this.zoneAreaData = {
+      zoneName: zone.zoneName,
+      description: zone.description,
+      topZone: zone.topZone,
+      priority: zone.priority,
+      status: zone.status,
+    }
+
+
+  }
+
+  updateAreaZone() {
+    this.role.updateAreaBasedZone(this.selectedZoneId, this.zoneAreaData).subscribe({
+      next: (res: any) => {
+        alert(res.message);
+        this.cancelAreaZone();
+        this.getAreaBasedZone(this.selectedAreaId);
+      },
+      error: () => {
+        alert("error updating Area Based Zone")
+      }
+    })
+  }
 
 }
 

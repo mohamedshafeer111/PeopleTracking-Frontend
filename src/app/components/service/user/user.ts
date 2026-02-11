@@ -54,4 +54,31 @@ export class User {
 
 
 
+  // 7-2-26
+
+
+
+
+
+  technologyByCount() {
+  return this.http.get(`${this.apiUrl}deviceadd/count-by-technology`);
+}
+
+
+
+
+
+getAssetByTechnology(technology: string) {
+  return this.http.get<any>(
+    `${this.apiUrl}Asset/by-technology`,
+    {
+      params: {
+        technology
+      }
+    }
+  );
+}
+
+
+
 }

@@ -84,7 +84,7 @@ export class People implements OnInit {
 
 
   constructor(private people: Peopleservice, private cdr: ChangeDetectorRef, private peopleType: Peopletype, private deviceService: Peopletype) { }
-  activeTab: string = 'person';
+  activeTab: string = 'project';
 
 
   setActive(tabName: string) {

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment.prod';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -122,7 +123,7 @@ export class Roleservice {
 
 
   //area
-  getBuilding(id: any) {
+  getBuilding(id: any):Observable<any> {
     return this.http.get(`${this.apiUrl}buildings/summary?areaId=${id}`);
   }
 
@@ -245,6 +246,24 @@ export class Roleservice {
     return this.http.post(`${this.apiUrl}zonesensor/createdashboard`, {
       dashboardName: dashboardName
     });
+  }
+
+
+
+  createAreaZone(areaId:string,zoneAreaData:any){
+    return this.http.post(`${this.apiUrl}zones/createZonebasedonArea?areaId=${areaId}`,zoneAreaData)
+  }
+
+  getAreaZone(id:string):Observable<any>{
+    return this.http.get(`${this.apiUrl}zones/zone1/${id}`)
+  }
+
+  deleteAreaBasedZone(id:string){
+    return this.http.delete(`${this.apiUrl}zones/delete1/${id}`)
+  }
+
+  updateAreaBasedZone(id:string,zoneAreaData:any){
+    return this.http.put(`${this.apiUrl}zones/update1/${id}`,zoneAreaData)
   }
 
 }

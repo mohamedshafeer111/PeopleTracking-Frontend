@@ -19,12 +19,17 @@ export class Role implements OnInit {
 
   constructor(private roleService: Roleservice, private cdr: ChangeDetectorRef) { }
 
-  roles: any[] = [];
+   roles: any[] = [];
+  filteredRoles: any[] = []; // NEW
+  searchOpen = false; // NEW
+  searchTerm = ''; // NEW
+
 
   loadRole() {
     this.roleService.getRole().subscribe({
       next: (res: any) => {
         this.roles = res;
+        this.filteredRoles = [...this.roles]; // NEW
         this.cdr.detectChanges();
       },
       error: () => {
@@ -33,68 +38,43 @@ export class Role implements OnInit {
     })
   }
 
+  // NEW SEARCH METHODS
+  toggleSearch() {
+    this.searchOpen = !this.searchOpen;
+    if (!this.searchOpen) {
+      this.searchTerm = '';
+      this.filterRoles();
+    }
+  }
 
-  // createRoles = {
-  //   roleName: "",
-  //   description: ""
-  // }
+  filterRoles() {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredRoles = [...this.roles];
+      return;
+    }
+    this.filteredRoles = this.roles.filter(role =>
+      role.roleName.toLowerCase().includes(term) ||
+      role.description.toLowerCase().includes(term)
+    );
+  }
 
-
-
-  // openCreateRole = false;
-
-  // openCreateRolePopup() {
-  //   this.createRoles = {
-  //     roleName: "",
-  //     description: ""
-  //   }
-  //   this.openCreateRole = true;
-
-  // }
-
-  // closeCreateRolePopup() {
-  //   this.openCreateRole = false;
-  // }
-
-  // createRole() {
-  //   this.roleService.createNewRole(this.createRoles).subscribe({
-  //     next: (res: any) => {
-  //       alert(res.message || 'Role created successfully');
-  //       this.closeCreateRolePopup();
-  //       this.loadRole();
-  //     },
-  //     error: () => {
-  //       alert("error creating role")
-  //     }
-  //   })
-  // }
-
-
-
-
-  //Edit
-
-
+  // Edit
   editRoles = {
     roleName: "",
     description: ""
-
   }
 
   selectedRoleId: string = '';
-
-
   openEditRole = false;
 
-  openeditRolePopup(role:any) {
-
-    this.selectedRoleId =role.id;
+  openeditRolePopup(role: any) {
+    this.selectedRoleId = role.id;
     this.editRoles = {
-      roleName:role.roleName,
-      description:role.description
+      roleName: role.roleName,
+      description: role.description
     }
     this.openEditRole = true;
-
   }
 
   closeEditRolePopup() {
@@ -102,7 +82,7 @@ export class Role implements OnInit {
   }
 
   updateRole() {
-    this.roleService.updateRole(this.editRoles,this.selectedRoleId).subscribe({
+    this.roleService.updateRole(this.editRoles, this.selectedRoleId).subscribe({
       next: (res: any) => {
         alert(res.message || 'Role Updated successfully');
         this.closeEditRolePopup();
@@ -114,22 +94,12 @@ export class Role implements OnInit {
     })
   }
 
-
-
-  // delete user
-
-
-
+  // Delete role
   openDeleteRole = false;
 
-  
-
-
   openDeleteRolePopup(role: any) {
-    this.selectedRoleId=role.id;
-    
+    this.selectedRoleId = role.id;
     this.openDeleteRole = true;
-
   }
 
   closeDeleteRolePopup() {
@@ -148,11 +118,4 @@ export class Role implements OnInit {
       }
     })
   }
-  
-  
-
 }
-
-
-
-

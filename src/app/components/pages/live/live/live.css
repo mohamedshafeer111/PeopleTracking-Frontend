@@ -137,7 +137,7 @@ label {
   font-size: 12px;
   display: flex;
   align-items: center;
- 
+
 }
 
 /* Hide native radio */
@@ -400,8 +400,8 @@ label {
 /* Floating vertical icon bar on top-left of map */
 .map-floating-icons {
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: 85px;
+  left: 10px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -607,7 +607,8 @@ p {
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-  color: #7030a0; /* theme color */
+  color: #7030a0;
+  /* theme color */
 }
 
 .control-group label {
@@ -636,7 +637,8 @@ p {
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-  color: #7030a0; /* theme color */
+  color: #7030a0;
+  /* theme color */
 }
 
 
@@ -659,84 +661,492 @@ p {
 
 
 .map-controls {
-    display: flex;
-    flex-wrap: wrap;              /* Allow wrapping when needed */
-    align-items: center;          /* Vertically center elements */
-    gap: 12px;                    /* Space between items */
-    padding: 10px;
-    background: #ffffff;
-    border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  /* Allow wrapping when needed */
+  align-items: center;
+  /* Vertically center elements */
+  gap: 12px;
+  /* Space between items */
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px;
 }
 
 /* All selects same style */
 .map-controls select {
-    padding: 6px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    outline: none;
+  /* padding: 6px 10px; */
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-weight: 400;
 }
 
 /* Label styling */
 .map-controls label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-right: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 5px;
 }
 
 /* Hours group container */
 .hours-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 /* Hour Buttons */
 .hour-button {
-    padding: 4px 10px;
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    background: #f5f5f5;
+  padding: 4px 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  background: #f5f5f5;
 }
 
 .hour-button.active {
-    background: #7030a0;
-    color: white;
-    border-color: #7030a0;
+  background: #7030a0;
+  color: white;
+  border-color: #7030a0;
 }
 
 /* Make entire control bar stay on one line on medium screens */
 @media (max-width: 1100px) {
-    .map-controls {
-        flex-wrap: wrap; /* still allows wrapping, but keeps items compact */
-        gap: 8px;
-    }
+  .map-controls {
+    flex-wrap: wrap;
+    /* still allows wrapping, but keeps items compact */
+    gap: 8px;
+  }
 
-    .map-controls select {
-        width: 180px;   /* reduce width on laptops */
-    }
+  .map-controls select {
+    width: 180px;
+    /* reduce width on laptops */
+  }
 }
 
 /* Tablet & small laptop screens */
 @media (max-width: 900px) {
-    .map-controls select {
-        width: 160px;
-    }
+  .map-controls select {
+    width: 160px;
+  }
 }
 
 /* Mobile fallback */
 @media (max-width: 600px) {
-    .map-controls {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .map-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .map-controls select {
-        width: 100%;
-    }
+  .map-controls select {
+    width: 100%;
+  }
+}
+
+#map {
+  position: relative;
+}
+
+.device-marker {
+  position: absolute;
+  z-index: 1000;
+  transform: translate(-50%, -100%);
 }
 
 
+
+.leaflet-tooltip.device-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #000;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0;
+  white-space: nowrap;
+}
+
+
+
+.map-floating-icons {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  border: 2px solid rgb(185, 183, 183);
+  border-radius: 1px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+
+
+
+/* polygen enable disable color */
+
+/* .color-wrapper.active {
+    border: 2px solid #aa76d1ab;
+    border-radius: 4
+/* new */
+
+
+
+.custom-dropdown {
+  position: relative;
+  width: 200px;
+}
+
+.dropdown-header {
+  padding: 3px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dropdown-header:hover {
+  border-color: #999;
+}
+
+.dropdown-header img {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.3s;
+}
+
+.dropdown-header img.rotate {
+  transform: rotate(180deg);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.checkbox-item:hover {
+  background: #f0f0f0;
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.checkbox-item span {
+  flex: 1;
+  user-select: none;
+}
+
+
+
+
+
+
+.apply-buton {
+  background-color: #e8e7e9;
+  border-radius: 8px;
+  padding: 6px 6px;
+
+  border: none;
+  /* 🔴 removes black border */
+  outline: none;
+  /* 🔴 removes focus ring */
+  box-shadow: none;
+  /* 🔴 removes active shadow */
+
+  cursor: pointer;
+}
+
+/* remove jump on click */
+.apply-buton:focus,
+.apply-buton:active {
+  outline: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.container {
+  position: relative;
+}
+
+.apply-buton {
+  cursor: pointer;
+  /* box-shadow: 0 8px 20px rgba(96, 72, 114, 0.35); */
+}
+
+.apply-buton:hover {
+  background-color: #5e2687;
+  color: white;
+}
+
+
+
+
+
+/* outer purple glow */
+.device-ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(112, 48, 160, 0.15);
+  border: 2px solid #7030a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(112, 48, 160, 0.6);
+}
+
+/* inner icon */
+.device-core {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #7030a0;
+}
+
+/* .asset-popup {
+  position: absolute;
+  top: 400px;
+  right: 500px;
+  width: 260px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  padding: 12px;
+  z-index: 1000;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  position: relative;
+  padding: 6px 10px;
+ 
+}
+
+.header-title {
+  text-align: center;
+  font-size: 14px;
+
+}
+
+.close-btn {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+ 
+}
+
+.close-btn:hover {
+  color: purple;
+} */
+
+
+/* Asset Popup Container */
+.asset-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  max-width: 90%;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+/* Popup Header */
+.asset-popup .popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #7030a0;
+  color: #fff;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Close Button */
+.asset-popup .close-btn {
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.asset-popup .close-btn:hover {
+  transform: rotate(90deg);
+  color: #ff4d4d;
+}
+
+/* Popup Body */
+.asset-popup .popup-body {
+  padding: 20px;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.asset-popup .popup-body p {
+  margin: 8px 0;
+}
+
+/* Highlight key details */
+.asset-popup .popup-body p:first-child {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.asset-popup .popup-body p span {
+  font-weight: 500;
+  color: #555;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+
+.popup-table-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  max-width: 1200px;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
+
+.asset-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #7030a0;
+  /* header color */
+  color: #fff;
+  padding: 0px 8px;
+  font-size: 14px;
+}
+
+.asset-close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.asset-close-btn:hover {
+  transform: scale(1.2);
+}
+
+.asset-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-y: auto;
+  /* display: block; */
+  max-height: 70vh;
+  z-index: 2001;
+}
+
+.asset-table thead {
+  background-color: #f3f3f3;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.asset-table th,
+.asset-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.asset-table th {
+  font-weight: 600;
+  color: #333;
+}
+
+.asset-table tbody tr:hover {
+  background-color: #f0e6ff;
+  /* subtle highlight */
+  cursor: default;
+}
+
+.asset-table td {
+  color: #555;
+  white-space: nowrap;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 10-2-26 */
 

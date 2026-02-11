@@ -1,9 +1,10 @@
 <nav class="navbar">
   <h3>People List</h3>
   <div class="tabs">
-    <button class="aone" routerLink="/people" routerLinkActive="active">People</button>
+    <!-- <button class="aone" routerLink="/people" routerLinkActive="active">People</button> -->
     <button class="aone" routerLink="/project" routerLinkActive="active">Project</button>
     <button class="aone" routerLink="/devices" routerLinkActive="active">Devices</button>
+     <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button>
   </div>
 </nav>
 
@@ -11,7 +12,7 @@
 
 
 
-<div class="sub-tabs">
+<!-- <div class="sub-tabs">
   <div class="tabs-left">
     <button class="tab" [class.active]="activeTab==='person'" (click)="setActive('person')">Person</button>
     <button class="tab" [class.active]="activeTab==='Peopletype'" (click)="setActive('Peopletype')">People type</button>
@@ -27,16 +28,16 @@
 
 
   </div>
-</div>
+</div> -->
 
 
 
 
 
-<nav class="navbarSub" *ngIf="activeTab==='person'">
+<!-- <nav class="navbarSub" *ngIf="activeTab==='person'">
   <h3>Person</h3>
 
-  <!-- Main component template (e.g., app.component.html) -->
+
   <div class="date-range-wrapper">
     <div class="date-fields-bordered">
       <label>Start Date</label>
@@ -59,17 +60,17 @@
     <img src="assets/download.png" alt="download">
     <img src="assets/refresh.png" alt="Refresh" (click)="loadPerson()">
   </div>
-</nav>
+</nav> -->
 
-<!-- Place this OUTSIDE the nav -->
-<div *ngFor="let person of filteredPersonList">
+
+<!-- <div *ngFor="let person of filteredPersonList">
   {{ person.name }}
-</div>
+</div> -->
 
 
 
-<!-- Person Table -->
-<div *ngIf="activeTab==='person'" class="table-container">
+
+<!-- <div *ngIf="activeTab==='person'" class="table-container">
   <table>
     <thead>
       <tr>
@@ -91,7 +92,6 @@
       </tr>
     </thead>
     <tbody>
-      <!-- <tr *ngFor="let person of personList"> -->
       <tr *ngFor="let person of filteredPersonList">
         <td>{{ person.firstName }}</td>
         <td>{{ person.lastName }}</td>
@@ -139,11 +139,11 @@
 
 
 
-</div>
+</div> -->
 
 
 
-<!-- adding user -->
+
 
 <div class="overlay" *ngIf="openAddPerson">
   <div class="popup">
@@ -205,7 +205,7 @@
 
 
 
-<!-- update user -->
+
 
 <div class="overlay" *ngIf="openUpdatePerson">
   <div class="popup">
