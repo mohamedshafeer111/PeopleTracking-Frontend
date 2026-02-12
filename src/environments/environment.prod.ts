@@ -8,7 +8,7 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://neither-wake-spectrum-updating.trycloudflare.com/api',
- wsUrl: 'wss://neither-wake-spectrum-updating.trycloudflare.com/ws/ZoneCount'
-
+  apiUrl: 'https://perry-courts-grades-favor.trycloudflare.com/api',
+  wsUrl: 'wss://perry-courts-grades-favor.trycloudflare.com/ws/ZoneCount'
 };
+
