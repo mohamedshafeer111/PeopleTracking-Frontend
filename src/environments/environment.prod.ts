@@ -8,7 +8,7 @@
 
 export const environment = {
   production: true,
-     apiUrl: 'https://arkansas-modern-clarke-bookmarks.trycloudflare.com/api',
+     apiUrl: 'https://arkansas-modern-clarke-bookmarks.trycloudflare.com/api/',
   wsUrl: 'wss://arkansas-modern-clarke-bookmarks.trycloudflare.com/ws/ZoneCount'
 };
 

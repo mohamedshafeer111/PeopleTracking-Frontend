@@ -15,15 +15,15 @@ export class Widget {
   // private apiUrl = 'http://172.16.100.26:5202/api/PersonalDashboard';
 
   createDashboard(payload: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/PersonalDashboard`, payload);
+    return this.http.post(`${this.baseUrl}PersonalDashboard`, payload);
   }
 
   getPersonalDashboard(dashboardId: string) {
-    return this.http.get(`${this.baseUrl}/PersonalDashboard/${dashboardId}`);
+    return this.http.get(`${this.baseUrl}PersonalDashboard/${dashboardId}`);
   }
 
    deleteClockWidget(dashboardId:string,personalWidgetId:string):Observable<any>{
-    return this.http.delete(`${this.baseUrl}/PersonalDashboard/${dashboardId}/widgets/${personalWidgetId}`)
+    return this.http.delete(`${this.baseUrl}PersonalDashboard/${dashboardId}/widgets/${personalWidgetId}`)
 
    }
 
