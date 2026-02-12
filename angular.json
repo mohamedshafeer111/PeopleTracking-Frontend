@@ -13,17 +13,16 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "node_modules/leaflet/dist/leaflet.css",
-              "src/styles.css"
-            ]
-          },
+  "index": "src/index.html",
+
+  "tsConfig": "tsconfig.app.json",
+  "assets": ["src/favicon.ico", "src/assets"],
+  "styles": [
+    "node_modules/leaflet/dist/leaflet.css",
+    "src/styles.css"
+  ]
+},
+
           "configurations": {
             "production": {
               "budgets": [

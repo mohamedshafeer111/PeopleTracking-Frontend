@@ -8,5 +8,5 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://neither-wake-spectrum-updating.trycloudflare.com'
+ apiUrl: 'https://neither-wake-spectrum-updating.trycloudflare.com/api'
 };
