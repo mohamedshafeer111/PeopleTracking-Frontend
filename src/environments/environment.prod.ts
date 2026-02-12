@@ -9,5 +9,6 @@
 export const environment = {
   production: true,
   apiUrl: 'https://neither-wake-spectrum-updating.trycloudflare.com/api',
-  wsUrl: 'ws://neither-wake-spectrum-updating.trycloudflare.com/ws/ZoneCount'
+ wsUrl: 'wss://neither-wake-spectrum-updating.trycloudflare.com/ws/ZoneCount'
+
 };
