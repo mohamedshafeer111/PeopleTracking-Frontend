@@ -8,7 +8,7 @@
 
 export const environment = {
   production: true,
-     apiUrl: 'https://second-autos-seek-gibraltar.trycloudflare.com/api/',
+     apiUrl: 'https://acres-interval-reuters-simon.trycloudflare.com/api/',
   wsUrl: 'wss://arkansas-modern-clarke-bookmarks.trycloudflare.com/ws/ZoneCount'
 };
 
