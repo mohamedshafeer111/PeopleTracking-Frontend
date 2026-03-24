@@ -8,7 +8,7 @@
 
 export const environment = {
   production: true,
-     apiUrl: ' https://double-impact-poultry-quantities.trycloudflare.com/api/',
+     apiUrl: 'https://minimize-especially-looks-consoles.trycloudflare.com/api/',
   wsUrl: 'wss://arkansas-modern-clarke-bookmarks.trycloudflare.com/ws/ZoneCount'
 };
 
