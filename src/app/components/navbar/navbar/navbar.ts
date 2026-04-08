@@ -1,23 +1,94 @@
 import { CommonModule } from '@angular/common';
 import { Component,ElementRef,HostListener } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+
+import { Permission } from '../../service/permission/permission';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterModule,CommonModule],
+  imports: [RouterModule,CommonModule,RouterOutlet],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
 export class Navbar {
    userid: string = '';
 
+
+
+
+   // Permission flags
+  canViewTracking = false;
+  canViewEvents = false;
+  canViewReports = false;
+  canViewProcessAutomation = false;
+  canViewAdministration = false;
+  canViewDashboard = false;
+
+
+  
+
   ngOnInit() {
     this.userid = localStorage.getItem('userid') || '';
+
+
+
+// Load permissions fresh from localStorage
+    this.permission.loadPermissions();
+    this.applyPermissions();
+
+      if (this.isTrackingActive()) {
+    this.isTrackingMenuOpen = true;
+  }
+  if (this.isAdminActive()) {
+    this.isAdminMenuOpen = true;
   }
 
-  menuOpen = false;
 
-constructor(private router: Router, private eRef: ElementRef) {}
+  }
+
+
+   applyPermissions() {
+    this.canViewDashboard = this.permission.hasPermission('Dashboard');
+    this.canViewTracking = this.permission.hasPermission('Tracking');
+    this.canViewEvents = this.permission.hasPermission('Events');
+    this.canViewReports = this.permission.hasPermission('Reports');
+    this.canViewProcessAutomation = this.permission.hasPermission('Process & Automation');
+    this.canViewAdministration = this.permission.hasPermission('Administration');
+  }
+
+
+
+
+
+
+constructor(private router: Router, private eRef: ElementRef,   private permission: Permission) {}
+
+
+
+  menuOpen = false;
+// isTrackingActive(): boolean {
+//   return this.router.url.includes('/live') || this.router.url.includes('/historicals');
+// }
+isTrackingActive(): boolean {
+    const url = this.router.url;
+    console.log('Current URL:', url); // Debug logy
+    return url.includes('/live') || url.includes('/historicals');
+  }
+// isAdminActive(): boolean {
+//   return this.router.url.includes('/people') || 
+//          this.router.url.includes('/licensemanagement') || 
+//          this.router.url.includes('/user-management');
+// }
+  isAdminActive(): boolean {
+    const url = this.router.url;
+    console.log('Current URL:', url); // Debug log
+    return url.includes('/people') || 
+           url.includes('/licensemanagement') || 
+           url.includes('/user-management');
+  }
+
+
+
 
 
   isAdminMenuOpen = false;
@@ -148,6 +219,32 @@ logout() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+closeAllSubmenus() {
+  this.isTrackingMenuOpen = false;
+  this.isAdminMenuOpen = false;
+  this.isLiveOpen = false;
+  this.isHistoricalsOpen = false;
+}
 
 
 

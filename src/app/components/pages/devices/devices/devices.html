@@ -7,7 +7,7 @@
     <!-- <button class="aone" routerLink="/people" routerLinkActive="active">People</button> -->
     <button class="aone" routerLink="/project" routerLinkActive="active">Project</button>
     <button class="aone" routerLink="/devices" routerLinkActive="active">Devices</button>
-    <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button>
+    <!-- <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button> -->
   </div>
 </nav>
 <!-- Device / Device Type sub-tabs -->
@@ -26,11 +26,17 @@
 
 <nav class="navbarSub" *ngIf="activeTab==='device'">
   <h3>Device</h3>
+  <input 
+  type="text" 
+  [(ngModel)]="searchText" 
+  placeholder="Search device..." 
+  class="search-box"
+/>
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreateDevicePopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="loadDevices()">
+    <img src="assets/add.png" alt="Add" (click)="openCreateDevicePopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="loadDevices()" class="nav-icon upload-icon">
   </div>
 </nav>
 
@@ -59,7 +65,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let device of deviceList">
+      <tr *ngFor="let device of deviceList | device:searchText">
         <td>{{ device.deviceType }}</td>
         <td>{{ device.deviceName }}</td>
         <td>{{ device.uniqueId }}</td>
@@ -544,10 +550,10 @@
 <nav class="navbarSub" *ngIf="activeTab==='deviceType'">
   <h3>Device Type</h3>
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreateDeviceTypePopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="loadDeviceTypes()">
+    <img src="assets/add.png" alt="Add" (click)="openCreateDeviceTypePopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="loadDeviceTypes()"class="nav-icon upload-icon">
   </div>
 </nav>
 <div *ngIf="activeTab==='deviceType'" class="table-container">
@@ -578,8 +584,8 @@
       </tr>
     </tbody>
   </table>
-  <div class="table-bottom-controls">
-    <!-- Page Size Selector -->
+  <!-- <div class="table-bottom-controls">
+
     <div class="page-size-selector">
       <label>Rows per page:</label>
       <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
@@ -587,13 +593,12 @@
       </select>
     </div>
 
-    <!-- Pagination Buttons -->
     <div class="pagination">
       <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
       <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
     </div>
-  </div>
+  </div> -->
 
 </div>
 
@@ -787,8 +792,8 @@
 <nav class="navbarSub" *ngIf="activeTab==='parameter'">
   <h3>Parameter</h3>
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openAddDevicePara()">
-    <img src="assets/refresh.png" alt="Refresh" (click)="loadDevices()">
+    <img src="assets/add.png" alt="Add" (click)="openAddDevicePara()" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="loadDevices()" class="nav-icon upload-icon">
   </div>
 </nav>
 

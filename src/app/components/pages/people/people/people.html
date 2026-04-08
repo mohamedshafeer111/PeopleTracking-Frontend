@@ -1,10 +1,10 @@
 <nav class="navbar">
   <h3>People List</h3>
   <div class="tabs">
-    <!-- <button class="aone" routerLink="/people" routerLinkActive="active">People</button> -->
+    <button class="aone" routerLink="/people" routerLinkActive="active">People</button>
     <button class="aone" routerLink="/project" routerLinkActive="active">Project</button>
     <button class="aone" routerLink="/devices" routerLinkActive="active">Devices</button>
-     <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button>
+     <!-- <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button> -->
   </div>
 </nav>
 
@@ -12,7 +12,7 @@
 
 
 
-<!-- <div class="sub-tabs">
+<div class="sub-tabs">
   <div class="tabs-left">
     <button class="tab" [class.active]="activeTab==='person'" (click)="setActive('person')">Person</button>
     <button class="tab" [class.active]="activeTab==='Peopletype'" (click)="setActive('Peopletype')">People type</button>
@@ -28,13 +28,13 @@
 
 
   </div>
-</div> -->
+</div>
 
 
 
 
 
-<!-- <nav class="navbarSub" *ngIf="activeTab==='person'">
+<nav class="navbarSub" *ngIf="activeTab==='person'">
   <h3>Person</h3>
 
 
@@ -55,22 +55,22 @@
     class="person-search" />
 
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreatePersonPopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="loadPerson()">
+    <img src="assets/add.png" alt="Add" (click)="openCreatePersonPopup()" class="nav-icon upload-icon" >
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="loadPerson()" class="nav-icon upload-icon">
   </div>
-</nav> -->
+</nav>
 
 
-<!-- <div *ngFor="let person of filteredPersonList">
+<div *ngFor="let person of filteredPersonList">
   {{ person.name }}
-</div> -->
+</div>
 
 
 
-
-<!-- <div *ngIf="activeTab==='person'" class="table-container">
+ 
+ <div *ngIf="activeTab==='person'" class="table-container">
   <table>
     <thead>
       <tr>
@@ -139,7 +139,7 @@
 
 
 
-</div> -->
+</div> 
 
 
 
@@ -320,10 +320,10 @@
   <input type="text" placeholder="Search..." [(ngModel)]="peopleTypeSearch" (input)="searchPeopleType()"
     class="person-searchpt" />
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreatePeopleTypePopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="Peopletype()">
+    <img src="assets/add.png" alt="Add" (click)="openCreatePeopleTypePopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="Peopletype()" class="nav-icon upload-icon">
   </div>
 </nav>
 <!-- People Table -->
@@ -480,10 +480,10 @@
   <input type="text" placeholder="Search..." [(ngModel)]="accessSearch" (input)="searchAccess()"
     class="person-search" />
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreateaccessPopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="Access()">
+    <img src="assets/add.png" alt="Add" (click)="openCreateaccessPopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="Access()" class="nav-icon upload-icon">
   </div>
 </nav>
 <!-- access table -->
@@ -723,10 +723,10 @@
   <input type="text" placeholder="Search..." [(ngModel)]="groupsSearch" (input)="searchGroups()"
     class="person-searchg" />
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreategroupsPopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="groups()">
+    <img src="assets/add.png" alt="Add" (click)="openCreategroupsPopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="groups()" class="nav-icon upload-icon">
   </div>
 </nav>
 <!-- groups Table -->
@@ -911,10 +911,10 @@
 
   <input type="text" placeholder="Search..." [(ngModel)]="tasksSearch" (input)="searchTasks()" class="person-search" />
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreateTaskPopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="tasks()">
+    <img src="assets/add.png" alt="Add" (click)="openCreateTaskPopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="tasks()" class="nav-icon upload-icon">
   </div>
 </nav>
 <!-- TaskSchedule table -->
@@ -1148,10 +1148,10 @@
   <input type="text" placeholder="Search..." [(ngModel)]="manualAttendanceSearch" (input)="searchManualAttendance()"
     class="person-searchma" />
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreateManualAttendancePopup()">
-    <img src="assets/upload.png" alt="upload">
-    <img src="assets/download.png" alt="download">
-    <img src="assets/refresh.png" alt="Refresh" (click)="getManualAttendance()">
+    <img src="assets/add.png" alt="Add" (click)="openCreateManualAttendancePopup()" class="nav-icon upload-icon">
+    <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
+    <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="getManualAttendance()"class="nav-icon upload-icon">
   </div>
 </nav>
 

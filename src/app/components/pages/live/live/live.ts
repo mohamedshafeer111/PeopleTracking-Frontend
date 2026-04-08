@@ -105,17 +105,6 @@ export class Live implements OnInit, AfterViewInit {
       .openPopup();
   }
 
-  // ngAfterViewInit(): void {
-  //   if (typeof window === 'undefined') return; // SSR safe
-
-  //   this.map = L.map('map').setView([13.0827, 80.2707], 13);
-
-  //   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  //     maxZoom: 19
-  //   }).addTo(this.map);
-
-  //   this.initializeCanvas();
-  // }
   ngAfterViewInit(): void {
 
 
@@ -210,31 +199,31 @@ export class Live implements OnInit, AfterViewInit {
     building?: { lat: number, lng: number, zoom: number, name?: string };
   } = {};
 
+
   // loadCountries(projectId: string) {
   //   this.selectedProjectId = projectId;
+
+  //   // ✅ If already expanded, collapse it
   //   if (this.expandedProjects.has(projectId)) {
   //     this.expandedProjects.delete(projectId);
-
-  //     // 🧭 Move back to last project location
-  //     const loc = this.locationCache.project;
-  //     if (loc) this.moveToLocation(loc.lat, loc.lng, loc.zoom, loc.name);
   //     return;
   //   }
 
+  //   // ✅ 1. FIRST: Load project on map
+  //   const project = this.projects.find(p => p.id === projectId);
+  //   if (project?.latitude && project?.longitude) {
+  //     this.moveToLocation(
+  //       project.latitude,
+  //       project.longitude,
+  //       project.zoomLevel || 8,
+  //       project.projectName
+  //     );
+  //   }
+
+  //   // ✅ 2. THEN: Expand countries
   //   this.role.countryGetById(projectId).subscribe({
   //     next: (res: any) => {
   //       this.countriesByProject[projectId] = Array.isArray(res) ? res : [];
-
-  //       if (res?.length > 0) {
-  //         const { latitude, longitude, zoomLevel, countryName } = res[0];
-  //         this.locationCache.country = { lat: latitude, lng: longitude, zoom: zoomLevel || 10, name: countryName };
-  //         this.moveToLocation(latitude, longitude, zoomLevel || 10, countryName);
-  //       }
-
-  //       // Save project location if not already
-  //       if (!this.locationCache.project && res?.length > 0) {
-  //         this.locationCache.project = { lat: res[0].latitude, lng: res[0].longitude, zoom: res[0].zoomLevel || 8, name: res[0].countryName };
-  //       }
 
   //       this.activeLevel = 'project';
   //       this.devicesGetByProjectId(projectId);
@@ -247,34 +236,51 @@ export class Live implements OnInit, AfterViewInit {
   // }
 
 
+
+
+  // Cache areas per country
+
+
   loadCountries(projectId: string) {
     this.selectedProjectId = projectId;
 
-    // ✅ If already expanded, collapse it
     if (this.expandedProjects.has(projectId)) {
       this.expandedProjects.delete(projectId);
+
+      // ✅ Move map back to project location
+      const project = this.projects.find(p => p.id === projectId);
+      if (project?.latitude && project?.longitude) {
+        this.moveToLocation(project.latitude, project.longitude, project.zoomLevel || 8, project.projectName);
+      }
+
+      // ✅ Reset all children
+      this.expandedCountry.clear();
+      this.expandedArea.clear();
+      this.expandedBuilding.clear();
+      this.expandedFloor.clear();
+      this.expandedZone.clear();
+      this.floorImage = null;
+      this.zoneImage = null;
+      this.subZoneImage = null;
+      this.polygons = [];
+      this.polygonsByZone = {};
+      this.placedDevices = [];
+      this.zoneClickAreas = [];
+      this.cdr.detectChanges();
       return;
     }
 
-    // ✅ 1. FIRST: Load project on map
+    // ✅ rest of your existing expand code unchanged
     const project = this.projects.find(p => p.id === projectId);
     if (project?.latitude && project?.longitude) {
-      this.moveToLocation(
-        project.latitude,
-        project.longitude,
-        project.zoomLevel || 8,
-        project.projectName
-      );
+      this.moveToLocation(project.latitude, project.longitude, project.zoomLevel || 8, project.projectName);
     }
 
-    // ✅ 2. THEN: Expand countries
     this.role.countryGetById(projectId).subscribe({
       next: (res: any) => {
         this.countriesByProject[projectId] = Array.isArray(res) ? res : [];
-
         this.activeLevel = 'project';
         this.devicesGetByProjectId(projectId);
-
         this.expandedProjects.add(projectId);
         this.cdr.detectChanges();
       },
@@ -282,37 +288,40 @@ export class Live implements OnInit, AfterViewInit {
     });
   }
 
-
-
-
-  // Cache areas per country
   areaByCountry: { [countryId: string]: any[] } = {};
 
   expandedCountry: Set<string> = new Set();
 
   // loadArea(countryId: string) {
   //   this.selectedCountryId = countryId;
+
+  //   // ✅ If already expanded, collapse it
   //   if (this.expandedCountry.has(countryId)) {
   //     this.expandedCountry.delete(countryId);
-
-  //     // ⬅️ Move back to country location
-  //     const loc = this.locationCache.country;
-  //     if (loc) this.moveToLocation(loc.lat, loc.lng, loc.zoom, loc.name);
   //     return;
   //   }
 
+  //   // ✅ 1. FIRST: Find and load country on map
+  //   for (const countries of Object.values(this.countriesByProject)) {
+  //     const country = (countries as any[]).find(c => c.id === countryId);
+  //     if (country?.latitude && country?.longitude) {
+  //       this.moveToLocation(
+  //         country.latitude,
+  //         country.longitude,
+  //         country.zoomLevel || 10,
+  //         country.countryName
+  //       );
+  //       break;
+  //     }
+  //   }
+
+  //   // ✅ 2. THEN: Expand areas
   //   this.role.getSummary(countryId).subscribe({
   //     next: (res: any) => {
   //       this.areaByCountry[countryId] = Array.isArray(res) ? res : [];
 
-  //       if (res?.length > 0) {
-  //         const { latitude, longitude, zoomLevel, areaName } = res[0];
-  //         this.locationCache.area = { lat: latitude, lng: longitude, zoom: zoomLevel || 10, name: areaName };
-  //         this.moveToLocation(latitude, longitude, zoomLevel || 10, areaName);
-  //       }
   //       this.activeLevel = 'country';
   //       this.devicesGetByCountryId(this.selectedProjectId, countryId);
-
 
   //       this.expandedCountry.add(countryId);
   //       this.cdr.detectChanges();
@@ -321,37 +330,53 @@ export class Live implements OnInit, AfterViewInit {
   //   });
   // }
 
+  // Store building per area
+
+
   loadArea(countryId: string) {
     this.selectedCountryId = countryId;
 
-    // ✅ If already expanded, collapse it
     if (this.expandedCountry.has(countryId)) {
       this.expandedCountry.delete(countryId);
+
+      // ✅ Move map back to country location
+      for (const countries of Object.values(this.countriesByProject)) {
+        const country = (countries as any[]).find(c => c.id === countryId);
+        if (country?.latitude && country?.longitude) {
+          this.moveToLocation(country.latitude, country.longitude, country.zoomLevel || 10, country.countryName);
+          break;
+        }
+      }
+
+      // ✅ Reset all children
+      this.expandedArea.clear();
+      this.expandedBuilding.clear();
+      this.expandedFloor.clear();
+      this.expandedZone.clear();
+      this.floorImage = null;
+      this.zoneImage = null;
+      this.subZoneImage = null;
+      this.polygons = [];
+      this.polygonsByZone = {};
+      this.placedDevices = [];
+      this.zoneClickAreas = [];
+      this.cdr.detectChanges();
       return;
     }
-
-    // ✅ 1. FIRST: Find and load country on map
+    // ✅ rest of your existing expand code unchanged
     for (const countries of Object.values(this.countriesByProject)) {
       const country = (countries as any[]).find(c => c.id === countryId);
       if (country?.latitude && country?.longitude) {
-        this.moveToLocation(
-          country.latitude,
-          country.longitude,
-          country.zoomLevel || 10,
-          country.countryName
-        );
+        this.moveToLocation(country.latitude, country.longitude, country.zoomLevel || 10, country.countryName);
         break;
       }
     }
 
-    // ✅ 2. THEN: Expand areas
     this.role.getSummary(countryId).subscribe({
       next: (res: any) => {
         this.areaByCountry[countryId] = Array.isArray(res) ? res : [];
-
         this.activeLevel = 'country';
         this.devicesGetByCountryId(this.selectedProjectId, countryId);
-
         this.expandedCountry.add(countryId);
         this.cdr.detectChanges();
       },
@@ -359,36 +384,45 @@ export class Live implements OnInit, AfterViewInit {
     });
   }
 
-  // Store building per area
   buildingByArea: { [areaId: string]: any[] } = {};
 
   expandedArea: Set<string> = new Set();
 
+
   // loadBuilding(areaId: string) {
+  //   this.getAreaBasedZone(areaId);
   //   this.loadDevicesByArea(areaId);
   //   this.selectedAreaId = areaId;
+
+  //   // ✅ If already expanded, collapse it
   //   if (this.expandedArea.has(areaId)) {
   //     this.expandedArea.delete(areaId);
-
-  //     // ⬅️ Move back to area
-  //     const loc = this.locationCache.area;
-  //     if (loc) this.moveToLocation(loc.lat, loc.lng, loc.zoom, loc.name);
   //     return;
   //   }
 
+  //   // ✅ 1. FIRST: Find and load area on map
+  //   for (const areas of Object.values(this.areaByCountry)) {
+  //     const area = (areas as any[]).find(a => a.id === areaId);
+  //     if (area?.latitude && area?.longitude) {
+  //       this.moveToLocation(
+  //         area.latitude,
+  //         area.longitude,
+  //         area.zoomLevel || 10,
+  //         area.areaName
+  //       );
+  //       break;
+
+  //     }
+  //     this.cdr.detectChanges();
+  //   }
+
+  //   // ✅ 2. THEN: Expand buildings
   //   this.role.getBuilding(areaId).subscribe({
   //     next: (res: any) => {
   //       this.buildingByArea[areaId] = Array.isArray(res) ? res : [];
 
-  //       if (res?.length > 0) {
-  //         const { latitude, longitude, zoomLevel, buildingName } = res[0];
-  //         this.locationCache.building = { lat: latitude, lng: longitude, zoom: zoomLevel || 10, name: buildingName };
-  //         this.moveToLocation(latitude, longitude, zoomLevel || 10, buildingName);
-  //       }
-
   //       this.activeLevel = 'area';
   //       this.devicesGetByAreaId(this.selectedProjectId, this.selectedCountryId, areaId);
-
 
   //       this.expandedArea.add(areaId);
   //       this.cdr.detectChanges();
@@ -403,36 +437,48 @@ export class Live implements OnInit, AfterViewInit {
     this.loadDevicesByArea(areaId);
     this.selectedAreaId = areaId;
 
-    // ✅ If already expanded, collapse it
     if (this.expandedArea.has(areaId)) {
       this.expandedArea.delete(areaId);
+
+      // ✅ Move map back to area location
+      for (const areas of Object.values(this.areaByCountry)) {
+        const area = (areas as any[]).find(a => a.id === areaId);
+        if (area?.latitude && area?.longitude) {
+          this.moveToLocation(area.latitude, area.longitude, area.zoomLevel || 10, area.areaName);
+          break;
+        }
+      }
+
+      // ✅ Reset all children
+      this.expandedBuilding.clear();
+      this.expandedFloor.clear();
+      this.expandedZone.clear();
+      this.floorImage = null;
+      this.zoneImage = null;
+      this.subZoneImage = null;
+      this.polygons = [];
+      this.polygonsByZone = {};
+      this.placedDevices = [];
+      this.zoneClickAreas = [];
+      this.cdr.detectChanges();
       return;
     }
 
-    // ✅ 1. FIRST: Find and load area on map
+    // ✅ rest of your existing expand code unchanged
     for (const areas of Object.values(this.areaByCountry)) {
       const area = (areas as any[]).find(a => a.id === areaId);
       if (area?.latitude && area?.longitude) {
-        this.moveToLocation(
-          area.latitude,
-          area.longitude,
-          area.zoomLevel || 10,
-          area.areaName
-        );
+        this.moveToLocation(area.latitude, area.longitude, area.zoomLevel || 10, area.areaName);
         break;
-
       }
       this.cdr.detectChanges();
     }
 
-    // ✅ 2. THEN: Expand buildings
     this.role.getBuilding(areaId).subscribe({
       next: (res: any) => {
         this.buildingByArea[areaId] = Array.isArray(res) ? res : [];
-
         this.activeLevel = 'area';
         this.devicesGetByAreaId(this.selectedProjectId, this.selectedCountryId, areaId);
-
         this.expandedArea.add(areaId);
         this.cdr.detectChanges();
       },
@@ -449,25 +495,37 @@ export class Live implements OnInit, AfterViewInit {
 
 
 
-  // loadFloor(buildingId: string) {
-  //   // 🟡 Collapse logic (reverse)
+  // loadFloor(buildingId: string, building?: any) {  // ✅ Accept building object
   //   this.selectedBuildingId = buildingId;
+
+  //   // ✅ COLLAPSE LOGIC
   //   if (this.expandedBuilding.has(buildingId)) {
   //     this.expandedBuilding.delete(buildingId);
   //     this.floorImage = null;
   //     this.clearPolygons();
 
   //     // 🔁 Move map back to building's location
-  //     for (const areaBuildings of Object.values(this.buildingByArea)) {
-  //       const parentBuilding = (areaBuildings as any[]).find(b => b.id === buildingId);
-  //       if (parentBuilding?.latitude && parentBuilding?.longitude) {
-  //         this.moveToLocation(
-  //           parentBuilding.latitude,
-  //           parentBuilding.longitude,
-  //           parentBuilding.zoomLevel || 10,
-  //           parentBuilding.buildingName
-  //         );
-  //         break; // stop once found
+  //     // First try passed building object
+  //     if (building?.latitude && building?.longitude) {
+  //       this.moveToLocation(
+  //         building.latitude,
+  //         building.longitude,
+  //         building.zoomLevel || 10,
+  //         building.buildingName
+  //       );
+  //     } else {
+  //       // Fallback: search in buildingByArea
+  //       for (const areaBuildings of Object.values(this.buildingByArea)) {
+  //         const parentBuilding = (areaBuildings as any[]).find(b => b.id === buildingId);
+  //         if (parentBuilding?.latitude && parentBuilding?.longitude) {
+  //           this.moveToLocation(
+  //             parentBuilding.latitude,
+  //             parentBuilding.longitude,
+  //             parentBuilding.zoomLevel || 10,
+  //             parentBuilding.buildingName
+  //           );
+  //           break;
+  //         }
   //       }
   //     }
 
@@ -483,232 +541,130 @@ export class Live implements OnInit, AfterViewInit {
   //     return;
   //   }
 
-  //   // 🟢 Expand logic (forward)
+  //   // ✅ 1. FIRST: Load BUILDING on map using passed object
+  //   if (building?.latitude && building?.longitude) {
+  //     this.moveToLocation(
+  //       building.latitude,
+  //       building.longitude,
+  //       building.zoomLevel || 10,
+  //       building.buildingName
+  //     );
+  //   } else {
+  //     // Fallback: search in buildingByArea (shouldn't be needed on first click)
+  //     for (const areaBuildings of Object.values(this.buildingByArea)) {
+  //       const foundBuilding = (areaBuildings as any[]).find(b => b.id === buildingId);
+  //       if (foundBuilding?.latitude && foundBuilding?.longitude) {
+  //         this.moveToLocation(
+  //           foundBuilding.latitude,
+  //           foundBuilding.longitude,
+  //           foundBuilding.zoomLevel || 10,
+  //           foundBuilding.buildingName
+  //         );
+  //         break;
+  //       }
+  //     }
+  //   }
+
+  //   // ✅ 2. THEN: Expand floors
   //   this.role.getFloor(buildingId).subscribe({
   //     next: (res: any) => {
   //       const data = Array.isArray(res) ? res : [];
   //       this.floorByBuilding[buildingId] = data;
   //       this.expandedBuilding.add(buildingId);
 
-  //       // 🟢 Show floor image
-  //       this.floorImage = data.length ? data[0].uploadMap : null;
+  //       // Don't show floor image when expanding building
+  //       this.floorImage = null;  // ✅ Changed: don't load floor image yet
   //       this.zoneImage = null;
   //       this.subZoneImage = null;
   //       this.clearPolygons();
 
-  //       // 🔁 Move to floor (optional if lat/lng exists)
-  //       if (data.length && data[0].latitude && data[0].longitude) {
-  //         this.moveToLocation(
-  //           data[0].latitude,
-  //           data[0].longitude,
-  //           data[0].zoomLevel || 10,
-  //           data[0].floorName
-  //         );
-  //       }
+  //       this.activeLevel = 'building';
 
-  //       this.activeLevel = 'floor';
-
-  //       // ✅ Use actual floor ID from response
-  //       const floorId = data.length ? data[0].id : null;
-  //       if (floorId) {
-  //         this.devicesGetByFloorId(
-  //           this.selectedProjectId!,
-  //           this.selectedCountryId!,
-  //           this.selectedAreaId!,
-  //           this.selectedBuildingId!,
-  //           floorId
-  //         );
-  //       }
+  //       // ✅ Load devices for building
+  //       this.devicesGetByBuildingId(
+  //         this.selectedProjectId!,
+  //         this.selectedCountryId!,
+  //         this.selectedAreaId!,
+  //         buildingId
+  //       );
 
   //       this.cdr.detectChanges();
   //     },
   //     error: () => console.error('Error loading floor'),
   //   });
   // }
-  loadFloor(buildingId: string, building?: any) {  // ✅ Accept building object
+
+
+  loadFloor(buildingId: string, building?: any) {
     this.selectedBuildingId = buildingId;
 
-    // ✅ COLLAPSE LOGIC
     if (this.expandedBuilding.has(buildingId)) {
       this.expandedBuilding.delete(buildingId);
-      this.floorImage = null;
-      this.clearPolygons();
 
-      // 🔁 Move map back to building's location
-      // First try passed building object
+      // ✅ Reset all children
+      this.expandedFloor.clear();
+      this.expandedZone.clear();
+      this.floorImage = null;
+      this.zoneImage = null;
+      this.subZoneImage = null;
+      this.polygons = [];
+      this.polygonsByZone = {};
+      this.placedDevices = [];
+      this.zoneClickAreas = [];
+
+      // ✅ your existing map move back logic unchanged
       if (building?.latitude && building?.longitude) {
-        this.moveToLocation(
-          building.latitude,
-          building.longitude,
-          building.zoomLevel || 10,
-          building.buildingName
-        );
+        this.moveToLocation(building.latitude, building.longitude, building.zoomLevel || 10, building.buildingName);
       } else {
-        // Fallback: search in buildingByArea
         for (const areaBuildings of Object.values(this.buildingByArea)) {
           const parentBuilding = (areaBuildings as any[]).find(b => b.id === buildingId);
           if (parentBuilding?.latitude && parentBuilding?.longitude) {
-            this.moveToLocation(
-              parentBuilding.latitude,
-              parentBuilding.longitude,
-              parentBuilding.zoomLevel || 10,
-              parentBuilding.buildingName
-            );
+            this.moveToLocation(parentBuilding.latitude, parentBuilding.longitude, parentBuilding.zoomLevel || 10, parentBuilding.buildingName);
             break;
           }
         }
       }
 
       this.activeLevel = 'building';
-      this.devicesGetByBuildingId(
-        this.selectedProjectId!,
-        this.selectedCountryId!,
-        this.selectedAreaId!,
-        buildingId
-      );
-
+      this.devicesGetByBuildingId(this.selectedProjectId!, this.selectedCountryId!, this.selectedAreaId!, buildingId);
       this.cdr.detectChanges();
       return;
     }
 
-    // ✅ 1. FIRST: Load BUILDING on map using passed object
+    // ✅ rest of your existing expand code unchanged
     if (building?.latitude && building?.longitude) {
-      this.moveToLocation(
-        building.latitude,
-        building.longitude,
-        building.zoomLevel || 10,
-        building.buildingName
-      );
+      this.moveToLocation(building.latitude, building.longitude, building.zoomLevel || 10, building.buildingName);
     } else {
-      // Fallback: search in buildingByArea (shouldn't be needed on first click)
       for (const areaBuildings of Object.values(this.buildingByArea)) {
         const foundBuilding = (areaBuildings as any[]).find(b => b.id === buildingId);
         if (foundBuilding?.latitude && foundBuilding?.longitude) {
-          this.moveToLocation(
-            foundBuilding.latitude,
-            foundBuilding.longitude,
-            foundBuilding.zoomLevel || 10,
-            foundBuilding.buildingName
-          );
+          this.moveToLocation(foundBuilding.latitude, foundBuilding.longitude, foundBuilding.zoomLevel || 10, foundBuilding.buildingName);
           break;
         }
       }
     }
 
-    // ✅ 2. THEN: Expand floors
     this.role.getFloor(buildingId).subscribe({
       next: (res: any) => {
         const data = Array.isArray(res) ? res : [];
         this.floorByBuilding[buildingId] = data;
         this.expandedBuilding.add(buildingId);
-
-        // Don't show floor image when expanding building
-        this.floorImage = null;  // ✅ Changed: don't load floor image yet
+        this.floorImage = null;
         this.zoneImage = null;
         this.subZoneImage = null;
         this.clearPolygons();
-
         this.activeLevel = 'building';
-
-        // ✅ Load devices for building
-        this.devicesGetByBuildingId(
-          this.selectedProjectId!,
-          this.selectedCountryId!,
-          this.selectedAreaId!,
-          buildingId
-        );
-
+        this.devicesGetByBuildingId(this.selectedProjectId!, this.selectedCountryId!, this.selectedAreaId!, buildingId);
         this.cdr.detectChanges();
       },
       error: () => console.error('Error loading floor'),
     });
   }
 
-
-
-
   zones: any[] = [];
   zoneByFloor: { [floorId: string]: any[] } = {};
   expandedFloor: Set<string> = new Set();
 
-
-  // loadZones(floorId: string) {
-  //   this.selectedFloorId = floorId;
-
-
-  //   // 🟡 COLLAPSE LOGIC (go back from zone → floor)
-  //   if (this.expandedFloor.has(floorId)) {
-  //     this.expandedFloor.delete(floorId);
-  //     this.zoneImage = null;
-  //     this.clearPolygons();
-
-  //     // 🔁 Restore floor image
-  //     for (const floors of Object.values(this.floorByBuilding)) {
-  //       const parentFloor = (floors as any[]).find(f => f.id === floorId);
-  //       if (parentFloor?.uploadMap) {
-  //         this.floorImage = parentFloor.uploadMap;
-  //         break;
-  //       }
-  //     }
-
-  //     this.activeLevel = 'floor';
-
-  //     // ✅ Load devices for this floor (when collapsing zones)
-  //     this.devicesGetByFloorId(
-  //       this.selectedProjectId!,
-  //       this.selectedCountryId!,
-  //       this.selectedAreaId!,
-  //       this.selectedBuildingId!,
-  //       floorId
-  //     );
-  //     this.loadPolygonsByFloor(floorId);
-  //     this.loadDevicesByFloor(floorId);
-
-  //     this.cdr.detectChanges();
-  //     return;
-  //   }
-
-  //   // 🟢 EXPAND LOGIC (load zones for floor)
-  //   this.role.getZones(floorId).subscribe({
-  //     next: (res: any) => {
-  //       const data = Array.isArray(res) ? res : [];
-
-  //       // 🗂️ Store zones grouped by floor
-  //       this.zoneByFloor[floorId] = data;
-  //       this.zoneByFloor = { ...this.zoneByFloor }; // force change detection
-
-  //       // ✅ Mark this floor as expanded
-  //       this.expandedFloor.add(floorId);
-
-  //       // 🖼️ Update map images
-  //       this.zoneImage = data.length ? data[0].uploadMap : null;
-  //       this.floorImage = null;
-  //       this.subZoneImage = null;
-  //       this.clearPolygons();
-
-  //       // 🏷️ Update active level
-  //       this.activeLevel = 'zone';
-
-  //       // ✅ Fetch devices for this floor (after zones load)
-  //       this.devicesGetByFloorId(
-  //         this.selectedProjectId!,
-  //         this.selectedCountryId!,
-  //         this.selectedAreaId!,
-  //         this.selectedBuildingId!,
-  //         floorId
-  //       );
-  //       this.loadPolygonsByFloor(floorId);
-
-  //       this.loadDevicesByFloor(floorId);
-
-  //       this.cdr.detectChanges();
-
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading zones:', err);
-  //     },
-  //   });
-  // }
 
 
   loadZones(floorId: string) {
@@ -916,7 +872,7 @@ export class Live implements OnInit, AfterViewInit {
   private ctx!: CanvasRenderingContext2D;
   private polygons: {
     points: { x: number; y: number }[]; color: string; label?: string;
-    zoneId?: string;
+    zoneId?: string; deviceUniqueId?: string;
   }[] = [];
   private tempPoints: { x: number; y: number }[] = [];
   currentColor: string = '#ff0000';
@@ -969,226 +925,172 @@ export class Live implements OnInit, AfterViewInit {
   }
 
 
-
   // setColor(event: any) {
   //   this.currentColor = event.target.value;
+
+  //   this.isPolygonDrawingEnabled = true; // ✅ enable drawing
+  //   this.polygonCompleted = false;       // reset state
+  //   this.tempPoints = [];
+
   //   this.redrawCanvas();
   // }
 
-  setColor(event: any) {
-    this.currentColor = event.target.value;
+setColor(event: any) {
+  this.currentColor = event.target.value;
 
-    this.isPolygonDrawingEnabled = true; // ✅ enable drawing
-    this.polygonCompleted = false;       // reset state
+  if (this.selectedOutdoorZone && !this.floorImage && !this.zoneImage && !this.subZoneImage) {
+    // ✅ Directly start drawing on Leaflet map after color pick
+    this.isOutdoorPolygonDrawingEnabled = true;
+    this.outdoorPolygonCompleted = false;
+    this.outdoorTempLatLngs = [];
+    this.clearOutdoorTempDrawing();
+
+    // ✅ Remove old listener first to avoid duplicates
+    this.map.off('click', this.onOutdoorMapClick.bind(this));
+    this.map.on('click', this.onOutdoorMapClick.bind(this));
+    this.map.getContainer().style.cursor = 'crosshair'; // ✅ show draw cursor
+
+  } else {
+    // ✅ Canvas drawing (floor/zone image)
+    this.isPolygonDrawingEnabled = true;
+    this.polygonCompleted = false;
     this.tempPoints = [];
-
     this.redrawCanvas();
   }
-
-
+}
   isPolygonDrawingEnabled = false;
 
   enablePolygonDrawing() {
     this.isPolygonDrawingEnabled = true;
   }
 
-  // redrawCanvas() {
-  //   if (!this.ctx) return;
-  //   const canvas = this.drawingCanvas.nativeElement;
-  //   this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  //   // Draw saved polygons
-  //   this.polygons.forEach((poly) => {
-  //     // Draw polygon
-  //     this.ctx.fillStyle = poly.color + '40';
-  //     this.ctx.strokeStyle = poly.color;
-  //     this.ctx.lineWidth = 2;
-  //     this.ctx.beginPath();
-  //     this.ctx.moveTo(poly.points[0].x, poly.points[0].y);
-  //     for (let i = 1; i < poly.points.length; i++) {
-  //       this.ctx.lineTo(poly.points[i].x, poly.points[i].y);
-  //     }
-  //     this.ctx.closePath();
-  //     this.ctx.fill();
-  //     this.ctx.stroke();
-
-  //     if (poly.label) {
-  //       // Calculate centroid
-  //       const centroid = poly.points.reduce(
-  //         (acc, pt) => {
-  //           acc.x += pt.x;
-  //           acc.y += pt.y;
-  //           return acc;
-  //         },
-  //         { x: 0, y: 0 }
-  //       );
-  //       centroid.x /= poly.points.length;
-  //       centroid.y /= poly.points.length;
-
-  //       const zoneText = poly.label;
-  //       const visitorText = `Total Assets: ${this.zoneVisitorCounts[zoneText] || 0}`;
-
-  //       this.ctx.font = '10px Arial';
-  //       const zoneTextWidth = this.ctx.measureText(zoneText).width;
-  //       const visitorTextWidth = this.ctx.measureText(visitorText).width;
-  //       const padding = 2;
-  //       const rectWidth = Math.max(zoneTextWidth, visitorTextWidth) + padding * 4;
-  //       const rectHeight = 40;
-
-
-  //       const offsetX = 20;  // 👉 move right side
-
-  //       const boxX = centroid.x - rectWidth / 2 + offsetX;
-  //       const boxY = centroid.y - rectHeight / 4;
-
-  //       this.zoneClickAreas.push({
-  //         zoneName: zoneText,
-  //         x: boxX,
-  //         y: boxY,
-  //         width: rectWidth,
-  //         height: rectHeight,
-  //         polygonIndex: 1
-  //       });
-
-  //       this.ctx.fillStyle = '#cb99f1ff';
-  //       this.ctx.strokeStyle = '#7030a0';
-  //       this.ctx.lineWidth = 1;
-  //       this.ctx.fillRect(boxX, boxY, rectWidth, rectHeight);
-  //       this.ctx.strokeRect(boxX, boxY, rectWidth, rectHeight);
-
-  //       this.ctx.fillStyle = 'white';
-  //       this.ctx.textAlign = 'center';
-  //       this.ctx.textBaseline = 'top';
-  //       this.ctx.fillText(zoneText, centroid.x + offsetX, centroid.y - 4);
-  //       this.ctx.fillText(visitorText, centroid.x + offsetX, centroid.y + 10)
-  //     }
-  //   });
-
-  //   // Draw points while creating polygon
-  //   this.tempPoints.forEach((p) => {
-  //     this.ctx.fillStyle = this.currentColor;
-  //     this.ctx.beginPath();
-  //     this.ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
-  //     this.ctx.fill();
-  //   });
-  // }
-
 
 
   redrawCanvas() {
-  if (!this.ctx) return;
-  const canvas = this.drawingCanvas.nativeElement;
-  this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!this.ctx) return;
+    const canvas = this.drawingCanvas.nativeElement;
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw saved polygons
-  this.polygons.forEach((poly) => {
-    // Draw polygon
-    this.ctx.fillStyle = poly.color + '40';
-    this.ctx.strokeStyle = poly.color;
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.moveTo(poly.points[0].x, poly.points[0].y);
-    for (let i = 1; i < poly.points.length; i++) {
-      this.ctx.lineTo(poly.points[i].x, poly.points[i].y);
-    }
-    this.ctx.closePath();
-    this.ctx.fill();
-    this.ctx.stroke();
+    // Draw saved polygons
+    this.polygons.forEach((poly) => {
+      // Draw polygon
+      this.ctx.fillStyle = poly.color + '40';
+      this.ctx.strokeStyle = poly.color;
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.moveTo(poly.points[0].x, poly.points[0].y);
+      for (let i = 1; i < poly.points.length; i++) {
+        this.ctx.lineTo(poly.points[i].x, poly.points[i].y);
+      }
+      this.ctx.closePath();
+      this.ctx.fill();
+      this.ctx.stroke();
 
-    if (poly.label) {
-      // Calculate centroid
-      const centroid = poly.points.reduce(
-        (acc, pt) => {
-          acc.x += pt.x;
-          acc.y += pt.y;
-          return acc;
-        },
-        { x: 0, y: 0 }
-      );
-      centroid.x /= poly.points.length;
-      centroid.y /= poly.points.length;
+      if (poly.label) {
+        // Calculate centroid
+        const centroid = poly.points.reduce(
+          (acc, pt) => {
+            acc.x += pt.x;
+            acc.y += pt.y;
+            return acc;
+          },
+          { x: 0, y: 0 }
+        );
+        centroid.x /= poly.points.length;
+        centroid.y /= poly.points.length;
 
-      const zoneText = poly.label;
-      
-      // 🔥 GET COUNT FROM DEVICES IN THIS ZONE
-      const devicesInZone = this.placedDevices.filter(d => {
-        // Check if device is inside this polygon
-        return this.isPointInPolygon({ x: d.x, y: d.y }, poly.points);
-      });
-      
-      // 🔥 SUM UP ALL DEVICE COUNTS IN THIS ZONE
-      let totalCount = 0;
-      devicesInZone.forEach(device => {
-        const deviceCount = this.deviceVisitorCounts[device.deviceUniqueId] || 0;
-        totalCount += deviceCount;
-      });
-      
-      const visitorText = `Total Assets: ${totalCount}`;
-
-      this.ctx.font = '10px Arial';
-      const zoneTextWidth = this.ctx.measureText(zoneText).width;
-      const visitorTextWidth = this.ctx.measureText(visitorText).width;
-      const padding = 2;
-      const rectWidth = Math.max(zoneTextWidth, visitorTextWidth) + padding * 4;
-      const rectHeight = 40;
-
-      const offsetX = 20;  // 👉 move right side
-
-      const boxX = centroid.x - rectWidth / 2 + offsetX;
-      const boxY = centroid.y - rectHeight / 4;
-
-      this.zoneClickAreas.push({
-        zoneName: zoneText,
-        x: boxX,
-        y: boxY,
-        width: rectWidth,
-        height: rectHeight,
-        polygonIndex: 1
-      });
-
-      this.ctx.fillStyle = '#cb99f1ff';
-      this.ctx.strokeStyle = '#7030a0';
-      this.ctx.lineWidth = 1;
-      this.ctx.fillRect(boxX, boxY, rectWidth, rectHeight);
-      this.ctx.strokeRect(boxX, boxY, rectWidth, rectHeight);
-
-      this.ctx.fillStyle = 'white';
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'top';
-      this.ctx.fillText(zoneText, centroid.x + offsetX, centroid.y - 4);
-      this.ctx.fillText(visitorText, centroid.x + offsetX, centroid.y + 10);
-    }
-  });
-
-  // Draw points while creating polygon
-  this.tempPoints.forEach((p) => {
-    this.ctx.fillStyle = this.currentColor;
-    this.ctx.beginPath();
-    this.ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
-    this.ctx.fill();
-  });
-}
+        const zoneText = poly.label;
 
 
 
+        // 🔥 GET COUNT FROM DEVICES IN THIS ZONE
+        const devicesInZone = this.placedDevices.filter(d => {
+          // Check if device is inside this polygon
+          return this.isPointInPolygon({ x: d.x, y: d.y }, poly.points);
+        });
 
-// Helper method to check if a point is inside a polygon
-isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: number }[]): boolean {
-  let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
+        // 🔥 SUM UP ALL DEVICE COUNTS IN THIS ZONE
+        let totalCount = 0;
+        devicesInZone.forEach(device => {
+          // const deviceCount = this.deviceVisitorCounts[device.deviceUniqueId] || 0;
+          // totalCount += deviceCount;
+          const countByZone = this.deviceVisitorCounts[device.zoneId] || 0;
+          const countByDevice = this.deviceVisitorCounts[device.deviceUniqueId] || 0;
+          totalCount += Math.max(countByZone, countByDevice);
+        });
+        const deviceUniqueId = devicesInZone.length > 0
+          ? devicesInZone[0].deviceUniqueId
+          : '';
+        console.log('✅ deviceUniqueId for zone box:', deviceUniqueId);
 
-    const intersect =
-      yi > point.y !== yj > point.y &&
-      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
 
-    if (intersect) inside = !inside;
+        const visitorText = `Total Assets: ${totalCount}`;
+
+        this.ctx.font = '14px Aria';
+        const zoneTextWidth = this.ctx.measureText(zoneText).width;
+        const visitorTextWidth = this.ctx.measureText(visitorText).width;
+        const padding = 6;
+        const rectWidth = Math.max(zoneTextWidth, visitorTextWidth) + padding * 4;
+        const rectHeight = 60;
+
+        const offsetX = -30;  // 👉 move right side
+
+        const boxX = centroid.x - rectWidth / 2 + offsetX;
+        const boxY = centroid.y - rectHeight / 4;
+
+        this.zoneClickAreas.push({
+          deviceUniqueId: deviceUniqueId,
+          zoneName: zoneText,
+          x: boxX,
+          y: boxY,
+          width: rectWidth,
+          height: rectHeight,
+          polygonIndex: 1
+        });
+
+        this.ctx.fillStyle = '#cb99f1ff';
+        this.ctx.strokeStyle = '#7030a0';
+        this.ctx.lineWidth = 1;
+        this.ctx.fillRect(boxX, boxY, rectWidth, rectHeight);
+        this.ctx.strokeRect(boxX, boxY, rectWidth, rectHeight);
+
+        this.ctx.fillStyle = 'white';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'top';
+        this.ctx.fillText(zoneText, centroid.x + offsetX, centroid.y - 4);
+        this.ctx.fillText(visitorText, centroid.x + offsetX, centroid.y + 10);
+      }
+    });
+
+    // Draw points while creating polygon
+    this.tempPoints.forEach((p) => {
+      this.ctx.fillStyle = this.currentColor;
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+      this.ctx.fill();
+    });
   }
-  return inside;
-}
+
+
+
+
+  // Helper method to check if a point is inside a polygon
+  isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: number }[]): boolean {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x;
+      const yi = polygon[i].y;
+      const xj = polygon[j].x;
+      const yj = polygon[j].y;
+
+      const intersect =
+        yi > point.y !== yj > point.y &&
+        point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
 
 
 
@@ -1196,6 +1098,7 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
 
   zoneClickAreas: Array<{
     zoneName: string;
+    deviceUniqueId: string;
     x: number;
     y: number;
     width: number;
@@ -1214,20 +1117,19 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
 
     // Check if click is inside any zone box
     const clickedZone = this.zoneClickAreas.find(zone =>
+
       x >= zone.x &&
       x <= zone.x + zone.width &&
       y >= zone.y &&
       y <= zone.y + zone.height
     );
-
     if (clickedZone) {
       console.log('Clicked on zone:', clickedZone.zoneName);
 
-
-
-      // Call your method to show assets
-      this.getActiveAssetDetails();
+      this.getActiveAssetDetails(clickedZone.deviceUniqueId);
     }
+
+
   }
 
   // Helpers
@@ -1467,59 +1369,7 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
   }
 
 
-  // onMapImageClick(event: MouseEvent) {
 
-  //   if (!this.placingDevice || !this.selectedDeviceId) return;
-
-  //   const imgElement = event.target as HTMLElement;
-  //   const rect = imgElement.getBoundingClientRect();
-
-  //   const x = event.clientX - rect.left;
-  //   const y = event.clientY - rect.top;
-
-  //   // Get selected device by active level
-  //   let selectedDevice: any = null;
-  //   switch (this.activeLevel) {
-  //     case 'project': selectedDevice = this.projectDevices.find(d => d.id === this.selectedDeviceId); break;
-  //     case 'country': selectedDevice = this.countryDevices.find(d => d.id === this.selectedDeviceId); break;
-  //     case 'area': selectedDevice = this.areaDevices.find(d => d.id === this.selectedDeviceId); break;
-  //     case 'building': selectedDevice = this.buildingDevices.find(d => d.id === this.selectedDeviceId); break;
-  //     case 'floor': selectedDevice = this.floorDevices.find(d => d.id === this.selectedDeviceId); break;
-  //     case 'zone': selectedDevice = this.zoneDevices.find(d => d.id === this.selectedDeviceId); break;
-  //   }
-
-  //   if (!selectedDevice) return;
-
-  //   // ✅ Create zone bucket if not created
-  //   if (!this.placedDevicesByZone[this.selectedZoneId]) {
-  //     this.placedDevicesByZone[this.selectedZoneId] = [];
-  //   }
-
-  //   // ✅ Push device only for this zone
-  //   this.placedDevicesByZone[this.selectedZoneId].push({
-  //     id: selectedDevice.id,
-  //     name: selectedDevice.deviceName,
-  //     x,
-  //     y
-  //   });
-
-  //   console.log(
-  //     "Placed devices for this zone:",
-  //     this.placedDevicesByZone[this.selectedZoneId]
-  //   );
-
-  //   // ✅ Update UI to show only current zone devices
-  //   this.placedDevices = [...this.placedDevicesByZone[this.selectedZoneId]];
-
-  //   // Stop placing device
-  //   this.placingDevice = false;
-
-  //   if (this.drawingCanvas?.nativeElement) {
-  //     this.drawingCanvas.nativeElement.style.pointerEvents = "auto";
-  //   }
-
-  //   this.showDevicePopup = true;
-  // }
 
 
   onMapImageClick(event: MouseEvent) {
@@ -1635,7 +1485,7 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
         // Zone was clicked - show asset details
         console.log('Clicked on zone:', clickedZone.zoneName);
         // this.selectedZone = clickedZone.zoneName;
-        this.getActiveAssetDetails();
+        this.getActiveAssetDetails(clickedZone.deviceUniqueId)
         return; // Stop here - don't proceed to polygon drawing
       }
     }
@@ -1816,102 +1666,85 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
 
   polygonsByZone: { [zoneId: string]: any[] } = {};
 
-  loadSavedPolygonsForZone(zoneId: string) {
-    if (!zoneId) return;
-
-    this.device.getZoneMappingById(zoneId).subscribe({
-      next: (res: any) => {
-
-        const mapping = Array.isArray(res) ? res[0] : res;
-        if (!mapping?.geoJsonData?.features?.[0]) return;
-
-        const feature = mapping.geoJsonData.features[0];
-        const coords = feature.geometry.coordinates[0];
-        const color = feature.properties?.additionalProp2 || this.currentColor;
-        const label = feature.properties?.additionalProp1 || this.selectedZoneName;
-
-        const points = coords.map((pt: any) => ({ x: pt[0], y: pt[1] }));
-
-        // 🟢 Initialize zone polygon list if empty
-        if (!this.polygonsByZone[zoneId]) {
-          this.polygonsByZone[zoneId] = [];
-        }
-
-        // 🟢 Replace only this zone’s polygons
-        this.polygonsByZone[zoneId] = [{
-          points,
-          color,
-          label,
-          zoneId
-        }];
-
-        // 🟢 Set ACTIVE polygon list for UI
-        this.polygons = this.polygonsByZone[zoneId];
-
-        this.redrawCanvas();
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-
   // loadSavedPolygonsForZone(zoneId: string) {
   //   if (!zoneId) return;
-
-  //   // 🔴 ALWAYS reset active state first
-  //   this.polygons = [];
-  //   this.tempPoints = [];
-  //   this.redrawCanvas();
 
   //   this.device.getZoneMappingById(zoneId).subscribe({
   //     next: (res: any) => {
 
   //       const mapping = Array.isArray(res) ? res[0] : res;
-
-  //       // 🟢 If NO polygon exists → keep zone empty
-  //       if (!mapping?.geoJsonData?.features?.[0]) {
-  //         this.polygonsByZone[zoneId] = [];
-  //         this.cdr.detectChanges();
-  //         return;
-  //       }
+  //       if (!mapping?.geoJsonData?.features?.[0]) return;
 
   //       const feature = mapping.geoJsonData.features[0];
   //       const coords = feature.geometry.coordinates[0];
+  //       const color = feature.properties?.additionalProp2 || this.currentColor;
+  //       const label = feature.properties?.additionalProp1 || this.selectedZoneName;
 
-  //       const color =
-  //         feature.properties?.additionalProp2 || this.currentColor;
+  //       const points = coords.map((pt: any) => ({ x: pt[0], y: pt[1] }));
 
-  //       const label =
-  //         feature.properties?.additionalProp1 || this.selectedZoneName;
+  //       // 🟢 Initialize zone polygon list if empty
+  //       if (!this.polygonsByZone[zoneId]) {
+  //         this.polygonsByZone[zoneId] = [];
+  //       }
 
-  //       const points = coords.map((pt: any) => ({
-  //         x: pt[0],
-  //         y: pt[1],
-  //       }));
-
-  //       // 🟢 Replace ONLY this zone’s polygons
+  //       // 🟢 Replace only this zone’s polygons
   //       this.polygonsByZone[zoneId] = [{
   //         points,
   //         color,
   //         label,
-  //         zoneId,
+  //         zoneId
   //       }];
 
-  //       // 🟢 Activate only this zone
-  //       this.polygons = [...this.polygonsByZone[zoneId]];
+  //       // 🟢 Set ACTIVE polygon list for UI
+  //       this.polygons = this.polygonsByZone[zoneId];
 
   //       this.redrawCanvas();
   //       this.cdr.detectChanges();
-  //     },
-  //     error: err => {
-  //       console.error('Polygon load failed', err);
-
-  //       // safety clear
-  //       this.polygons = [];
-  //       this.redrawCanvas();
   //     }
   //   });
   // }
+
+  loadSavedPolygonsForZone(zoneId: string) {
+    if (!zoneId) return;
+
+    this.device.getZoneMappingById(zoneId).subscribe({
+      next: (res: any) => {
+        const mapping = Array.isArray(res) ? res[0] : res;
+
+        // ✅ No polygon for this zone — clear and return
+        if (!mapping?.geoJsonData?.features?.[0]) {
+          this.polygons = [];                    // ✅ clear — don't show other zones
+          this.polygonsByZone[zoneId] = [];      // ✅ mark as empty
+          this.zoneClickAreas = [];
+          this.redrawCanvas();
+          return;
+        }
+
+        const feature = mapping.geoJsonData.features[0];
+        const coords = feature.geometry.coordinates[0];
+        const color = feature.properties?.additionalProp2 || this.currentColor;
+        const label = feature.properties?.additionalProp1 || this.selectedZoneName;
+        const points = coords.map((pt: any) => ({ x: pt[0], y: pt[1] }));
+
+        // ✅ Store only this zone
+        this.polygonsByZone[zoneId] = [{ points, color, label, zoneId }];
+
+        // ✅ Zone level — show ONLY this zone's polygon
+        this.polygons = this.polygonsByZone[zoneId];
+
+        this.zoneClickAreas = [];
+        this.redrawCanvas();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        // ✅ API error — show empty canvas, don't leak other zones
+        this.polygons = [];
+        this.polygonsByZone[zoneId] = [];
+        this.zoneClickAreas = [];
+        this.redrawCanvas();
+      }
+    });
+  }
 
 
   enableDevicePlacement() {
@@ -2023,8 +1856,22 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
       console.log('🚀 FINAL PAYLOAD:', payload);
 
       this.device.saveDeviceGeoJson(payload).subscribe({
-        next: () => console.log('✅ Device saved:', d.name),
-        error: err => console.error('❌ Save failed', err)
+        // next: () => console.log('✅ Device saved:', d.name),
+        // error: err => console.error('❌ Save failed', err)
+        next: (res: any) => {
+
+          console.log("SAVE RESPONSE:", res);
+          this.fetchZoneMapping(this.selectedZoneId);
+
+          const newDevice = {
+            id: res.id,   // ✅ mapping id from backend
+            name: res.deviceName,
+            deviceUniqueId: res.deviceUniqueId,
+            x: d.x,
+            y: d.y
+          };
+        }
+
       });
 
       this.placedDevicesByZone[this.selectedZoneId].push(d);
@@ -2040,21 +1887,19 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
 
   pendingPlacedDevices: any[] = [];
 
-  // placedDevicesByZone: { [zoneId: string]: any[] } = {};
+
 
   // fetchZoneMapping(zoneId: string) {
   //   this.device.getZoneMapping(zoneId).subscribe({
   //     next: (response: any[]) => {
-
   //       if (!Array.isArray(response)) {
   //         console.warn("Invalid response format");
   //         return;
   //       }
 
-  //       // Flatten all devices
   //       const devices = response.flatMap((item: any) =>
   //         item.deviceGeoJsonData?.features?.map((f: any) => ({
-  //           id: item.deviceReferenceId,
+  //           id: item.id,   // ✅ FIXED HERE
   //           name: item.deviceName,
   //           deviceUniqueId: item.deviceUniqueId,
   //           x: f.geometry.coordinates[0],
@@ -2065,106 +1910,142 @@ isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: numbe
   //       this.placedDevicesByZone[zoneId] = devices;
   //       this.placedDevices = devices;
 
-  //       console.log("🟢 All devices loaded:", devices);
+  //       console.log("🟢 Devices loaded correctly:", devices);
 
   //       this.cdr.detectChanges();
   //     }
   //   });
   // }
 
-fetchZoneMapping(zoneId: string) {
-  this.device.getZoneMapping(zoneId).subscribe({
-    next: (response: any[]) => {
-      if (!Array.isArray(response)) {
-        console.warn("Invalid response format");
-        return;
+
+  fetchZoneMapping(zoneId: string) {
+    this.device.getZoneMapping(zoneId).subscribe({
+      next: (response: any[]) => {
+        if (!Array.isArray(response)) {
+          console.warn("Invalid response format");
+          return;
+        }
+        const devices = response.flatMap((item: any) =>
+          item.deviceGeoJsonData?.features?.map((f: any) => ({
+            id: item.id,
+            name: item.deviceName,
+            deviceUniqueId: item.deviceUniqueId,
+            zoneId: item.zoneId,
+            x: f.geometry.coordinates[0],
+            y: f.geometry.coordinates[1]
+          })) || []
+        );
+
+        this.placedDevicesByZone[zoneId] = devices;
+        this.placedDevices = devices;
+        console.log('🟢 placedDevices with zoneId:', devices);
+
+        this.zoneClickAreas = []; // ✅ clear stale areas
+        this.cdr.detectChanges();
+        this.redrawCanvas();      // ✅ redraw AFTER placedDevices is set
+        this.cdr.detectChanges();
       }
-
-      const devices = response.flatMap((item: any) =>
-        item.deviceGeoJsonData?.features?.map((f: any) => ({
-          id: item.deviceReferenceId,
-          name: item.deviceName,
-          deviceUniqueId: item.deviceUniqueId, // ✅ CRITICAL
-          x: f.geometry.coordinates[0],
-          y: f.geometry.coordinates[1]
-        })) || []
-      );
-
-      this.placedDevicesByZone[zoneId] = devices;
-      this.placedDevices = devices;
-
-      console.log("🟢 Devices loaded with uniqueIds:", devices);
-
-      this.cdr.detectChanges();
-    }
-  });
-}
+    });
+  }
 
   ws!: WebSocket;
   wsConnected = false;
 
-connectWebSocket() {
-   this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
-   //this.ws = new WebSocket('ws://172.16.100.29:5202/ws/ZoneCount');
+  // connectWebSocket() {
+  //   //this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+  //   this.ws = new WebSocket('ws://172.16.100.29:5202/ws/ZoneCount');
 
-  this.ws.onopen = () => {
-    console.log('✅ WebSocket Connected');
-  };
+  //   this.ws.onopen = () => {
+  //     console.log('✅ WebSocket Connected');
+  //   };
 
-  this.ws.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      const updates = Array.isArray(data) ? data : [data];
+  //   this.ws.onmessage = (event) => {
+  //     try {
+  //       const data = JSON.parse(event.data);
+  //       const updates = Array.isArray(data) ? data : [data];
 
-      updates.forEach(update => {
-        // 🔥 DEVICE LIVE LOCATION UPDATE
-        if (update.tagId && update.latitude != null && update.longitude != null) {
-          console.log('📡 WS Location Update:', update);
-          this.moveDeviceMarker(update);
-        }
+  //       updates.forEach(update => {
+  //         // 🔥 DEVICE LIVE LOCATION UPDATE
+  //         if (update.tagId && update.latitude != null && update.longitude != null) {
+  //           console.log('📡 WS Location Update:', update);
+  //           this.moveDeviceMarker(update);
+  //         }
 
-        // 🔥 DEVICE COUNT UPDATE
-        if (update.ZoneId && typeof update.Count === 'number') {
-          this.deviceVisitorCounts[update.ZoneId] = update.Count;
-          console.log(`📊 Device ${update.ZoneId} count: ${update.Count}`);
-          
-          // 🔥 REDRAW CANVAS TO UPDATE ZONE LABEL
-          this.redrawCanvas();
-        }
-      });
+  //         // 🔥 DEVICE COUNT UPDATE
+  //         if (update.ZoneId && typeof update.Count === 'number') {
+  //           this.deviceVisitorCounts[update.ZoneId] = update.Count;
+  //           console.log(`📊 Device ${update.ZoneId} count: ${update.Count}`);
 
-      this.cdr.detectChanges();
-    } catch (err) {
-      console.error('❌ WebSocket parse error', err);
-    }
-  };
+  //           // 🔥 REDRAW CANVAS TO UPDATE ZONE LABEL
+  //           this.redrawCanvas();
+  //         }
+  //       });
 
-  this.ws.onclose = () => console.log('🔌 WebSocket Closed');
-  this.ws.onerror = err => console.error('❌ WebSocket Error', err);
-}
-  deviceMarkers = new Map<string, any>();
+  //       this.cdr.detectChanges();
+  //     } catch (err) {
+  //       console.error('❌ WebSocket parse error', err);
+  //     }
+  //   };
 
-  // moveDeviceMarker(update: any) {
-  //   const { tagId, latitude, longitude } = update;
-
-  //   const marker = this.deviceMarkers.get(tagId);
-
-  //   if (!marker) {
-  //     console.warn(`⚠️ No marker found for tagId ${tagId}`);
-  //     return;
-  //   }
-
-  //   // 🔥 Move marker
-  //   marker.setLatLng([latitude, longitude]);
+  //   this.ws.onclose = () => console.log('🔌 WebSocket Closed');
+  //   this.ws.onerror = err => console.error('❌ WebSocket Error', err);
   // }
 
-  selectedItemId: string | number | null = null; // to store the clicked item's ID
+  wsLocationMap: { [tagId: string]: any } = {};  // key = tagId, value = latest WS data
+  matchedWsData: any = null;
 
-  selectItem(id: string | number) {
-    this.selectedItemId = id;
+  connectWebSocket() {
+    this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+
+    this.ws.onopen = () => {
+      console.log('✅ WebSocket Connected');
+    };
+
+    this.ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const updates = Array.isArray(data) ? data : [data];
+
+        updates.forEach(update => {
+
+          // 🔥 DEVICE LIVE LOCATION UPDATE
+          if (update.tagId && update.latitude != null && update.longitude != null) {
+            console.log('📡 WS Location Update:', update);
+
+            // ✅ Store latest location data keyed by tagId
+            this.wsLocationMap[update.tagId] = update;
+
+            // ✅ If popup is open and this update matches the current asset, refresh it
+            if (this.assetData && this.assetData.uniqueId === update.tagId) {
+              this.matchedWsData = update;
+            }
+
+            this.moveDeviceMarker(update);
+          }
+
+          // 🔥 DEVICE COUNT UPDATE
+          if (update.ZoneId && typeof update.Count === 'number') {
+            this.deviceVisitorCounts[update.ZoneId] = update.Count;
+            console.log(`📊 Device ${update.ZoneId} count: ${update.Count}`);
+            this.redrawCanvas();
+          }
+
+        });
+
+        this.cdr.detectChanges();
+      } catch (err) {
+        console.error('❌ WebSocket parse error', err);
+      }
+    };
+
+    this.ws.onclose = () => console.log('🔌 WebSocket Closed');
+    this.ws.onerror = err => console.error('❌ WebSocket Error', err);
   }
 
+
+
   activeLevels: 'project' | 'country' | 'area' | 'building' | 'floor' | 'zone' | null = null;
+
 
 
 
@@ -2175,33 +2056,30 @@ connectWebSocket() {
       next: (res: any[]) => {
         console.log("🟩 Floor polygon response:", res);
 
-        // Clear old polygons
-        this.polygons = [];
+        // ✅ Reset and rebuild fresh for this floor only
+        this.polygonsByZone = {};
 
-        // Loop all zone mappings
         res.forEach((mapping: any) => {
           const feature = mapping.geoJsonData?.features?.[0];
           if (!feature) return;
-
           const coords = feature.geometry?.coordinates?.[0];
           if (!coords) return;
 
           const color = feature.properties?.additionalProp2 || '#ff0000';
           const label = feature.properties?.additionalProp1 || '';
-          const zoneId = mapping.id;
-
+          const zoneId = mapping.zoneId;           // ✅ correct field
           const points = coords.map((pt: any) => ({ x: pt[0], y: pt[1] }));
 
-          // Insert polygon
-          this.polygons.push({
-            points,
-            color,
-            label,
-            zoneId
-          });
+          if (!this.polygonsByZone[zoneId]) {
+            this.polygonsByZone[zoneId] = [];
+          }
+          this.polygonsByZone[zoneId].push({ points, color, label, zoneId });
         });
 
-        // Redraw once after adding all polygons
+        // ✅ Floor level — always show all zones merged
+        this.polygons = Object.values(this.polygonsByZone).flat();
+
+        this.zoneClickAreas = [];
         this.redrawCanvas();
       },
       error: (err) => {
@@ -2209,9 +2087,6 @@ connectWebSocket() {
       }
     });
   }
-
-
-
 
   getZoneImageByZoneid(zoneId: string) {
     this.device.getZoneImageByZoneId(zoneId).subscribe({
@@ -2263,45 +2138,39 @@ connectWebSocket() {
 
   loadDevicesByFloor(floorId: string) {
     if (!floorId) return;
-
     this.device.getDeviceGeoJsonByFloor(floorId).subscribe({
       next: (res: any) => {
         console.log("🟩 Floor device mapping response:", res);
-
-        // Clear old device markers
         this.placedDevices = [];
-
         res.forEach((mapping: any) => {
           const feature = mapping.deviceGeoJsonData?.features?.[0];
           if (!feature) return;
-
           const coords = feature.geometry?.coordinates;
           if (!coords || feature.geometry.type !== "Point") return;
 
-          const x = coords[0];
-          const y = coords[1];
-
           this.placedDevices.push({
-            id: mapping.deviceReferenceId,
+            id: mapping.id,
             name: mapping.deviceName,
-            x,
-            y
+            deviceUniqueId: mapping.deviceUniqueId,
+            zoneId: mapping.zoneId,
+            x: coords[0],
+            y: coords[1]
           });
         });
-        this.cdr.detectChanges();
 
         console.log("📌 Loaded devices:", this.placedDevices);
+        this.zoneClickAreas = [];
+        this.cdr.detectChanges();
+        this.redrawCanvas();
       },
-
       error: (err) => {
         console.error("❌ Error loading device mapping for floor", err);
       }
     });
   }
 
-
-  selectedDays: number = 1;  // default 1 day
-  daysOptions: number[] = [1, 2, 5, 7, 15, 30]; // example options
+  selectedDays: number = 1;
+  daysOptions: number[] = [1, 2, 5, 7, 15, 30];
 
 
 
@@ -2315,7 +2184,6 @@ connectWebSocket() {
       .subscribe({
         next: (res: any) => {
 
-          // 👇 Store the response using zoneName as the key
           this.zoneVisitorCounts[res.zoneName] = res.totalCount;
 
           this.redrawCanvas();
@@ -2335,7 +2203,6 @@ connectWebSocket() {
       .subscribe({
         next: (res: any) => {
 
-          // 👇 Store the response
           this.zoneVisitorCounts[res.zoneName] = res.totalCount;
 
           this.redrawCanvas();
@@ -2351,7 +2218,7 @@ connectWebSocket() {
   onMapPixelClick(e: any) {
     if (!this.placingDevice || !this.selectedDeviceId) return;
 
-    console.log('✅ MAP CLICK DETECTED'); // <-- MUST PRINT
+    console.log('✅ MAP CLICK DETECTED');
 
     const point = this.map.latLngToContainerPoint(e.latlng);
 
@@ -2364,7 +2231,7 @@ connectWebSocket() {
 
     if (!selectedDevice) return;
 
-    // temp placement
+
     this.placedDevices = [{
       id: selectedDevice.id,
       name: selectedDevice.deviceName,
@@ -2412,7 +2279,7 @@ connectWebSocket() {
         ]
       },
 
-      // 👇 FROM GET API
+
       deviceName: this.selectedDevice.deviceName,
       deviceReferenceId: this.selectedDevice.deviceId,
       deviceUniqueId: this.selectedDevice.deviceUniqueId,
@@ -2463,7 +2330,6 @@ connectWebSocket() {
 
         .addTo(this.map);
 
-      // 🔥 CLICK TO DELETE
       marker.on('click', () => {
         this.selectedDeleteDeviceId = device.id;
         this.selectedDeleteMarker = marker;
@@ -2471,8 +2337,6 @@ connectWebSocket() {
 
       });
 
-
-      // 🔥 STORE marker using deviceUniqueId
       this.deviceMarkers.set(device.deviceUniqueId, marker);
     });
   }
@@ -2491,18 +2355,11 @@ connectWebSocket() {
 
 
 
-  // deviceMarkers: any[] = [];
 
   clearDeviceMarkers() {
     this.deviceMarkers.forEach(m => this.map.removeLayer(m));
     //this.deviceMarkers = [];
   }
-
-
-  // selectedDevice: any = null;
-
-
-
 
 
 
@@ -2624,7 +2481,6 @@ connectWebSocket() {
 
     this.showHourInputs = true;
 
-    // ✅ Call floor API automatically when time range changes
     if (this.selectedFloorId) {
       if (this.selectedTimeRange === 'day') {
         this.loadFloorReportByHours();
@@ -2633,7 +2489,7 @@ connectWebSocket() {
       }
     }
 
-    // 🔥 Keep your existing zone API calls
+
     if (this.selectedZoneName) {
       if (this.selectedTimeRange === 'day') {
         this.loadZoneCounts();
@@ -2651,7 +2507,6 @@ connectWebSocket() {
   onHourChange() {
     console.log(`Selected: ${this.selectedTimeRange} → ${this.selectedHour}`);
 
-    // ✅ Call floor API when hour/day changes
     if (this.selectedFloorId) {
       if (this.selectedTimeRange === 'day') {
         this.loadFloorReportByHours();
@@ -2660,7 +2515,7 @@ connectWebSocket() {
       }
     }
 
-    // 🔥 Keep your existing zone API calls
+
     if (this.selectedZoneName) {
       if (this.selectedTimeRange === 'day') {
         this.loadZoneCounts();
@@ -2696,15 +2551,15 @@ connectWebSocket() {
         next: (res: any) => {
           alert(res.message);
 
-          // remove marker from map
+
           if (this.selectedDeleteMarker) {
             this.map.removeLayer(this.selectedDeleteMarker);
           }
 
-          // cleanup
+
           this.cancelDelete();
 
-          // optional refresh (safe)
+
           this.loadDevicesByArea(this.selectedAreaId);
         },
         error: err => console.error('❌ Delete failed', err)
@@ -2730,33 +2585,33 @@ connectWebSocket() {
   }
 
 
-  cancelIndoorDelete() {
-    this.showDeletePopup = false;
-    this.selectedIndoorDeviceId = null;
-    this.selectedIndoorMarker = null;
-  }
+  // cancelIndoorDelete() {
+  //   this.showDeletePopup = false;
+  //   this.selectedIndoorDeviceId = null;
+  //   this.selectedIndoorMarker = null;
+  // }
 
 
-  confirmIndoorDelete() {
-    if (!this.selectedIndoorDeviceId) return;
+  // confirmIndoorDelete() {
+  //   if (!this.selectedIndoorDeviceId) return;
 
-    this.device.deleteIndoorDevice(this.selectedIndoorDeviceId).subscribe({
-      next: () => {
-        console.log('✅ Indoor device deleted:', this.selectedIndoorDeviceId);
+  //   this.device.deleteIndoorDevice(this.selectedIndoorDeviceId).subscribe({
+  //     next: () => {
+  //       console.log('✅ Indoor device deleted:', this.selectedIndoorDeviceId);
 
-        // remove marker from map
-        if (this.selectedIndoorMarker) {
-          this.map.removeLayer(this.selectedIndoorMarker);
-        }
+  //       // remove marker from map
+  //       if (this.selectedIndoorMarker) {
+  //         this.map.removeLayer(this.selectedIndoorMarker);
+  //       }
 
-        // close popup
-        this.cancelDelete();
-      },
-      error: err => {
-        console.error('❌ Delete failed', err);
-      }
-    });
-  }
+  //       // close popup
+  //       this.cancelDelete();
+  //     },
+  //     error: err => {
+  //       console.error('❌ Delete failed', err);
+  //     }
+  //   });
+  // }
 
 
 
@@ -2876,8 +2731,8 @@ connectWebSocket() {
 
 
 
-  fullEmployeeData: any[] = [];  // Add this property
-  fullDeviceData: any[] = [];    // Add this property
+  fullEmployeeData: any[] = [];
+  fullDeviceData: any[] = [];
 
   loadEmployees() {
     this.peopleservice.getPerson(1, 50).subscribe({
@@ -2886,21 +2741,19 @@ connectWebSocket() {
 
         const list = res?.data || res || [];
 
-        // Filter only Employees
         const employees = list.filter(
           (p: any) => p.peopleType === 'Employee'
         );
 
         console.log('Filtered Employees:', employees);
 
-        // ✅ Store full data
         this.fullEmployeeData = employees;
 
-        // Map for dropdown display
+
         this.dataList = employees.map((p: any) => ({
           id: p.id,
           displayLabel: `${p.firstName} ${p.lastName} (${p.idNumber})`,
-          idNumber: p.idNumber  // ✅ Store idNumber directly in dataList
+          idNumber: p.idNumber
         }));
 
         console.log('Mapped dataList:', this.dataList);
@@ -2914,7 +2767,7 @@ connectWebSocket() {
 
 
 
-  assetList: any[] = []; // ✅ Add this property to store assets
+  assetList: any[] = [];
 
 
   loadAssets() {
@@ -2940,14 +2793,12 @@ connectWebSocket() {
           (d: any) => d.deviceType === type
         );
 
-        // ✅ Store full data
         this.fullDeviceData = filtered;
 
-        // Map for dropdown display
         this.dataList = filtered.map((d: any) => ({
           id: d.id,
           displayLabel: `${d.deviceName} (${d.uniqueId})`,
-          uniqueId: d.uniqueId  // ✅ Store uniqueId directly in dataList
+          uniqueId: d.uniqueId
         }));
 
         this.cdr.detectChanges();
@@ -2967,46 +2818,23 @@ connectWebSocket() {
   }
 
 
-
-
-
-
-
-
-
-
-
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   onCheckboxChange(itemId: any, event: any) {
     const checked = event.target.checked;
 
     if (this.selectedDeviceType === 'fixed') {
-      // 🔒 Fixed device → only ONE selection allowed
+
       this.selectedItems.clear();
 
       if (checked) {
         this.selectedItems.add(itemId);
       }
     } else {
-      // ✅ Multi-select mode
+
       if (checked) {
         this.selectedItems.add(itemId);
       } else {
@@ -3060,13 +2888,14 @@ connectWebSocket() {
     this.device.getRecentProcessedEvents(idsToSend).subscribe({
       next: (res: any[]) => {
         if (!res || res.length === 0) return;
-
+        this.latestProcessedEvents = res;
         this.moveMapToDevices(res);
         this.addAppliedDevicesToMap(res);
       },
       error: err => console.error(err)
     });
   }
+  latestProcessedEvents: any[] = [];
 
 
   renderDevicesOnOutsideMap(devices: any[]) {
@@ -3092,7 +2921,6 @@ connectWebSocket() {
       let y: number;
 
       if (sameLat && sameLng) {
-        // 🟢 Single device → center
         x = mapWidth / 2;
         y = mapHeight / 2;
       } else {
@@ -3118,14 +2946,12 @@ connectWebSocket() {
 
   moveMapToDevices(devices: any[]) {
 
-    // Single device
     if (devices.length === 1) {
       const d = devices[0];
       this.map.flyTo([d.latitude, d.longitude], 18);
       return;
     }
 
-    // Multiple devices → fit bounds
     const bounds = L.latLngBounds(
       devices.map(d => [d.latitude, d.longitude])
     );
@@ -3171,7 +2997,6 @@ connectWebSocket() {
         this.onOutdoorDeviceClick(d);
       });
 
-      // 🔥 THIS IS THE MOST IMPORTANT LINE
       this.deviceMarkers.set(String(d.tagid), marker);
 
       console.log('🟢 Marker added for tagId:', d.tagid);
@@ -3213,8 +3038,7 @@ connectWebSocket() {
     this.device.getRecentProcessedEvents(ids).subscribe({
       next: (res: any) => {
         console.log('✅ Recent processed events:', res);
-        // Handle the response here
-        // Update UI, show markers on map, etc.
+
       },
       error: (err: any) => {
         console.error('❌ Error fetching recent processed events:', err);
@@ -3222,15 +3046,11 @@ connectWebSocket() {
     });
   }
 
-  // Helper method to get employee by ID
   getEmployeeById(id: string): any {
-    // You need to store the full employee data, not just the mapped version
     return this.fullEmployeeData?.find((emp: any) => emp.id === id);
   }
 
-  // Helper method to get device by ID
   getDeviceById(id: string): any {
-    // You need to store the full device data, not just the mapped version
     return this.fullDeviceData?.find((dev: any) => dev.id === id);
   }
 
@@ -3247,7 +3067,7 @@ connectWebSocket() {
 
   toggleSelectAll(event: any) {
     if (this.selectedDeviceType === 'fixed') {
-      return; // ❌ no select-all for fixed device
+      return;
     }
 
     const checked = event.target.checked;
@@ -3267,11 +3087,9 @@ connectWebSocket() {
     } else {
       this.expandedArea.add(areaId);
 
-      // 🔥 Initialize empty arrays for both zones and buildings
       this.zoneByArea[areaId] = [];
       this.buildingByArea[areaId] = [];
 
-      // Load both zones and buildings for this area
       this.getAreaBasedZone(areaId);
       this.loadBuilding(areaId);
     }
@@ -3292,8 +3110,6 @@ connectWebSocket() {
   }
 
 
-
-  // placedDevices: PlacedDevice[] = [];
   placedDevicesByZone: { [zoneId: string]: PlacedDevice[] } = {};
 
 
@@ -3301,62 +3117,144 @@ connectWebSocket() {
   assetData: any = null;
   showAssetPopup: boolean = false;
 
-  onDeviceClick(device: any) {
-    console.log('Clicked device:', device);
-    if (!device.deviceUniqueId) {
-      console.error('❌ deviceUniqueId missing');
-      return;
-    }
+  // onDeviceClick(device: any) {
+  //   console.log('Clicked device:', device);
+  //   if (!device.deviceUniqueId) {
+  //     console.error('❌ deviceUniqueId missing');
+  //     return;
+  //   }
 
-    this.activeDevice = device;
+  //   this.activeDevice = device;
 
-    this.device
-      .getMappedDevice(device.deviceUniqueId)
-      .subscribe((res: any) => {
-        this.assetData = res.data; // ✅ no error now
-        this.showAssetPopup = true;
-        this.cdr.detectChanges(); // 🔥 important
-      });
-  }
+  //   this.device
+  //     .getMappedDevice(device.deviceUniqueId)
+  //     .subscribe((res: any) => {
+  //       this.assetData = res.data; // ✅ no error now
+  //       this.showAssetPopup = true;
+  //       this.cdr.detectChanges(); // 🔥 important
+  //     });
+  // }
+
+
+
+
+
+
 
   assetPopup: boolean = false;
   activeAssets: any[] = [];
 
+  getActiveAssetDetails(deviceUniqueId: string) {
+    console.log('🔍 Calling API with deviceUniqueId:', deviceUniqueId); // ✅ check this logs correct value
 
-  getActiveAssetDetails() {
-    this.device.getActiveAsset().subscribe({
+    this.device.getActiveAsset(deviceUniqueId).subscribe({
       next: (res: any) => {
-        this.cdr.detectChanges();
         this.activeAssets = res.data;
         this.assetPopup = true;
         this.cdr.detectChanges();
-
       },
       error: () => {
-        alert("Error Getting Active Asset")
+        alert("Active Asset Not Found");
       }
-    })
-
+    });
   }
+
+  wsDeviceData: any[] = [];   // holds all live WS messages
+
+  // onOutdoorDeviceClick(device: any) {
+  //   console.log('Clicked device:', device);
+
+  //   // Use tagId instead of deviceUniqueId
+  //   if (!device.tagid) {
+  //     console.error('❌ tagid missing');
+  //     return;
+  //   }
+
+  //   this.activeDevice = device;
+
+
+
+  //   // Call the new API method
+  //   this.device.getMappedDeviceByTagId(device.tagid).subscribe({
+  //     next: (res: any) => {
+
+
+  //    this.assetData = res.data; // store API response
+
+  //       this.showAssetPopup = true;
+  //       this.cdr.detectChanges(); // ensure popup updates
+  //     },
+  //     error: err => {
+  //       console.error('API error:', err);
+  //     }
+  //   });
+  // }
+
+  // 19-2-26
+  getDubaiTime(timestamp: string) {
+    if (!timestamp) return null;
+
+    // Parse original date
+    const date = new Date(timestamp);
+
+    // Convert to UTC first
+    const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+
+    // Add Dubai offset (UTC +4)
+    const dubaiTime = new Date(utc + (4 * 60 * 60 * 1000));
+
+    return dubaiTime;
+  }
+  //end 19-2-26
 
 
   onOutdoorDeviceClick(device: any) {
     console.log('Clicked device:', device);
 
-    // Use tagId instead of deviceUniqueId
     if (!device.tagid) {
       console.error('❌ tagid missing');
       return;
     }
 
     this.activeDevice = device;
+    this.matchedWsData = null;
 
-    // Call the new API method
+    // ✅ IMMEDIATE FALLBACK — device object already has lat/lng from the recent API
+    // Use it right away so popup shows location instantly without waiting for WS
+    if (device.latitude != null && device.longitude != null) {
+      this.matchedWsData = {
+        tagId: device.tagid,
+        latitude: device.latitude,
+        longitude: device.longitude,
+        Gsmtimestamp: device.checkInTime,   // map checkInTime → Gsmtimestamp for display
+        checkintime: device.checkInTime
+      };
+      console.log('✅ Using device object location as initial data:', this.matchedWsData);
+    }
+
     this.device.getMappedDeviceByTagId(device.tagid).subscribe({
       next: (res: any) => {
-        this.assetData = res.data; // store API response
+        this.assetData = res.data;
+
+        const uniqueId = res.data?.uniqueId;
+        console.log('🔑 Asset uniqueId from API:', uniqueId);
+        console.log('🗺️ Current wsLocationMap keys:', Object.keys(this.wsLocationMap));
+
+        if (uniqueId) {
+          // ✅ Check wsLocationMap for a fresher WS update — if found, prefer it
+          const wsMatch = this.wsLocationMap[String(uniqueId)] || null;
+
+          if (wsMatch) {
+            this.matchedWsData = { ...wsMatch };
+            console.log('✅ WS map match found, using live WS data:', this.matchedWsData);
+          } else {
+            console.log('⚠️ No WS map entry yet — keeping device object location data');
+            // matchedWsData already set above from device object, keep it
+          }
+        }
+
         this.showAssetPopup = true;
-        this.cdr.detectChanges(); // ensure popup updates
+        this.cdr.detectChanges();
       },
       error: err => {
         console.error('API error:', err);
@@ -3364,9 +3262,7 @@ connectWebSocket() {
     });
   }
 
-
-
-zoneVisitorCounts: { [zoneId: string]: number } = {};
+  zoneVisitorCounts: { [zoneId: string]: number } = {};
 
 
 
@@ -3379,25 +3275,421 @@ zoneVisitorCounts: { [zoneId: string]: number } = {};
 
 
 
-// 10-2-26
+  // 10-2-26
 
-// Add this property to store device counts
-deviceVisitorCounts: { [deviceUniqueId: string]: number } = {};
-
-
+  // Add this property to store device counts
+  deviceVisitorCounts: { [deviceUniqueId: string]: number } = {};
 
 
 
 
-testWebSocketMatch() {
-  console.log('📊 Device Visitor Counts:', this.deviceVisitorCounts);
-  console.log('📍 Placed Devices:', this.placedDevices);
-  
-  this.placedDevices.forEach(device => {
-    const count = this.deviceVisitorCounts[device.deviceUniqueId];
-    console.log(`Device ${device.deviceUniqueId}: Count = ${count || 0}`);
+
+
+  testWebSocketMatch() {
+    console.log('📊 Device Visitor Counts:', this.deviceVisitorCounts);
+    console.log('📍 Placed Devices:', this.placedDevices);
+
+    this.placedDevices.forEach(device => {
+      const count = this.deviceVisitorCounts[device.deviceUniqueId];
+      console.log(`Device ${device.deviceUniqueId}: Count = ${count || 0}`);
+    });
+  }
+
+  // --- Delete mode state ---
+  isDeleteModeActive = false;
+
+
+  enableDeleteMode() {
+    this.isDeleteModeActive = true;
+    this.showAssetPopup = false; // close asset popup if open
+  }
+
+  disableDeleteMode() {
+    this.isDeleteModeActive = false;
+  }
+
+
+  onDeviceClick(d: any) {
+    if (this.isDeleteModeActive) {
+      console.log('🗑️ selected id for delete:', d.id); // ✅ must log 698f1699...
+      this.selectedIndoorDeviceId = d.id;
+      this.selectedIndoorDeviceName = d.name;
+      this.showDeletePopup = true;
+    } else {
+      if (!d.deviceUniqueId) {
+        console.error('❌ deviceUniqueId missing');
+        return;
+      }
+      this.activeDevice = d;
+      this.device.getMappedDevice(d.deviceUniqueId).subscribe((res: any) => {
+        this.assetData = res.data;
+        this.showAssetPopup = true;
+        this.cdr.detectChanges();
+      });
+    }
+  }
+  cancelIndoorDelete() {
+    this.showDeletePopup = false;
+    this.isDeleteModeActive = false;  // important
+    this.selectedIndoorDeviceId = null;
+    this.selectedIndoorDeviceName = '';
+    this.disableDeleteMode(); // exit delete mode after cancel
+  }
+
+  // confirmIndoorDelete() {
+  //   console.log("Apply button clicked");
+  //   if (!this.selectedIndoorDeviceId) return;
+
+  //   this.device.deleteIndoorDevice(this.selectedIndoorDeviceId).subscribe({
+  //     next: (res: any) => {
+  //       console.log('✅ Deleted:', res);
+  //       this.showDeletePopup = false;
+  //       this.placedDevices = this.placedDevices.filter(
+  //         d => d.id !== this.selectedIndoorDeviceId  // ✅ matches correctly now
+  //       );
+  //       this.cancelIndoorDelete();
+  //       this.cdr.detectChanges();
+
+  //     },
+  //     error: err => console.error('❌ Delete failed', err)
+  //   });
+  // }
+
+  confirmIndoorDelete() {
+
+    console.log("Apply button clicked");
+
+    if (!this.selectedIndoorDeviceId) return;
+
+    this.device.deleteIndoorDevice(this.selectedIndoorDeviceId).subscribe({
+
+      next: (res: any) => {
+
+        console.log('✅ Deleted:', res);
+
+        this.showDeletePopup = false;
+
+        // ✅ Remove from placedDevices
+        this.placedDevices = this.placedDevices.filter(
+          d => d.id !== this.selectedIndoorDeviceId
+        );
+
+        // ✅ ALSO remove from placedDevicesByZone
+        Object.keys(this.placedDevicesByZone).forEach(zoneId => {
+
+          this.placedDevicesByZone[zoneId] =
+            this.placedDevicesByZone[zoneId].filter(
+              d => d.id !== this.selectedIndoorDeviceId
+            );
+
+        });
+
+        // ✅ Redraw canvas to remove visually
+        this.redrawCanvas();
+
+        this.cancelIndoorDelete();
+        this.cdr.detectChanges();
+      },
+
+      error: err => console.error('❌ Delete failed', err)
+    });
+  }
+
+  deviceMarkers = new Map<string, any>();
+  selectedItemId: string | number | null = null;
+  outdoorZoneMarker: any = null;
+
+  onOutdoorZoneSelect(zone: any) {
+    this.selectItem(zone.id);
+    this.selectedOutdoorZone = zone;
+
+    // ✅ Clear floor/zone images so Leaflet map shows
+    this.floorImage = null;
+    this.zoneImage = null;
+    this.subZoneImage = null;
+    this.activeLevel = 'outdoor';
+
+    if (zone.latitude && zone.longitude) {
+      console.log('🗺️ Moving map to:', zone.latitude, zone.longitude);
+
+      if (this.outdoorZoneMarker) {
+        this.map.removeLayer(this.outdoorZoneMarker);
+      }
+      this.map.setView([zone.latitude, zone.longitude], 16);
+
+      // Clear previous outdoor polygons on map
+      this.clearOutdoorPolygons();
+
+      // Load existing polygon from API
+      this.fetchOutdoorZoneMapping(zone.id);
+
+      this.outdoorZoneMarker = L.marker([zone.latitude, zone.longitude])
+        .addTo(this.map)
+        .bindPopup(`<b>${zone.zoneName}</b>`)
+        .openPopup();
+    }
+  }
+
+  selectItem(id: string | number) {
+    this.selectedItemId = id;
+  }
+
+  outdoorPolygonsByZone: { [zoneId: string]: L.Polygon[] } = {};
+  outdoorTempLatLngs: L.LatLng[] = [];
+  outdoorTempMarkers: L.CircleMarker[] = [];
+  outdoorTempPolyline: L.Polyline | null = null;
+  isOutdoorPolygonDrawingEnabled: boolean = false;
+  outdoorPolygonCompleted: boolean = false;
+  selectedOutdoorZone: any = null;
+  showOutdoorPolygonPopup: boolean = false;
+  outdoorPolygonLabel: string = '';
+
+  clearOutdoorPolygons() {
+    Object.values(this.outdoorPolygonsByZone).forEach(polygons => {
+      polygons.forEach(p => this.map.removeLayer(p));
+    });
+    this.outdoorPolygonsByZone = {};
+  }
+
+  clearOutdoorTempDrawing() {
+    this.outdoorTempMarkers.forEach(m => this.map.removeLayer(m));
+    this.outdoorTempMarkers = [];
+    if (this.outdoorTempPolyline) {
+      this.map.removeLayer(this.outdoorTempPolyline);
+      this.outdoorTempPolyline = null;
+    }
+    this.outdoorTempLatLngs = [];
+  }
+
+
+
+enableOutdoorPolygonDrawing() {
+  if (!this.selectedOutdoorZone) return;
+
+  this.isOutdoorPolygonDrawingEnabled = true;
+  this.outdoorPolygonCompleted = false;
+  this.outdoorTempLatLngs = [];
+  this.clearOutdoorTempDrawing();
+
+  this.map.on('click', this.onOutdoorMapClick.bind(this));
+  this.map.getContainer().style.cursor = 'crosshair';
+}
+
+  onOutdoorMapClick(e: L.LeafletMouseEvent) {
+    if (!this.isOutdoorPolygonDrawingEnabled) return;
+    if (this.outdoorPolygonCompleted) return;
+
+    const latlng = e.latlng;
+    this.outdoorTempLatLngs.push(latlng);
+
+    // Draw dot marker
+    const marker = L.circleMarker(latlng, {
+      radius: 5,
+      color: this.currentColor || '#7030a0',
+      fillOpacity: 1
+    }).addTo(this.map);
+    this.outdoorTempMarkers.push(marker);
+
+    // Update polyline preview
+    if (this.outdoorTempPolyline) {
+      this.map.removeLayer(this.outdoorTempPolyline);
+    }
+    if (this.outdoorTempLatLngs.length > 1) {
+      this.outdoorTempPolyline = L.polyline(this.outdoorTempLatLngs, {
+        color: this.currentColor || '#7030a0',
+        weight: 2
+      }).addTo(this.map);
+    }
+
+    // Close polygon if clicking near first point (>= 3 points)
+    if (this.outdoorTempLatLngs.length >= 3) {
+      const first = this.outdoorTempLatLngs[0];
+      const distance = this.map.distance(latlng, first);
+
+      if (distance <= 20) { // 20 meters threshold
+        this.outdoorPolygonCompleted = true;
+        this.isOutdoorPolygonDrawingEnabled = false;
+        this.map.off('click', this.onOutdoorMapClick.bind(this));
+        this.map.getContainer().style.cursor = '';
+        this.showOutdoorPolygonPopup = true; // show label popup
+        this.cdr.detectChanges();
+      }
+    }
+  }
+  // saveOutdoorPolygon() {
+  //   if (!this.selectedOutdoorZone || this.outdoorTempLatLngs.length < 3) return;
+
+  //   // ✅ Build polygon coordinates (closed ring — first point repeated at end)
+  //   const coordinates = [
+  //     ...this.outdoorTempLatLngs.map(latlng => [latlng.lng, latlng.lat]),
+  //     [this.outdoorTempLatLngs[0].lng, this.outdoorTempLatLngs[0].lat] // close ring
+  //   ];
+
+  //   const payload = {
+  //     areaId: this.selectedOutdoorZone.areaId,
+  //     zoneId: this.selectedOutdoorZone.id,
+  //     zoneName: this.outdoorPolygonLabel || this.selectedOutdoorZone.zoneName,
+  //     status: true,
+  //     topZone: "true",
+  //     assemblyPoint: false,
+  //     geoJsonData: {
+  //       type: "FeatureCollection",
+  //       features: [
+  //         {
+  //           type: "Feature",
+  //           geometry: {
+  //             type: "Polygon",
+  //             coordinates: [coordinates]  // ✅ GeoJSON polygon format
+  //           },
+  //           properties: {
+  //             additionalProp1: this.outdoorPolygonLabel || '',
+  //             additionalProp2: this.selectedOutdoorZone.id,
+  //             additionalProp3: ''
+  //           }
+  //         }
+  //       ]
+  //     }
+  //   };
+
+  //   this.device.saveOutdoorZoneMapping(payload).subscribe({
+  //     next: (res: any) => {
+  //       console.log('✅ Outdoor polygon saved:', res);
+  //       this.showOutdoorPolygonPopup = false;
+  //       this.outdoorPolygonLabel = '';
+  //       this.clearOutdoorTempDrawing();
+  //       this.fetchOutdoorZoneMapping(this.selectedOutdoorZone.id); // reload
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err: any) => {
+  //       console.error('❌ Save outdoor polygon error:', err);
+  //     }
+  //   });
+  // }
+
+savedOutdoorMappingId:any=''
+  saveOutdoorPolygon() {
+  if (!this.selectedOutdoorZone || this.outdoorTempLatLngs.length < 3) return;
+
+  // ✅ Convert to GeoJSON format (same pattern like applyPolygon)
+  const coordinates = [
+    ...this.outdoorTempLatLngs.map(latlng => [latlng.lng, latlng.lat]),
+    [this.outdoorTempLatLngs[0].lng, this.outdoorTempLatLngs[0].lat] // close ring
+  ];
+
+  const geoJson = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [coordinates]
+        },
+        properties: {
+          additionalProp1: this.outdoorPolygonLabel || '',
+          additionalProp2: this.selectedOutdoorZone.id,
+          additionalProp3: ''
+        }
+      }
+    ]
+  };
+
+  // ✅ Get existing ID (for update case)
+  const existingId = this.savedOutdoorMappingId ?? "";
+
+  const body = {
+    id: existingId, // ✅ same like applyPolygon
+    areaId: this.selectedOutdoorZone.areaId,
+    assemblyPoint: false,
+
+    // 🔥 Add required backend fields
+    clientId: "",
+    countryId: this.selectedCountryId || "",
+    projectId: this.selectedProjectId || "",
+    priority: "High",
+    exit: "",
+    createdBy: "admin",
+    createdAt: new Date().toISOString(),
+
+    geoJsonData: geoJson,
+
+    status: true,
+    topZone: "true",
+    zoneId: this.selectedOutdoorZone.id,
+    zoneName: this.outdoorPolygonLabel || this.selectedOutdoorZone.zoneName
+  };
+
+  this.device.saveOutdoorZoneMapping(body).subscribe({
+    next: (res: any) => {
+      console.log('✅ Outdoor polygon saved:', res);
+
+      // ✅ Save id for future update
+      this.savedOutdoorMappingId = res.id;
+
+      this.showOutdoorPolygonPopup = false;
+      this.outdoorPolygonLabel = '';
+      this.clearOutdoorTempDrawing();
+      this.fetchOutdoorZoneMapping(this.selectedOutdoorZone.id);
+      this.cdr.detectChanges();
+    },
+    error: (err: any) => {
+      console.error('❌ Save outdoor polygon error:', err);
+    }
   });
 }
 
+  fetchOutdoorZoneMapping(zoneId: string) {
+    this.device.getOutdoorZoneMapping(zoneId).subscribe({
+      next: (response: any) => {
+        // Clear existing polygons for this zone
+        if (this.outdoorPolygonsByZone[zoneId]) {
+          this.outdoorPolygonsByZone[zoneId].forEach(p => this.map.removeLayer(p));
+          this.outdoorPolygonsByZone[zoneId] = [];
+        }
+
+        const items = Array.isArray(response) ? response : [response];
+
+        items.forEach((item: any) => {
+          const features = item.geoJsonData?.features || [];
+
+          features.forEach((feature: any) => {
+            const coords = feature.geometry?.coordinates?.[0]; // ✅ Polygon ring
+            if (!coords || coords.length < 3) return;
+
+            const latLngs: L.LatLng[] = coords.map((c: number[]) =>
+              L.latLng(c[1], c[0]) // ✅ GeoJSON is [lng, lat] → Leaflet is [lat, lng]
+            );
+
+            const polygon = L.polygon(latLngs, {
+              color: '#7030a0',
+              fillColor: '#cb99f1',
+              fillOpacity: 0.4,
+              weight: 2
+            }).addTo(this.map);
+
+            // ✅ Show zone name as permanent label
+            const label = item.zoneName || feature.properties?.additionalProp1 || '';
+            if (label) {
+              polygon.bindTooltip(label, {
+                permanent: true,
+                direction: 'center',
+                className: 'polygon-label'
+              }).openTooltip();
+            }
+
+            if (!this.outdoorPolygonsByZone[zoneId]) {
+              this.outdoorPolygonsByZone[zoneId] = [];
+            }
+            this.outdoorPolygonsByZone[zoneId].push(polygon);
+          });
+        });
+
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('❌ Fetch outdoor zone mapping error:', err);
+      }
+    });
+  }
 
 }

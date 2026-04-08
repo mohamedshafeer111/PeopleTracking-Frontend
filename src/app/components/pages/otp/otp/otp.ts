@@ -27,22 +27,31 @@ export class Otp {
    }
 
 
- verifyOtp() {
+ 
+verifyOtp() {
   this.user.verifyOtp(this.loginUser).subscribe(
     (response: any) => {
       alert(response.message);
 
-      // Store token
-      // localStorage.setItem('authToken', response.token);
-
-       localStorage.setItem('token', response.token);
-
-
-      // Store userid
+      localStorage.setItem('token', response.token.token);
       localStorage.setItem('userid', response.userid);
 
-      // Navigate to dashboard
-      this.router.navigate(['/dashboard']);
+      const roleId = response.token.roleId;
+      localStorage.setItem('roleId', roleId);
+
+      // Fetch role permissions and store them
+      this.user.getRoleById(roleId).subscribe(
+        (roleData: any) => {
+          // Store permissions as JSON string
+          localStorage.setItem('permissions', JSON.stringify(roleData.assignPermissions));
+          this.router.navigate(['/dashboard']);
+        },
+        (error: any) => {
+          console.error('Failed to fetch role permissions', error);
+          // Navigate anyway, handle missing permissions in navbar
+          this.router.navigate(['/dashboard']);
+        }
+      );
     },
     (error: any) => {
       alert(error);
@@ -54,6 +63,11 @@ export class Otp {
 
 
 }
+
+
+
+
+
 
 
 

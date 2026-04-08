@@ -16,7 +16,7 @@
 
   h3 {
     margin: 0;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 600;
     color: #333;
   }
@@ -27,10 +27,11 @@
     gap: 10px;
 
     input {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 6px;
       border: 1px solid #bbb;
-      font-size: 14px;
+      font-size: 12px;
+      font-family:'RedHatDisplay';
     }
 
     .icons img {
@@ -50,13 +51,9 @@
 .table-container {
   margin-top: 20px;
   overflow-x: auto;
-  /* background: white; */
-  /* border: 1px solid #ccc;         Outer border for full table */
-  border-radius: 8px;
-  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); */
-  padding: 10px;
+  overflow-y: visible;
 
-  table {
+table {
     width: 100%;
     border-collapse: collapse;    /* Ensures single borders */
     border: 1px solid #ccc;       /* Outline for the table itself */
@@ -65,7 +62,8 @@
   th, td {
     padding: 10px;
     text-align: left;
-    border: 1px solid #ccc;       /* 👈 Adds vertical & horizontal grid lines */
+    border: 1px solid #ccc; 
+    font-size: 14px;      /* 👈 Adds vertical & horizontal grid lines */
   }
 
   th {
@@ -113,23 +111,23 @@
 
 .dropdown-menu {
   position: absolute;
+  top: 0;
+  left: 100%;   /* place dropdown to the right of icon */
+  margin-left: 6px; /* small gap from icon */
   background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 5px 0;
-  right: 0;
-  z-index: 10;
+  padding: 3px;
+  z-index: 9999;
 }
-
 .dropdown-menu button {
   display: block;
   width: 100%;
   background: none;
   border: none;
   text-align: left;
-  padding: 8px 12px;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -181,3 +179,12 @@
   visibility: visible;
   opacity: 1;
 }
+
+.upload-icon {
+  border: 2px solid #7030a0;
+  border-radius: 50%;
+}
+
+
+
+

@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class Events implements OnInit {
 
-  activeTab: string = 'people';
+  activeTab: string = 'events';
 
   eventsList: any[] = []; // only deviceId + description
 
@@ -63,6 +63,49 @@ onPageSizeChange(size: number) {
   setActive(tab: string) {
     this.activeTab = tab;
   }
+
+
+
+
+alertsList: any[] = [];
+
+switchTab(tab: string) {
+  this.activeTab = tab;
+
+  if (tab === 'events') {
+    this.loadEvents(1);
+  } else if (tab === 'alerts') {
+    this.loadAlerts();
+
+  }
+}
+
+alertList: any[] = [];
+alertPageNumber: number = 1;
+alertPageSize: number = 10;
+alertTotalPages: number = 0;
+alertTotalCount: number = 0;
+alertPageSizes: number[] = [5, 10, 25, 50];
+
+loadAlerts(pageNumber: number = 1) {
+  this.alertPageNumber = pageNumber;
+  this.user.getAlert(pageNumber, this.alertPageSize).subscribe({
+    next: (res: any) => {
+      this.alertList = res.data;
+      this.alertTotalCount = res.totalCount;
+      this.alertTotalPages = res.totalPages;
+      this.cdr.detectChanges();
+    },
+    error: () => {
+      console.log("error getting alert");
+    }
+  });
+}
+
+onAlertPageSizeChange() {
+  this.alertPageNumber = 1;
+  this.loadAlerts(1);
+}
 
 }
 

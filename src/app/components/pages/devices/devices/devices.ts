@@ -5,10 +5,11 @@ import { Peopletype } from '../../../service/peopletype/peopletype';
 import { FormsModule } from '@angular/forms';
 import { Roleservice } from '../../../service/role/roleservice';
 import { forkJoin } from 'rxjs';
+import { DevicePipe } from '../../../pipe/devicesearch/device-pipe';
 
 @Component({
   selector: 'app-devices',
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule,DevicePipe],
   templateUrl: './devices.html',
   styleUrl: './devices.css'
 })
@@ -32,6 +33,7 @@ export class Devices implements OnInit {
 
   activeTab: string = 'device';
   deviceList: any[] = [];
+  searchText: string = ''; 
 
   setActive(tab: string) {
     this.activeTab = tab;
@@ -251,7 +253,8 @@ export class Devices implements OnInit {
 
 
   technologyOptions: string[] = [
-    'BLE',
+    'BLE GATEWAY',
+    'BLE TAGS',
     'LORA',
     'QR BARCODE',
     'RFID',
@@ -541,11 +544,11 @@ export class Devices implements OnInit {
   // }
 
 
-openEditDevicePopup(device: any) {
+  openEditDevicePopup(device: any) {
     console.log('🔍 Opening edit popup for device:', device);
-    
+
     this.openEditDevice = true;
-    
+
     // ✅ Initialize editDevice with actual device values INCLUDING IDs
     this.editDevice = {
       id: device.id,
@@ -563,11 +566,11 @@ openEditDevicePopup(device: any) {
       floor: device.floorId || '',          // ✅ Use floorId
       zone: device.zoneId || ''             // ✅ Use zoneId
     };
-    
+
     // ✅ Set selected IDs BEFORE loading data
     this.selectedProjectId = device.projectId || '';
     this.selectedCountryId = device.countryId || '';
-    
+
     // ✅ Find project
     const project = this.projects.find(p => p.id === device.projectId);
     if (!project) {
@@ -575,12 +578,12 @@ openEditDevicePopup(device: any) {
       this.cdr.detectChanges();
       return;
     }
-    
+
     console.log('✅ Found project:', project);
-    
+
     // ✅ Load ALL hierarchical data
     this.loadHierarchicalDataParallel(device, project.id);
-}
+  }
 
 
 
@@ -717,7 +720,7 @@ openEditDevicePopup(device: any) {
 
 
 
-private loadHierarchicalDataParallel(device: any, projectId: string) {
+  private loadHierarchicalDataParallel(device: any, projectId: string) {
     console.log('🌍 Starting hierarchical data load for device:', device);
 
     // Step 1: Load countries
@@ -740,7 +743,7 @@ private loadHierarchicalDataParallel(device: any, projectId: string) {
             const areaArray = Array.isArray(areas) ? areas : [];
             this.areaByCountry[device.countryId] = areaArray;
             console.log('✅ Areas loaded:', areaArray);
-            
+
             this.cdr.detectChanges();
 
             if (!device.areaId) {
@@ -758,7 +761,7 @@ private loadHierarchicalDataParallel(device: any, projectId: string) {
                 const buildingArray = Array.isArray(buildings) ? buildings : [];
                 this.buildingByArea[device.areaId] = buildingArray;
                 console.log('✅ Buildings loaded:', buildingArray);
-                
+
                 this.cdr.detectChanges();
 
                 if (!device.buildingId) {
@@ -773,7 +776,7 @@ private loadHierarchicalDataParallel(device: any, projectId: string) {
                     const floorArray = Array.isArray(floors) ? floors : [];
                     this.floorByBuilding[device.buildingId] = floorArray;
                     console.log('✅ Floors loaded:', floorArray);
-                    
+
                     this.cdr.detectChanges();
 
                     if (!device.floorId) {
@@ -1558,18 +1561,18 @@ private loadHierarchicalDataParallel(device: any, projectId: string) {
 
 
 
-loadOutdoorZonesForArea(areaId: string) {
+  loadOutdoorZonesForArea(areaId: string) {
     console.log('🔍 Loading outdoor zones for area:', areaId);
     this.deviceService.getOutdoorZoneMapping(areaId).subscribe({
       next: (zones: any) => {
         console.log('✅ Raw outdoor zones response:', zones);
-        
+
         // ✅ Handle different response formats
         const zonesArray = Array.isArray(zones) ? zones : (zones.data ? zones.data : []);
-        
+
         this.outdoorZonesByArea[areaId] = zonesArray;
         console.log('✅ Outdoor zones stored for area', areaId, ':', this.outdoorZonesByArea[areaId]);
-        
+
         this.cdr.detectChanges();
       },
       error: (err: any) => {
@@ -1745,10 +1748,11 @@ loadOutdoorZonesForArea(areaId: string) {
     const payload = {
       deviceId: this.createPara.deviceId, // From dropdown
       deviceName: selectedDevice.deviceName, // Auto-filled from deviceList
+      deviceUniqueId: selectedDevice.uniqueId,
       deviceParameters: this.createPara.deviceParameters
         ? this.createPara.deviceParameters.split(',').map((p: string) => p.trim())
         : []
-    };
+    }; 
 
     console.log('✅ Request Payload:', payload);
 
@@ -1808,6 +1812,7 @@ loadOutdoorZonesForArea(areaId: string) {
 
     const payload = {
       deviceId: this.updateParaData.deviceId,
+      deviceUniqueId: selectedDevice.uniqueId,
       deviceName: selectedDevice ? selectedDevice.deviceName : this.updateParaData.deviceName,
       deviceParameters: this.updateParaData.deviceParameters
         ? this.updateParaData.deviceParameters.split(',').map((p: string) => p.trim())

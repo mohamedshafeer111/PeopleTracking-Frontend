@@ -83,8 +83,8 @@
       <span class="label">Zone :</span>
 
       <select formControlName="zone">
-        <option *ngFor="let zone of zones" [value]="zone">
-          {{ zone }}
+        <option *ngFor="let zone of zoneList" [value]="zone.zoneName">
+          {{ zone.zoneName }}
         </option>
       </select>
 
@@ -98,21 +98,19 @@
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Zone</th>
+            <th>Zone Name</th>
             <th>Time In</th>
             <th>Time Out</th>
-            <th>Time Spend</th>
+            <th>Time Spend(seconds)</th>
 
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of tableData">
-            <td>{{ row.name }}</td>
-            <td>{{ row.zone }}</td>
-            <td>{{ row.timeIn }}</td>
-            <td>{{ row.timeOut }}</td>
-            <td>{{ row.timeSpend }}</td>
+          <tr *ngFor="let overview of overviewData">
+            <td>{{ overview.zoneName }}</td>
+            <td>{{ overview.checkInTime }}</td>
+            <td>{{ overview.checkOutTime }}</td>
+            <td>{{ overview.timeSpentSeconds }}</td> 
 
           </tr>
         </tbody>
@@ -131,7 +129,7 @@
 
     <!-- SUMMARY CONTAINER -->
     <div class="summary-box">
-      <p><strong>Total Entries :</strong> 100</p>
+      <p><strong>Total Entries :</strong>3</p>
       <p><strong>Total Exists :</strong> 50</p>
       <p><strong>Total Time Spent :</strong> 22:45</p>
       <p><strong>Avg Time Spent :</strong> 10:45</p>
