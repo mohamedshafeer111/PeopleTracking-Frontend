@@ -1,7 +1,7 @@
 
 export const environment = {
 production: true,
-  apiUrl: 'http://172.16.100.26:5202/api/',
+  apiUrl: '/api/',
   wsUrl: 'ws://165.22.215.89:5202/ws/ZoneCount'
 };
 
