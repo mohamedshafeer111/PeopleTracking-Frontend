@@ -1995,7 +1995,7 @@ setColor(event: any) {
   matchedWsData: any = null;
 
   connectWebSocket() {
-    this.ws = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+    this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.ws.onopen = () => {
       console.log('✅ WebSocket Connected');

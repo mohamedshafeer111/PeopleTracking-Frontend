@@ -181,7 +181,7 @@ export class Device {
 
   getDevicesByAreaId(areaId: string) {
     return this.http.get<any[]>(
-      `http://172.16.100.29:5202/api/DeviceGeoJsonMappingController1/area/${areaId}`
+      `${this.baseUrl}/DeviceGeoJsonMappingController1/area/${areaId}`
     );
   }
 
@@ -192,7 +192,7 @@ export class Device {
 
   deleteDeviceGeoJsonMap(id: string) {
     return this.http.delete(
-      `http://172.16.100.29:5202/api/DeviceGeoJsonMappingController1/${id}`
+      `${this.baseUrl}/DeviceGeoJsonMappingController1/${id}`
     );
   }
 
@@ -321,13 +321,13 @@ deleteProcessAutomation(id: string) {
 
 // GET
 getOutdoorZoneMapping(zoneId: string): Observable<any> {
-  return this.http.get(`http://172.16.100.29:5202/api/ZoneMappingController1/by-zone/${zoneId}`);
+  return this.http.get(`${this.baseUrl}ZoneMappingController1/by-zone/${zoneId}`);
 }
 
 // POST
 saveOutdoorZoneMapping(payload: any): Observable<any> {
   return this.http.post(
-    `http://172.16.100.29:5202/api/ZoneMappingController1/createZoneMappingBasedOnArea`,
+    `${this.baseUrl}ZoneMappingController1/createZoneMappingBasedOnArea`,
     payload
   );
 }

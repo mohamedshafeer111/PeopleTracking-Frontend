@@ -858,7 +858,7 @@ export class Dashboard implements OnInit, OnDestroy {
   private ws!: WebSocket;
   //private wsUrl = 'ws://172.16.100.29:5202/ws/ZoneCount';
 
-   private wsUrl = 'wss://phcc.purpleiq.ai/ws/ZoneCount';
+   private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();
@@ -1598,7 +1598,7 @@ export class Dashboard implements OnInit, OnDestroy {
       this.deviceNotificationWs.close();
     }
 
-    this.deviceNotificationWs = new WebSocket('wss://phcc.purpleiq.ai/ws/DeviceNotification');
+    this.deviceNotificationWs = new WebSocket('ws://172.16.100.26:5202/ws/DeviceNotification');
 
     this.deviceNotificationWs.onopen = () => {
       console.log('✅ Device Notification WS Connected');

@@ -144,7 +144,7 @@ export class Customerdashboard implements OnInit, OnDestroy {
       this.deviceNotificationWs.close();
     }
 
-    this.deviceNotificationWs = new WebSocket('wss://phcc.purpleiq.ai/ws/ZoneCount');
+    this.deviceNotificationWs = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
 
     this.deviceNotificationWs.onopen = () => {
       console.log('✅ Device Notification WS Connected');
@@ -228,7 +228,7 @@ connectGatewayNotificationWS() {
     this.gatewayNotificationWs.close();
   }
 
-  this.gatewayNotificationWs = new WebSocket('wss://phcc.purpleiq.ai/ws/GatewayWebSocket');
+  this.gatewayNotificationWs = new WebSocket('ws://172.16.100.26:5202/ws/GatewayWebSocket');
 
   this.gatewayNotificationWs.onopen = () => {
     console.log('✅ Gateway WS Connected');
