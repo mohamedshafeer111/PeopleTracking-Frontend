@@ -1,5 +1,5 @@
 <nav class="headnavbar">
-  <h3>Create Process & Automation</h3>
+    <h3>Create Process & Automation</h3>
 </nav>
 
 
@@ -318,8 +318,8 @@
 
                                         <!-- SELECT DEVICE -->
                                         <!-- SELECT DEVICE -->
-<div class="input-row">
-  <label>Select Device</label>
+                                        <!-- <div class="input-row">
+  <label>Select Employee</label>
   <div style="flex: 1; min-width: 0;">
     <div class="multi-select-wrapper">
 
@@ -340,10 +340,10 @@
       <div class="multi-select-list"
         *ngIf="showDeviceDropdown && activeDevices.length === 0">
         <span class="no-devices">No devices available. Select a location first.</span>
-      </div>
+      </div> -->
 
-      <!-- chips inside wrapper -->
-      <!-- <div class="selected-chips" *ngIf="selectedDevices.length > 0">
+                                        <!-- chips inside wrapper -->
+                                        <!-- <div class="selected-chips" *ngIf="selectedDevices.length > 0">
         <span class="chip" *ngFor="let d of selectedDevices">
           {{ d.deviceName }}
           <span class="chip-remove"
@@ -351,91 +351,183 @@
         </span>
       </div> -->
 
-    </div>
+                                        <!-- </div>
 
-    <!-- inline error -->
     <small style="color:red; font-size:11px;" *ngIf="validationErrors.devices">
       ⚠ {{ validationErrors.devices }}
     </small>
   </div>
-</div>
+</div> -->
+
+                                        <div class="input-row">
+
+                                            <label>Select Employee</label>
+
+                                            <div style="flex: 1; min-width: 0;">
+
+                                                <div class="multi-select-wrapper">
+
+                                                    <!-- Trigger -->
+                                                    <div class="multi-select-trigger"
+                                                        (click)="toggleEmployeeDropdown()">
+
+                                                        <span>{{ selectedEmployeesLabel }}</span>
+
+                                                    </div>
+
+                                                    <!-- Dropdown -->
+                                                    <div class="multi-select-list" *ngIf="showEmployeeDropdown">
+
+                                                        <!-- Select All -->
+                                                        <label class="multi-select-item select-all">
+
+                                                            <input type="checkbox" [checked]="isAllEmployeesSelected()"
+                                                                (change)="toggleSelectAllEmployees($event)" />
+
+                                                            <span>Select All</span>
+
+                                                        </label>
+
+                                                        <!-- Employee List -->
+                                                        <label *ngFor="let emp of employeeList"
+                                                            class="multi-select-item"
+                                                            (click)="$event.stopPropagation()">
+
+                                                            <input type="checkbox"
+                                                                [checked]="isEmployeeSelected(emp.id)"
+                                                                (change)="onEmployeeSelectionChange(emp)" />
+
+                                                            <span>
+                                                                {{ emp.firstName }} - {{ emp.idNumber }}
+                                                            </span>
+
+                                                        </label>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
 
                                         <!-- STATUS -->
-                                        <div class="input-row">
-                                            <label>Status</label>
+                                        <!-- <div class="input-row">
+                                            <label>Zone</label>
                                             <select class="condition-input" [(ngModel)]="c.deviceStatus">
                                                 <option value="" disabled selected>Select status</option>
                                                 <option value="ONLINE">ONLINE</option>
                                                 <option value="OFFLINE">OFFLINE</option>
                                             </select>
-                                        </div>
-
-                                        <!-- ENTER TIME — single block, no duplicate -->
+                                        </div>  -->
                                         <div class="input-row">
-                                            <label>Enter Time (sec)</label>
-                                            <input type="number" placeholder="Enter time in seconds"
-                                                [(ngModel)]="c.deviceTime" (ngModelChange)="onTimeChange($event)" />
-                                            <!-- inline error under time -->
-                                            <small style="color:red; font-size:11px;" *ngIf="validationErrors.time">
-                                                ⚠ {{ validationErrors.time }}
-                                            </small>
+                                            <label>Zone</label>
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div class="multi-select-wrapper">
+
+                                                    <!-- Trigger -->
+                                                    <div class="multi-select-trigger"
+                                                        (click)="toggleZoneDropdown(selectedFloorId)">
+
+                                                        <span>{{ getSelectedZonesLabel() }}</span>
+
+                                                    </div>
+
+                                                    <!-- Dropdown -->
+                                                    <div class="multi-select-list" *ngIf="showZoneDropdown">
+
+                                                        <!-- Select All -->
+                                                        <label class="multi-select-item select-all">
+
+                                                            <input type="checkbox" [checked]="isAllZonesSelected()"
+                                                                (change)="toggleSelectAllZones($event)" />
+
+                                                            <span>Select All</span>
+
+                                                        </label>
+
+                                                        <!-- Zone List -->
+                                                        <label *ngFor="let zone of zoneList" class="multi-select-item"
+                                                            (click)="$event.stopPropagation()">
+
+                                                            <input type="checkbox" [checked]="isZoneSelected(zone.id)"
+                                                                (change)="onZoneSelectionChange(zone)" />
+
+                                                            <span>{{ zone.zoneName }}</span>
+
+                                                        </label>
+
+                                                    </div>
+
+                                                </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- ENTER TIME — single block, no duplicate -->
+                                            <div class="input-row">
+                                                <label>Enter Threshold (min)</label>
+                                                <input type="number" placeholder="Enter Threshold value in min"
+                                                    [(ngModel)]="c.deviceTime" (ngModelChange)="onTimeChange($event)" />
+                                                <!-- inline error under time -->
+                                                <small style="color:red; font-size:11px;" *ngIf="validationErrors.time">
+                                                    ⚠ {{ validationErrors.time }}
+                                                </small>
+                                            </div>
+
                                         </div>
 
-                                    </div>
 
 
-
-
-                                    <!-- PLUS / MINUS -->
-                                    <button class="add-btn" type="button">
-                                        <img src="assets/minus.png" class="btn-icon" *ngIf="i > 0"
-                                            (click)="removeCondition(i)" />
-                                        <!-- <img src="assets/plusicon.png" class="btn-icon"
+                                        <!-- PLUS / MINUS -->
+                                        <button class="add-btn" type="button">
+                                            <img src="assets/minus.png" class="btn-icon" *ngIf="i > 0"
+                                                (click)="removeCondition(i)" />
+                                            <!-- <img src="assets/plusicon.png" class="btn-icon"
                                             *ngIf="i === conditions.length - 1 && conditions.length < 3"
                                             (click)="addCondition()" /> -->
-                                    </button>
+                                        </button>
 
-                                    <!-- DROPDOWN LIST -->
-                                    <!-- <ul class="condition-dropdown" *ngIf="c.showDropdown">
+                                        <!-- DROPDOWN LIST -->
+                                        <!-- <ul class="condition-dropdown" *ngIf="c.showDropdown">
                                         <li (click)="selectCondition('device', i)">When the device</li>
                                         <li (click)="selectCondition('time', i)">When the time is</li>
                                         <li (click)="selectCondition('people', i)">When the people is</li>
                                     </ul> -->
 
+                                    </div>
+
+                                    <!-- DEVICE -->
+                                    <div class="condition-expand" *ngIf="c.selectedCondition === 'device'">
+                                        <select #deviceSelect class="condition-input" [(ngModel)]="selectedDeviceId"
+                                            (change)="onDeviceChange(deviceSelect.value)">
+                                            <option value="" disabled>Select Device</option>
+                                            <option *ngFor="let device of devices" [value]="device.id">
+                                                {{ device.deviceName }}
+                                            </option>
+                                        </select>
+
+                                        <select class="condition-input" [(ngModel)]="selectedParameterId"
+                                            [disabled]="parameters.length === 0">
+                                            <option value="" disabled>Select Parameter</option>
+                                            <option *ngFor="let param of parameters" [value]="param.id">
+                                                {{ param.name }}
+                                            </option>
+                                        </select>
+
+                                        <input class="condition-input" placeholder="Value" />
+                                    </div>
+
+                                    <!-- PEOPLE -->
+                                    <div class="people-inputs" *ngIf="c.showPeopleInputs">
+                                        <input class="condition-input" />
+                                        <input class="condition-input" />
+                                        <input class="condition-input" />
+                                    </div>
+
                                 </div>
 
-                                <!-- DEVICE -->
-                                <div class="condition-expand" *ngIf="c.selectedCondition === 'device'">
-                                    <select #deviceSelect class="condition-input" [(ngModel)]="selectedDeviceId"
-                                        (change)="onDeviceChange(deviceSelect.value)">
-                                        <option value="" disabled>Select Device</option>
-                                        <option *ngFor="let device of devices" [value]="device.id">
-                                            {{ device.deviceName }}
-                                        </option>
-                                    </select>
-
-                                    <select class="condition-input" [(ngModel)]="selectedParameterId"
-                                        [disabled]="parameters.length === 0">
-                                        <option value="" disabled>Select Parameter</option>
-                                        <option *ngFor="let param of parameters" [value]="param.id">
-                                            {{ param.name }}
-                                        </option>
-                                    </select>
-
-                                    <input class="condition-input" placeholder="Value" />
-                                </div>
-
-                                <!-- PEOPLE -->
-                                <div class="people-inputs" *ngIf="c.showPeopleInputs">
-                                    <input class="condition-input" />
-                                    <input class="condition-input" />
-                                    <input class="condition-input" />
-                                </div>
-
-                            </div>
-
-                            <!-- TIME PERIOD CHECKBOX -->
-                            <!-- <div class="form-row">
+                                <!-- TIME PERIOD CHECKBOX -->
+                                <!-- <div class="form-row">
                                 <label class="checkbox-label">
                                     <input type="checkbox" [checked]="showTimePeriod"
                                         (change)="toggleTimePeriod($event)" />
@@ -444,240 +536,246 @@
                                 </label>
                             </div> -->
 
-                            <!-- TIME PERIOD -->
-                            <div class="time-period-box" *ngIf="showTimePeriod">
+                                <!-- TIME PERIOD -->
+                                <div class="time-period-box" *ngIf="showTimePeriod">
 
-                                <div class="time-inputs">
+                                    <div class="time-inputs">
 
-                                    <!-- FROM -->
-                                    <div class="time-group">
-                                        <label>From</label>
-                                        <div class="time-box">
-                                            <input type="text" maxlength="2" placeholder="HH" [(ngModel)]="fromHour"
-                                                (input)="formatHour($event)" class="time-inner" />
-                                            <span class="colon">:</span>
-                                            <input type="text" maxlength="2" placeholder="MM" [(ngModel)]="fromMinute"
-                                                (input)="formatMinute($event)" class="time-inner" />
+                                        <!-- FROM -->
+                                        <div class="time-group">
+                                            <label>From</label>
+                                            <div class="time-box">
+                                                <input type="text" maxlength="2" placeholder="HH" [(ngModel)]="fromHour"
+                                                    (input)="formatHour($event)" class="time-inner" />
+                                                <span class="colon">:</span>
+                                                <input type="text" maxlength="2" placeholder="MM"
+                                                    [(ngModel)]="fromMinute" (input)="formatMinute($event)"
+                                                    class="time-inner" />
+                                            </div>
                                         </div>
+
+                                        <!-- TO -->
+                                        <div class="time-group">
+                                            <label>To</label>
+                                            <div class="time-box">
+                                                <input type="text" maxlength="2" placeholder="HH" [(ngModel)]="toHour"
+                                                    (input)="formatHour($event)" class="time-inner" />
+                                                <span class="colon">:</span>
+                                                <input type="text" maxlength="2" placeholder="MM" [(ngModel)]="toMinute"
+                                                    (input)="formatMinute($event)" class="time-inner" />
+                                            </div>
+                                        </div>
+
                                     </div>
 
-                                    <!-- TO -->
-                                    <div class="time-group">
-                                        <label>To</label>
-                                        <div class="time-box">
-                                            <input type="text" maxlength="2" placeholder="HH" [(ngModel)]="toHour"
-                                                (input)="formatHour($event)" class="time-inner" />
-                                            <span class="colon">:</span>
-                                            <input type="text" maxlength="2" placeholder="MM" [(ngModel)]="toMinute"
-                                                (input)="formatMinute($event)" class="time-inner" />
-                                        </div>
+                                    <!-- DAYS -->
+                                    <div class="days-selection">
+                                        <span *ngFor="let day of days" (click)="toggleDay(day)"
+                                            [class.selected]="selectedDays.includes(day)">
+                                            {{ day }}
+                                        </span>
                                     </div>
 
-                                </div>
-
-                                <!-- DAYS -->
-                                <div class="days-selection">
-                                    <span *ngFor="let day of days" (click)="toggleDay(day)"
-                                        [class.selected]="selectedDays.includes(day)">
-                                        {{ day }}
-                                    </span>
                                 </div>
 
                             </div>
-
                         </div>
                     </div>
+
                 </div>
 
-            </div>
 
+                <!-- ========== ROW 2 : ACTIONS (BOTTOM) ========== -->
+                <div class="rule-row">
 
-            <!-- ========== ROW 2 : ACTIONS (BOTTOM) ========== -->
-            <div class="rule-row">
+                    <!-- LEFT LABEL -->
+                    <div class="side-labels">
+                        <div class="side-label">Actions</div>
+                    </div>
 
-                <!-- LEFT LABEL -->
-                <div class="side-labels">
-                    <div class="side-label">Actions</div>
-                </div>
+                    <!-- RIGHT CONTENT -->
+                    <div class="content-wrapper">
+                        <div class="main-content">
+                            <div class="action-section">
 
-                <!-- RIGHT CONTENT -->
-                <div class="content-wrapper">
-                    <div class="main-content">
-                        <div class="action-section">
+                                <div *ngFor="let a of actions; let i = index" class="action-block">
 
-                            <div *ngFor="let a of actions; let i = index" class="action-block">
+                                    <!-- HEADER (LEFT LABEL + INPUT) -->
+                                    <div class="action-header">
+                                        <label class="action-label">{{ a.label }}</label>
 
-                                <!-- HEADER (LEFT LABEL + INPUT) -->
-                                <div class="action-header">
-                                    <label class="action-label">{{ a.label }}</label>
+                                        <div class="action-row">
+                                            <div class="dropdown-wrapper">
+                                                <div class="dropdown-input" (click)="toggleActionDropdown(i)">
+                                                    <input type="text" [value]="a.selectedActionLabel"
+                                                        placeholder="Select action" readonly />
+                                                </div>
 
-                                    <div class="action-row">
-                                        <div class="dropdown-wrapper">
-                                            <div class="dropdown-input" (click)="toggleActionDropdown(i)">
-                                                <input type="text" [value]="a.selectedActionLabel"
-                                                    placeholder="Select action" readonly />
+                                                <ul class="condition-dropdown open-below" *ngIf="a.showActionDropdown">
+                                                    <li (click)="selectAction('device', i)">Trigger Device</li>
+                                                    <li (click)="selectAction('alarm', i)">Send an alarm</li>
+                                                </ul>
                                             </div>
 
-                                            <ul class="condition-dropdown open-below" *ngIf="a.showActionDropdown">
-                                                <li (click)="selectAction('device', i)">Trigger Device</li>
-                                                <li (click)="selectAction('alarm', i)">Send an alarm</li>
-                                            </ul>
-                                        </div>
-
-                                        <div class="add-btn">
-                                            <img src="assets/minus.png" class="btn-icon" *ngIf="i > 0"
-                                                (click)="removeAction(i)" />
-                                            <!-- <img src="assets/plusicon.png" class="btn-icon"
+                                            <div class="add-btn">
+                                                <img src="assets/minus.png" class="btn-icon" *ngIf="i > 0"
+                                                    (click)="removeAction(i)" />
+                                                <!-- <img src="assets/plusicon.png" class="btn-icon"
                                                 *ngIf="i === actions.length - 1 && actions.length < 3"
                                                 (click)="addAction()" /> -->
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- 🔽 EXPANDED CONTENT (DOWN) -->
+
+                                    <!-- DEVICE -->
+                                    <div class="condition-expand" *ngIf="a.selectedAction === 'device'">
+                                        <select class="condition-input">
+                                            <option>Select Device</option>
+                                        </select>
+
+                                        <select class="condition-input">
+                                            <option>Select Parameter</option>
+                                        </select>
+
+                                        <input class="condition-input" placeholder="Value" />
+                                    </div>
+
+                                    <!-- ALARM OPTIONS -->
+                                    <div class="condition-expand alarm-options" *ngIf="a.selectedAction === 'alarm'">
+                                        <button class="alarm-btn" [class.active]="a.selectedAlarmType === 'dashboard'"
+                                            (click)="selectAlarmType('dashboard', i)">
+                                            Dashboard
+                                        </button>
+
+                                        <button class="alarm-btn" [class.active]="a.selectedAlarmType === 'email'"
+                                            (click)="selectAlarmType('email', i)">
+                                            Email
+                                        </button>
+
+                                        <button class="alarm-btn" [class.active]="a.selectedAlarmType === 'task'"
+                                            (click)="selectAlarmType('task', i)">
+                                            Task
+                                        </button>
+                                    </div>
+
+                                    <!-- EMAIL / TASK INPUTS -->
+                                    <div *ngIf="a.selectedAction === 'alarm' && a.selectedAlarmType === 'email'">
+
+                                        <select class="condition-input" [(ngModel)]="a.email.severity">
+                                            <option value="major">Major</option>
+                                            <option value="minor">Minor</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+
+                                        <input class="condition-input" placeholder="Enter Email 1"
+                                            [(ngModel)]="a.email.title" />
+
+                                        <input class="condition-input" placeholder="Enter Email 2"
+                                            [(ngModel)]="a.email.description" />
+
+                                        <input class="condition-input" placeholder="Recurrence"
+                                            [(ngModel)]="a.email.recurrence" />
+
+                                        <input class="condition-input" placeholder="Description"
+                                            [(ngModel)]="a.email.message" />
+                                    </div>
+                                    <div *ngIf="a.selectedAction === 'alarm' && a.selectedAlarmType === 'task'">
+
+                                        <select class="condition-input" [(ngModel)]="a.task.severity">
+                                            <option value="major">Major</option>
+                                            <option value="minor">Minor</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+
+                                        <input class="condition-input" placeholder="Task Title"
+                                            [(ngModel)]="a.task.title" />
+
+                                        <input class="condition-input" placeholder="Task Description"
+                                            [(ngModel)]="a.task.description" />
+
+                                        <input class="condition-input" placeholder="Recurrence"
+                                            [(ngModel)]="a.task.recurrence" />
+
+                                        <input class="condition-input" placeholder="Task Message"
+                                            [(ngModel)]="a.task.message" />
+                                    </div>
+
+
+
                                 </div>
 
-                                <!-- 🔽 EXPANDED CONTENT (DOWN) -->
-
-                                <!-- DEVICE -->
-                                <div class="condition-expand" *ngIf="a.selectedAction === 'device'">
-                                    <select class="condition-input">
-                                        <option>Select Device</option>
-                                    </select>
-
-                                    <select class="condition-input">
-                                        <option>Select Parameter</option>
-                                    </select>
-
-                                    <input class="condition-input" placeholder="Value" />
-                                </div>
-
-                                <!-- ALARM OPTIONS -->
-                                <div class="condition-expand alarm-options" *ngIf="a.selectedAction === 'alarm'">
-                                    <button class="alarm-btn" [class.active]="a.selectedAlarmType === 'dashboard'"
-                                        (click)="selectAlarmType('dashboard', i)">
-                                        Dashboard
-                                    </button>
-
-                                    <button class="alarm-btn" [class.active]="a.selectedAlarmType === 'email'"
-                                        (click)="selectAlarmType('email', i)">
-                                        Email
-                                    </button>
-
-                                    <button class="alarm-btn" [class.active]="a.selectedAlarmType === 'task'"
-                                        (click)="selectAlarmType('task', i)">
-                                        Task
-                                    </button>
-                                </div>
-
-                                <!-- EMAIL / TASK INPUTS -->
-                                <div *ngIf="a.selectedAction === 'alarm' && a.selectedAlarmType === 'email'">
-
-                                    <select class="condition-input" [(ngModel)]="a.email.severity">
-                                        <option value="major">Major</option>
-                                        <option value="minor">Minor</option>
-                                        <option value="critical">Critical</option>
-                                    </select>
-
-                                    <input class="condition-input" placeholder="Enter Email 1"
-                                        [(ngModel)]="a.email.title" />
-
-                                    <input class="condition-input" placeholder="Enter Email 2"
-                                        [(ngModel)]="a.email.description" />
-
-                                    <input class="condition-input" placeholder="Recurrence"
-                                        [(ngModel)]="a.email.recurrence" />
-
-                                    <input class="condition-input" placeholder="Description"
-                                        [(ngModel)]="a.email.message" />
-                                </div>
-                                <div *ngIf="a.selectedAction === 'alarm' && a.selectedAlarmType === 'task'">
-
-                                    <select class="condition-input" [(ngModel)]="a.task.severity">
-                                        <option value="major">Major</option>
-                                        <option value="minor">Minor</option>
-                                        <option value="critical">Critical</option>
-                                    </select>
-
-                                    <input class="condition-input" placeholder="Task Title"
-                                        [(ngModel)]="a.task.title" />
-
-                                    <input class="condition-input" placeholder="Task Description"
-                                        [(ngModel)]="a.task.description" />
-
-                                    <input class="condition-input" placeholder="Recurrence"
-                                        [(ngModel)]="a.task.recurrence" />
-
-                                    <input class="condition-input" placeholder="Task Message"
-                                        [(ngModel)]="a.task.message" />
-                                </div>
-
-
-
-                            </div>
 
 
 
 
-
-                            <!-- <div class="dropdown-input">
+                                <!-- <div class="dropdown-input">
     <p>ACTION: When the Device</p>
 </div> -->
 
-                            <div class="action-inputs">
+                                <div class="action-inputs">
 
-                                <!-- Row 1 -->
-                                <div class="action-row">
-                                    <label class="action-label">Select Type</label>
+                                    <!-- Row 1 -->
+                                    <div class="action-row">
+                                        <label class="action-label">Select Type</label>
 
-                                    <select class="condition-input device-input" [(ngModel)]="selectedActionType">
-                                        <option value="" disabled selected>Select Type</option>
-                                        <option value="Send an Alarm">Send an Alarm</option>
-                                    </select>
+                                        <select class="condition-input device-input" [(ngModel)]="description">
+                                            <option value="" disabled selected>Select Type</option>
+                                            <option value="Send an Alarm">Send an Alarm</option>
+                                        </select>
+                                    </div>
+
+
+
+
+<!-- 
+                                    <div class="action-row">
+                                        <label class="action-label">Email</label>
+
+                                        <input type="checkbox" class="dashboard-checkbox"
+                                            [(ngModel)]="dashboardChecked" />
+                                    </div> -->
+
+
+                                    <!-- Row 2 -->
+                                    <div class="input-row">
+                                        <label>Email</label>
+
+                                        <!-- <textarea class="condition-input description-box" placeholder="Enter Email description here..."
+                                        [(ngModel)]="mail"></textarea> -->
+
+                                        <input type="text" [(ngModel)]="mail" placeholder="Enter Email  here...">
+
+                                    </div>
+
+
+
+
                                 </div>
 
 
 
 
 
-                                <div class="action-row">
-                                    <label class="action-label">Dashboard</label>
 
-                                    <input type="checkbox" class="dashboard-checkbox" [(ngModel)]="dashboardChecked" />
+
+
+                                <div class="form-actions">
+                                    <button class="cancel-btn" routerLink="/processautomation">Cancel</button>
+                                    <button class="save-btn" (click)="saveNewProcessAutomation()">Create</button>
                                 </div>
 
-
-                                <!-- Row 2 -->
-                                <div class="input-row">
-                                    <label>Description</label>
-
-                                    <textarea class="condition-input description-box"
-                                        placeholder="Enter description here..." [(ngModel)]="description"></textarea>
-
-                                </div>
-
-
-                            </div>
-
-
-
-
-
-
-
-
-                            <div class="form-actions">
-                                <button class="cancel-btn" routerLink="/processautomation">Cancel</button>
-                                <button class="save-btn" (click)="saveProcessAutomation()">Create</button>
                             </div>
 
                         </div>
-
                     </div>
+
                 </div>
 
             </div>
 
+
+
         </div>
-
-
-
     </div>
-</div>

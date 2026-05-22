@@ -18,7 +18,7 @@
 
 
 
-<div class="AWContainer" *ngIf="isAddWidgetPopup">
+<!-- <div class="AWContainer" *ngIf="isAddWidgetPopup">
   <div class="AwContent">
     <div class="AWNavbar">
       <span>Customer</span>
@@ -35,7 +35,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 
 
@@ -50,7 +50,7 @@
 
 
 
-<div class="table-container">
+<!-- <div class="table-container">
   <table>
     <thead>
       <tr>
@@ -73,7 +73,7 @@
       </tr>
     </tbody>
   </table>
-</div>
+</div> -->
 
 
 
@@ -148,4 +148,108 @@
       </ng-template>
     </div>
   </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="dashboard-layout">
+
+  <div class="tables-section">
+
+    <div class="time-sheet-widget">
+      <div class="widget-header">
+        <h2>Time Sheet</h2>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Id</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Time Spend</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let person of personList; let isEven = even"
+            [class.row-highlight]="isEven"
+          >
+            <td>{{ person.personName }}</td>
+            <td>{{ person.personId }}</td>
+            <td>{{ person.checkInTime }}</td>
+            <td>{{ person.checkOutTime }}</td>
+            <td>{{ person.timeSpent }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+    <div class="time-sheet-widget">
+
+      <div class="widget-header">
+        <h2>Live Person Stream</h2>
+
+        <!-- <span class="delete-icon">🗑️</span> -->
+      </div>
+
+      <table class="data-table">
+
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Id</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="let person of personStreamData; let isEven = even"
+            [class.row-highlight]="isEven"
+          >
+
+            <td>{{ person.person_name }}</td>
+
+            <td>{{ person.person_id }}</td>
+
+            <td>{{ person.device_trigger }}</td>
+
+            <td>{{ person.timestamp }}</td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="chart-section">
+
+    <div class="chart-card">
+      <h2>Gender Ratio</h2>
+
+      <div class="chart-container">
+        <canvas id="genderPieChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
 </div>

@@ -266,6 +266,16 @@
 
             </div>
 
+<!-- rakesh changed the code  -->
+
+<select id="personTypeSelect" 
+        *ngIf="activeLevel === 'floor' || activeLevel === 'zone'"
+        [(ngModel)]="selectedPersonType" 
+        (change)="onPersonTypeChange()">
+  <option value="employee">Employee</option>
+  <option value="customer">Customer</option>
+</select>
+
 
             <div class="hours-group" *ngIf="showHourInputs">
                 <label class="hour-button" *ngFor="let h of hours" [class.active]="selectedHour === h">
@@ -520,4 +530,61 @@
                 (click)="showOutdoorPolygonPopup = false; clearOutdoorTempDrawing()">Cancel</button>
         </div>
     </div>
+</div>
+
+
+
+
+<div class="popup-overlay" *ngIf="inOutPopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Employees In Out List</h4>
+
+            <span class="close-btn" (click)="closeInOutpopup()">
+                ✖
+            </span>
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Status</th>
+                    <th>Company</th>
+                    <th>TimeStamp</th>
+                    <th>Phone</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let empl of empInOutlist">
+
+                    <td>{{ empl.person_details.firstName }}</td>
+
+                    <td>{{ empl.person_details.lastName }}</td>
+
+                    <td>{{ empl.device_trigger }}</td>
+
+                    <td>{{ empl.person_details.company }}</td>
+
+                      <td class="timestamp">
+                        {{ formatTimestamp(empl.timestamp) }}
+                    </td>
+
+                    <td>{{ empl.person_details.phoneNumber }}</td>
+
+                    <td>{{ empl.person_details.designation }}</td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>

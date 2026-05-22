@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Roleservice } from '../../../service/role/roleservice';
 import { Device } from '../../../service/device/device';
+import { Peopleservice } from '../../../service/people/peopleservice';
 // import { Router } from 'express';
 
 
@@ -60,11 +61,12 @@ export class Createprocessautomation implements OnInit, AfterViewChecked {
   activeTab: string = 'project'; // 👈 default tab
 
 
-  constructor(private role: Roleservice, private cdr: ChangeDetectorRef, private device: Device, private router: Router) { }
+  constructor(private role: Roleservice, private cdr: ChangeDetectorRef, private device: Device, private router: Router,private peopleservice:Peopleservice) { }
 
   ngOnInit(): void {
 
     this.loadProject();
+    this.loadAllEmployee();
   }
 
 
@@ -973,6 +975,7 @@ onActionDeviceChange(deviceId: string) {
       deviceId: '',
       deviceStatus: '',       // ← RENAMED from deviceId to avoid confusion
       deviceTime: '',
+       floorId: '',
       operator: 'AND' as 'AND' | 'OR'
     };
   }
@@ -1344,7 +1347,60 @@ saveProcessAutomation() {
   });
 }
 
+mail: string = '';
 
+
+saveNewProcessAutomation() {
+
+ const selectedEmployeeIds = this.selectedEmployees.map(
+    (emp: any) => emp.idNumber
+  );
+
+
+  const selectedZoneIds = this.selectedZones.map(
+    (zone: any) => zone.id
+  );
+
+  const body = {
+
+    id: '',
+
+    employee: selectedEmployeeIds,
+
+    title: this.title,
+
+    zone: selectedZoneIds,
+
+    threshold: Number(this.conditions[0].deviceTime),
+
+    text: this.description,
+
+    mail: this.mail,
+
+    createdAt: new Date().toISOString()
+
+  };
+
+  console.log(body);
+
+  this.device.createNewProcessAutomation(body).subscribe({
+
+    next: (res: any) => {
+
+      console.log('Process Automation Created', res);
+       this.router.navigate(['/processautomation']);
+
+    },
+
+    error: (err: any) => {
+
+      console.log('Error creating process automation', err);
+
+    }
+
+  });
+
+}
 
 
 
@@ -1445,15 +1501,204 @@ onDocumentClick(event: MouseEvent) {
 
 
 
+employeeList:any[]=[];
+
+loadAllEmployee(){
+  this.peopleservice.getTotalEmployees().subscribe({
+    next:(res:any)=>{
+        this.employeeList=res.data;
+    },
+    error:()=>{
+      console.log("error getting total employee")
+    }
+  })
+}
+
+
+selectedEmployees: any[] = [];
+
+showEmployeeDropdown = false;
+
+toggleEmployeeDropdown() {
+
+  this.showEmployeeDropdown =
+    !this.showEmployeeDropdown;
+
+  if (this.employeeList.length === 0) {
+
+    this.loadAllEmployee();
+
+  }
+
+}
+onEmployeeSelectionChange(emp: any) {
+
+  const index = this.selectedEmployees.findIndex(
+    e => e.id === emp.id
+  );
+
+  if (index > -1) {
+
+    this.selectedEmployees.splice(index, 1);
+
+  } else {
+
+    this.selectedEmployees.push(emp);
+
+  }
+
+}
+
+isEmployeeSelected(id: string): boolean {
+
+  return this.selectedEmployees.some(
+    e => e.id === id
+  );
+
+}
+
+toggleSelectAllEmployees(event: any) {
+
+  if (event.target.checked) {
+
+    this.selectedEmployees = [...this.employeeList];
+
+  } else {
+
+    this.selectedEmployees = [];
+
+  }
+
+}
+
+isAllEmployeesSelected(): boolean {
+
+  return this.employeeList.length > 0 &&
+         this.selectedEmployees.length === this.employeeList.length;
+
+}
+
+
+get selectedEmployeesLabel(): string {
+
+  if (this.selectedEmployees.length === 0) {
+
+    return 'Select Employee';
+
+  }
+
+  return this.selectedEmployees
+    .map(e => e.firstName)
+    .join(', ');
+
+}
+
+selectedFloor: any;
+zoneList: any[] = [];
+
+selectedZones: any[] = [];
+
+showZoneDropdown = false;
 
 
 
+loadZone(floorId: string) {
 
+  this.role.getZones(floorId).subscribe({
 
+    next: (res: any) => {
 
+      console.log(res);
 
+      this.zoneList = res;
+      this.cdr.detectChanges();
 
+    },
 
+    error: () => {
 
+      console.log('Error loading zones');
+
+    }
+
+  });
+
+}
+
+toggleZoneDropdown(floorId: string | null) {
+
+  if (!floorId) return;
+
+  this.showZoneDropdown =
+    !this.showZoneDropdown;
+
+  if (this.zoneList.length === 0) {
+
+    this.loadZone(floorId);
+
+  }
+
+}
+
+onZoneSelectionChange(zone: any) {
+
+  const index = this.selectedZones.findIndex(
+    z => z.id === zone.id
+  );
+
+  if (index > -1) {
+
+    this.selectedZones.splice(index, 1);
+
+  } else {
+
+    this.selectedZones.push(zone);
+
+  }
+
+}
+
+isZoneSelected(id: string): boolean {
+
+  return this.selectedZones.some(
+    z => z.id === id
+  );
+
+}
+
+toggleSelectAllZones(event: any) {
+
+  if (event.target.checked) {
+
+    this.selectedZones = [...this.zoneList];
+
+  } else {
+
+    this.selectedZones = [];
+
+  }
+
+}
+
+isAllZonesSelected(): boolean {
+
+  return this.zoneList.length > 0 &&
+         this.selectedZones.length === this.zoneList.length;
+
+}
+
+getSelectedZonesLabel(): string {
+
+  if (this.selectedZones.length === 0) {
+
+    return 'Select Zone';
+
+  }
+
+  return this.selectedZones
+    .map(z => z.zoneName)
+    .join(', ');
+
+}
 
 }

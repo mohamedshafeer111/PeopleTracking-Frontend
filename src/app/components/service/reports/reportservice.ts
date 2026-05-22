@@ -148,4 +148,9 @@ export class Reportservice {
     return this.http.get(`${this.apiUrl}Asset/asset-history-report/${bsonId}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   }
 
+
+  createReport(reportData:any){
+    return this.http.post(`${this.apiUrl}DeviceEvent/report`,reportData)
+  }
+
 }

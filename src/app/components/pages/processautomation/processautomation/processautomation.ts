@@ -26,6 +26,7 @@ export class Processautomation implements OnInit {
 
   ngOnInit() {
     this.loadAll();
+      this.loadProcessAutomation();
   }
 
 
@@ -159,6 +160,32 @@ deleteItem(id: string) {
       console.log('Error deleting process automation');
     }
   });
+}
+
+
+processAutomationList: any[] = [];
+
+loadProcessAutomation() {
+
+  this.device.getAllProcessAndAutomation().subscribe({
+
+    next: (res: any) => {
+
+      console.log(res);
+
+      this.processAutomationList = res.data;
+      this.cdr.detectChanges();
+
+    },
+
+    error: (err: any) => {
+
+      console.log('Error loading process automation', err);
+
+    }
+
+  });
+
 }
 
 }

@@ -57,22 +57,127 @@ export class Live implements OnInit, AfterViewInit {
     '30 Days': 30
   };
 
+  // rakesh change the code 
+  // ngOnInit(): void {
+  //   this.loadProject();
+  //   this.setDefaultTimeRange();
+  //   this.savedMappingId = localStorage.getItem("savedMappingId") || "";
+  //   this.connectWebSocket();
+
+
+  //   delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+  //   L.Icon.Default.mergeOptions({
+  //     iconRetinaUrl: 'assets/leaflet/marker-icon-2x.png',
+  //     iconUrl: 'assets/leaflet/marker-icon.png',
+  //     shadowUrl: 'assets/leaflet/marker-shadow.png',
+  //   });
+  // }
+
+
 
   ngOnInit(): void {
     this.loadProject();
     this.setDefaultTimeRange();
     this.savedMappingId = localStorage.getItem("savedMappingId") || "";
-    this.connectWebSocket();
-
-
+    this.connectWebSocket();         // your existing websocket
+    this.connectRealtimeWebSocket(); // new realtime count websocket
     delete (L.Icon.Default.prototype as any)._getIconUrl;
-
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'assets/leaflet/marker-icon-2x.png',
       iconUrl: 'assets/leaflet/marker-icon.png',
       shadowUrl: 'assets/leaflet/marker-shadow.png',
     });
   }
+
+
+  // ngOnDestroy(): void {
+  //   if (this.ws) {
+  //     this.ws.close();
+  //   }
+  //   if (this.realtimeWs) {
+  //     this.realtimeWs.close();
+  //   }
+  // }
+  ngOnDestroy(): void {
+    if (this.wsReconnectTimer) {
+      clearTimeout(this.wsReconnectTimer);
+    }
+    if (this.ws) {
+      this.ws.close();
+    }
+    if (this.realtimeWs) {
+      this.realtimeWs.close();
+    }
+  }
+
+
+
+  // private ws: WebSocket | null = null;
+  checkinCount: number = 0;
+  checkoutCount: number = 0;
+
+
+
+  private realtimeWs: WebSocket | null = null;
+
+  private realtimeWsReconnectAttempts: number = 0;
+
+  // connectRealtimeWebSocket() {
+  //   this.realtimeWs = new WebSocket('ws://172.16.100.29:5402/ws/RealtimeCount');
+
+  //   this.realtimeWs.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     this.checkinCount = data.checkinCount || 0;
+  //     this.checkoutCount = data.checkoutCount || 0;
+  //     this.redrawCanvas();
+  //   };
+
+  //   this.realtimeWs.onerror = (err) => {
+  //     console.error('Realtime WebSocket error:', err);
+  //   };
+
+  //   this.realtimeWs.onclose = () => {
+  //     console.warn('Realtime WebSocket closed');
+  //   };
+  // }
+  connectRealtimeWebSocket() {
+    if (this.realtimeWsReconnectAttempts >= 3) {
+      console.warn('⚠️ Max Realtime WS reconnect attempts reached. Stopping.');
+      return;
+    }
+
+    this.realtimeWs = new WebSocket('ws://172.16.100.29:5402/ws/RealtimeCount');
+
+    this.realtimeWs.onopen = () => {
+      console.log('✅ Realtime WebSocket Connected');
+      this.realtimeWsReconnectAttempts = 0;
+    };
+
+    this.realtimeWs.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      this.checkinCount = data.checkinCount || 0;
+      this.checkoutCount = data.checkoutCount || 0;
+      this.redrawCanvas();
+    };
+
+    this.realtimeWs.onclose = () => {
+      console.warn('🔌 Realtime WebSocket Closed');
+      this.realtimeWsReconnectAttempts++;
+      if (this.realtimeWsReconnectAttempts < 3) {
+        setTimeout(() => this.connectRealtimeWebSocket(), 5000);
+      }
+    };
+
+    this.realtimeWs.onerror = err => {
+      console.error('❌ Realtime WebSocket Error', err);
+    };
+  }
+
+
+
+
+
 
   projects: any[] = [];
   loadProject() {
@@ -935,34 +1040,45 @@ export class Live implements OnInit, AfterViewInit {
   //   this.redrawCanvas();
   // }
 
-setColor(event: any) {
-  this.currentColor = event.target.value;
+  setColor(event: any) {
+    this.currentColor = event.target.value;
 
-  if (this.selectedOutdoorZone && !this.floorImage && !this.zoneImage && !this.subZoneImage) {
-    // ✅ Directly start drawing on Leaflet map after color pick
-    this.isOutdoorPolygonDrawingEnabled = true;
-    this.outdoorPolygonCompleted = false;
-    this.outdoorTempLatLngs = [];
-    this.clearOutdoorTempDrawing();
+    if (this.selectedOutdoorZone && !this.floorImage && !this.zoneImage && !this.subZoneImage) {
+      // ✅ Directly start drawing on Leaflet map after color pick
+      this.isOutdoorPolygonDrawingEnabled = true;
+      this.outdoorPolygonCompleted = false;
+      this.outdoorTempLatLngs = [];
+      this.clearOutdoorTempDrawing();
 
-    // ✅ Remove old listener first to avoid duplicates
-    this.map.off('click', this.onOutdoorMapClick.bind(this));
-    this.map.on('click', this.onOutdoorMapClick.bind(this));
-    this.map.getContainer().style.cursor = 'crosshair'; // ✅ show draw cursor
+      // ✅ Remove old listener first to avoid duplicates
+      this.map.off('click', this.onOutdoorMapClick.bind(this));
+      this.map.on('click', this.onOutdoorMapClick.bind(this));
+      this.map.getContainer().style.cursor = 'crosshair'; // ✅ show draw cursor
 
-  } else {
-    // ✅ Canvas drawing (floor/zone image)
-    this.isPolygonDrawingEnabled = true;
-    this.polygonCompleted = false;
-    this.tempPoints = [];
-    this.redrawCanvas();
+    } else {
+      // ✅ Canvas drawing (floor/zone image)
+      this.isPolygonDrawingEnabled = true;
+      this.polygonCompleted = false;
+      this.tempPoints = [];
+      this.redrawCanvas();
+    }
   }
-}
   isPolygonDrawingEnabled = false;
 
   enablePolygonDrawing() {
     this.isPolygonDrawingEnabled = true;
   }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1023,8 +1139,32 @@ setColor(event: any) {
           : '';
         console.log('✅ deviceUniqueId for zone box:', deviceUniqueId);
 
+        // rakesh change the code
+        // const visitorText = `Total Assets: ${totalCount}`;
 
-        const visitorText = `Total Assets: ${totalCount}`;
+        const personLabel = this.selectedPersonType === 'customer' ? 'Customer' : 'Employee';
+
+
+        let visitorText = '';
+
+        // Get zone order index
+        const zoneIndex = poly.zoneId ? (this.zoneOrderMap[poly.zoneId] ?? -1) : -1;
+
+        if (this.activeLevel === 'floor') {
+          if (zoneIndex === 0) {
+            visitorText = `Check-in ${personLabel}: ${this.checkinCount}`;
+          } else if (zoneIndex === 1) {
+            visitorText = `Check-out ${personLabel}: ${this.checkoutCount}`;
+          } else {
+            visitorText = `Total ${personLabel}: ${totalCount}`;
+          }
+        } else if (this.activeLevel === 'zone') {
+          // Single zone view — show checkin
+          visitorText = `Check-in ${personLabel}: ${this.checkinCount}`;
+        } else {
+          visitorText = `Total ${personLabel}: ${totalCount}`;
+        }
+
 
         this.ctx.font = '14px Aria';
         const zoneTextWidth = this.ctx.measureText(zoneText).width;
@@ -1071,7 +1211,8 @@ setColor(event: any) {
     });
   }
 
-
+  // Add this property
+  zoneOrderMap: { [zoneId: string]: number } = {};
 
 
   // Helper method to check if a point is inside a polygon
@@ -1126,7 +1267,8 @@ setColor(event: any) {
     if (clickedZone) {
       console.log('Clicked on zone:', clickedZone.zoneName);
 
-      this.getActiveAssetDetails(clickedZone.deviceUniqueId);
+       this.getActiveAssetDetails(clickedZone.deviceUniqueId);
+      //this.openInOutPopup('In');
     }
 
 
@@ -1485,7 +1627,18 @@ setColor(event: any) {
         // Zone was clicked - show asset details
         console.log('Clicked on zone:', clickedZone.zoneName);
         // this.selectedZone = clickedZone.zoneName;
-        this.getActiveAssetDetails(clickedZone.deviceUniqueId)
+
+
+        // this.getActiveAssetDetails(clickedZone.deviceUniqueId)
+         clickedZone.zoneName === 'Zone In'
+        ? this.openInOutPopup('in')
+
+        : clickedZone.zoneName === 'Zone Out'
+        ? this.openInOutPopup('out')
+
+        : null;
+
+      return;
         return; // Stop here - don't proceed to polygon drawing
       }
     }
@@ -1994,11 +2147,74 @@ setColor(event: any) {
   wsLocationMap: { [tagId: string]: any } = {};  // key = tagId, value = latest WS data
   matchedWsData: any = null;
 
+  // connectWebSocket() {
+  //   // this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+
+  //   this.ws.onopen = () => {
+  //     console.log('✅ WebSocket Connected');
+  //   };
+
+  //   this.ws.onmessage = (event) => {
+  //     try {
+  //       const data = JSON.parse(event.data);
+  //       const updates = Array.isArray(data) ? data : [data];
+
+  //       updates.forEach(update => {
+
+  //         // 🔥 DEVICE LIVE LOCATION UPDATE
+  //         if (update.tagId && update.latitude != null && update.longitude != null) {
+  //           console.log('📡 WS Location Update:', update);
+
+  //           // ✅ Store latest location data keyed by tagId
+  //           this.wsLocationMap[update.tagId] = update;
+
+  //           // ✅ If popup is open and this update matches the current asset, refresh it
+  //           if (this.assetData && this.assetData.uniqueId === update.tagId) {
+  //             this.matchedWsData = update;
+  //           }
+
+  //           this.moveDeviceMarker(update);
+  //         }
+
+  //         // 🔥 DEVICE COUNT UPDATE
+  //         if (update.ZoneId && typeof update.Count === 'number') {
+  //           this.deviceVisitorCounts[update.ZoneId] = update.Count;
+  //           console.log(`📊 Device ${update.ZoneId} count: ${update.Count}`);
+  //           this.redrawCanvas();
+  //         }
+
+  //       });
+
+  //       this.cdr.detectChanges();
+  //     } catch (err) {
+  //       console.error('❌ WebSocket parse error', err);
+  //     }
+  //   };
+
+  //   this.ws.onclose = () => console.log('🔌 WebSocket Closed');
+  //   this.ws.onerror = err => console.error('❌ WebSocket Error', err);
+  // }
+
+
+
+
+
+
+  private wsReconnectTimer: any = null;
+  private wsReconnectAttempts: number = 0;
+  private readonly MAX_RECONNECT = 3;
+
   connectWebSocket() {
-    this.ws = new WebSocket('ws://172.16.100.26:5202/ws/ZoneCount');
+    if (this.wsReconnectAttempts >= this.MAX_RECONNECT) {
+      console.warn('⚠️ Max WS reconnect attempts reached. Stopping.');
+      return;
+    }
+
+    this.ws = new WebSocket('ws://172.16.100.29:5402/ws/ZoneCount');
 
     this.ws.onopen = () => {
       console.log('✅ WebSocket Connected');
+      this.wsReconnectAttempts = 0; // reset on success
     };
 
     this.ws.onmessage = (event) => {
@@ -2007,29 +2223,18 @@ setColor(event: any) {
         const updates = Array.isArray(data) ? data : [data];
 
         updates.forEach(update => {
-
-          // 🔥 DEVICE LIVE LOCATION UPDATE
           if (update.tagId && update.latitude != null && update.longitude != null) {
-            console.log('📡 WS Location Update:', update);
-
-            // ✅ Store latest location data keyed by tagId
             this.wsLocationMap[update.tagId] = update;
-
-            // ✅ If popup is open and this update matches the current asset, refresh it
             if (this.assetData && this.assetData.uniqueId === update.tagId) {
               this.matchedWsData = update;
             }
-
             this.moveDeviceMarker(update);
           }
 
-          // 🔥 DEVICE COUNT UPDATE
           if (update.ZoneId && typeof update.Count === 'number') {
             this.deviceVisitorCounts[update.ZoneId] = update.Count;
-            console.log(`📊 Device ${update.ZoneId} count: ${update.Count}`);
             this.redrawCanvas();
           }
-
         });
 
         this.cdr.detectChanges();
@@ -2038,9 +2243,26 @@ setColor(event: any) {
       }
     };
 
-    this.ws.onclose = () => console.log('🔌 WebSocket Closed');
-    this.ws.onerror = err => console.error('❌ WebSocket Error', err);
+    this.ws.onclose = () => {
+      console.warn('🔌 WebSocket Closed');
+      this.wsReconnectAttempts++;
+
+      // Retry after 5 seconds, max 3 times
+      if (this.wsReconnectAttempts < this.MAX_RECONNECT) {
+        this.wsReconnectTimer = setTimeout(() => {
+          console.log(`🔁 Reconnecting... attempt ${this.wsReconnectAttempts}`);
+          this.connectWebSocket();
+        }, 5000);
+      }
+    };
+
+    this.ws.onerror = err => {
+      console.error('❌ WebSocket Error', err);
+      // Don't reconnect here — onclose will handle it
+    };
   }
+
+
 
 
 
@@ -2078,6 +2300,13 @@ setColor(event: any) {
 
         // ✅ Floor level — always show all zones merged
         this.polygons = Object.values(this.polygonsByZone).flat();
+        // rakesh added the code 
+        // Track zone order for checkin/checkout mapping
+        this.polygons.forEach((poly, index) => {
+          if (poly.zoneId) {
+            this.zoneOrderMap[poly.zoneId] = index;
+          }
+        });
 
         this.zoneClickAreas = [];
         this.redrawCanvas();
@@ -2120,12 +2349,30 @@ setColor(event: any) {
     });
   }
 
-
+  // rakesh changed the code 
+  // loadDevicesByZone(zoneId: string) {
+  //   this.device.getDevicesByZoneId(zoneId).subscribe({
+  //     next: (res: any) => {
+  //       console.log("Zone devices:", res);
+  //       this.zoneDevices = res; // store for UI
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       console.error("Error loading devices for zone", err);
+  //     }
+  //   });
+  // }
   loadDevicesByZone(zoneId: string) {
-    this.device.getDevicesByZoneId(zoneId).subscribe({
+    this.device.getDevicesByZone(
+      this.selectedProjectId,
+      this.selectedCountryId,
+      this.selectedAreaId,
+      this.selectedBuildingId,
+      this.selectedFloorId,
+      zoneId
+    ).subscribe({
       next: (res: any) => {
-        console.log("Zone devices:", res);
-        this.zoneDevices = res; // store for UI
+        this.zoneDevices = Array.isArray(res) ? res : [];
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -2133,7 +2380,6 @@ setColor(event: any) {
       }
     });
   }
-
 
 
   loadDevicesByFloor(floorId: string) {
@@ -3158,7 +3404,48 @@ setColor(event: any) {
       }
     });
   }
+  empInOutlist: any[] = [];
 
+  getEmpInOutSummary() {
+    this.peopleservice.employeeInCount().subscribe({
+      next: (res: any) => {
+        this.empInOutlist = res;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.log("error getting InOut count ")
+      }
+    })
+  }
+
+  inOutPopup: boolean = false;
+
+  openInOutPopup(type: string) {
+
+    this.peopleservice.employeeInCount().subscribe({
+
+      next: (res: any) => {
+
+        this.empInOutlist = res.filter(
+          (item: any) => item.device_trigger === type
+        );
+
+        this.inOutPopup = true;
+
+        this.cdr.detectChanges();
+
+      },
+
+      error: () => {
+        console.log("error getting InOut count");
+      }
+
+    });
+
+  }
+  closeInOutpopup() {
+    this.inOutPopup = false;
+  }
   wsDeviceData: any[] = [];   // holds all live WS messages
 
   // onOutdoorDeviceClick(device: any) {
@@ -3463,17 +3750,17 @@ setColor(event: any) {
 
 
 
-enableOutdoorPolygonDrawing() {
-  if (!this.selectedOutdoorZone) return;
+  enableOutdoorPolygonDrawing() {
+    if (!this.selectedOutdoorZone) return;
 
-  this.isOutdoorPolygonDrawingEnabled = true;
-  this.outdoorPolygonCompleted = false;
-  this.outdoorTempLatLngs = [];
-  this.clearOutdoorTempDrawing();
+    this.isOutdoorPolygonDrawingEnabled = true;
+    this.outdoorPolygonCompleted = false;
+    this.outdoorTempLatLngs = [];
+    this.clearOutdoorTempDrawing();
 
-  this.map.on('click', this.onOutdoorMapClick.bind(this));
-  this.map.getContainer().style.cursor = 'crosshair';
-}
+    this.map.on('click', this.onOutdoorMapClick.bind(this));
+    this.map.getContainer().style.cursor = 'crosshair';
+  }
 
   onOutdoorMapClick(e: L.LeafletMouseEvent) {
     if (!this.isOutdoorPolygonDrawingEnabled) return;
@@ -3566,77 +3853,77 @@ enableOutdoorPolygonDrawing() {
   //   });
   // }
 
-savedOutdoorMappingId:any=''
+  savedOutdoorMappingId: any = ''
   saveOutdoorPolygon() {
-  if (!this.selectedOutdoorZone || this.outdoorTempLatLngs.length < 3) return;
+    if (!this.selectedOutdoorZone || this.outdoorTempLatLngs.length < 3) return;
 
-  // ✅ Convert to GeoJSON format (same pattern like applyPolygon)
-  const coordinates = [
-    ...this.outdoorTempLatLngs.map(latlng => [latlng.lng, latlng.lat]),
-    [this.outdoorTempLatLngs[0].lng, this.outdoorTempLatLngs[0].lat] // close ring
-  ];
+    // ✅ Convert to GeoJSON format (same pattern like applyPolygon)
+    const coordinates = [
+      ...this.outdoorTempLatLngs.map(latlng => [latlng.lng, latlng.lat]),
+      [this.outdoorTempLatLngs[0].lng, this.outdoorTempLatLngs[0].lat] // close ring
+    ];
 
-  const geoJson = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        geometry: {
-          type: "Polygon",
-          coordinates: [coordinates]
-        },
-        properties: {
-          additionalProp1: this.outdoorPolygonLabel || '',
-          additionalProp2: this.selectedOutdoorZone.id,
-          additionalProp3: ''
+    const geoJson = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [coordinates]
+          },
+          properties: {
+            additionalProp1: this.outdoorPolygonLabel || '',
+            additionalProp2: this.selectedOutdoorZone.id,
+            additionalProp3: ''
+          }
         }
+      ]
+    };
+
+    // ✅ Get existing ID (for update case)
+    const existingId = this.savedOutdoorMappingId ?? "";
+
+    const body = {
+      id: existingId, // ✅ same like applyPolygon
+      areaId: this.selectedOutdoorZone.areaId,
+      assemblyPoint: false,
+
+      // 🔥 Add required backend fields
+      clientId: "",
+      countryId: this.selectedCountryId || "",
+      projectId: this.selectedProjectId || "",
+      priority: "High",
+      exit: "",
+      createdBy: "admin",
+      createdAt: new Date().toISOString(),
+
+      geoJsonData: geoJson,
+
+      status: true,
+      topZone: "true",
+      zoneId: this.selectedOutdoorZone.id,
+      zoneName: this.outdoorPolygonLabel || this.selectedOutdoorZone.zoneName
+    };
+
+    this.device.saveOutdoorZoneMapping(body).subscribe({
+      next: (res: any) => {
+        console.log('✅ Outdoor polygon saved:', res);
+
+        // ✅ Save id for future update
+        this.savedOutdoorMappingId = res.id;
+
+        this.showOutdoorPolygonPopup = false;
+        this.outdoorPolygonLabel = '';
+        this.clearOutdoorTempDrawing();
+        this.fetchOutdoorZoneMapping(this.selectedOutdoorZone.id);
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('❌ Save outdoor polygon error:', err);
       }
-    ]
-  };
-
-  // ✅ Get existing ID (for update case)
-  const existingId = this.savedOutdoorMappingId ?? "";
-
-  const body = {
-    id: existingId, // ✅ same like applyPolygon
-    areaId: this.selectedOutdoorZone.areaId,
-    assemblyPoint: false,
-
-    // 🔥 Add required backend fields
-    clientId: "",
-    countryId: this.selectedCountryId || "",
-    projectId: this.selectedProjectId || "",
-    priority: "High",
-    exit: "",
-    createdBy: "admin",
-    createdAt: new Date().toISOString(),
-
-    geoJsonData: geoJson,
-
-    status: true,
-    topZone: "true",
-    zoneId: this.selectedOutdoorZone.id,
-    zoneName: this.outdoorPolygonLabel || this.selectedOutdoorZone.zoneName
-  };
-
-  this.device.saveOutdoorZoneMapping(body).subscribe({
-    next: (res: any) => {
-      console.log('✅ Outdoor polygon saved:', res);
-
-      // ✅ Save id for future update
-      this.savedOutdoorMappingId = res.id;
-
-      this.showOutdoorPolygonPopup = false;
-      this.outdoorPolygonLabel = '';
-      this.clearOutdoorTempDrawing();
-      this.fetchOutdoorZoneMapping(this.selectedOutdoorZone.id);
-      this.cdr.detectChanges();
-    },
-    error: (err: any) => {
-      console.error('❌ Save outdoor polygon error:', err);
-    }
-  });
-}
+    });
+  }
 
   fetchOutdoorZoneMapping(zoneId: string) {
     this.device.getOutdoorZoneMapping(zoneId).subscribe({
@@ -3691,5 +3978,39 @@ savedOutdoorMappingId:any=''
       }
     });
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // rakesh change the code 
+
+
+
+  selectedPersonType: string = 'employee'; // default is employee
+
+  onPersonTypeChange() {
+    this.redrawCanvas(); // re-render with updated label
+    // this.activeLevel = 'floor'; 
+  }
+
+formatTimestamp(timestamp: string): string {
+
+  return timestamp
+    .replace('T', ',')
+    .replace('Z', '')
+    .split('.')[0];
+
+}
 
 }

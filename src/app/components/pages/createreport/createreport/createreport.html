@@ -2,11 +2,12 @@
   <h3>Reports</h3>
   <div class="nav-icons">
     <!-- <img src="assets/search.png" alt="Search" /> -->
-    <img src="assets/add.png" alt="Add" routerLink="/reports" class="nav-icon upload-icon">
-    <!-- <img src="assets/download.png" alt="download"> -->
-    <img src="assets/columns.png"  (click)="toggleColumnPicker()" class="nav-icon upload-icon">
 
-    <div class="column-popup" *ngIf="showColumnPicker">
+
+    <!-- <img src="assets/add.png" alt="Add" routerLink="/reports" class="nav-icon upload-icon">
+    <img src="assets/columns.png"  (click)="toggleColumnPicker()" class="nav-icon upload-icon"> -->
+
+    <!-- <div class="column-popup" *ngIf="showColumnPicker">
       <b>Select Columns</b>
 
       <div *ngFor="let col of columns">
@@ -17,11 +18,11 @@
     </div>
 
     <img src="assets/refresh.png" alt="Refresh" class="nav-icon upload-icon">
-    <img src="assets/filter.png" alt="filter" class="nav-icon upload-icon">
+    <img src="assets/filter.png" alt="filter" class="nav-icon upload-icon"> -->
   </div>
 
 </nav>
-<nav class="navbarbottom">
+<!-- <nav class="navbarbottom">
   <div class="radio-group">
     <label>
       <input type="radio" name="frequency" value="monthly" [(ngModel)]="selectedFrequency" />
@@ -42,11 +43,14 @@
       Once
     </label>
   </div>
-</nav>
+</nav> -->
 
 
 
-<div class="table-container">
+<!-- <div class="table-container">
+
+
+
   <table>
     <thead>
       <tr>
@@ -96,7 +100,82 @@
   </table>
 </div>
 
-<!-- Optional: message if no reports -->
+
 <div *ngIf="!reports.length" class="no-reports">
   <p>No reports have been generated yet.</p>
+</div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="report-container">
+
+  <div class="header-row">
+
+    <p class="header">Create Employee Report</p>
+
+    <!-- Download Image Icon -->
+    <img
+      src="assets/download.png"
+      alt="Download"
+      class="download-icon"
+      *ngIf="reportList.length > 0"
+      (click)="downloadCSV()"
+    />
+
+  </div>
+
+  <div class="form-row">
+
+    <div class="form-group">
+      <label>Start Date</label>
+      <input type="date" [(ngModel)]="startDate">
+    </div>
+
+    <div class="form-group">
+      <label>End Date</label>
+      <input type="date" [(ngModel)]="endDate">
+    </div>
+
+    <div class="btn-group">
+      <button (click)="createPersonReport()">
+        Generate Report
+      </button>
+    </div>
+
+  </div>
+
+  <table class="report-table" *ngIf="reportList.length > 0">
+
+    <thead>
+      <tr>
+        <th>Person ID</th>
+        <th>Person Name</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>Time Spent (Minutes)</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let report of reportList">
+        <td>{{ report.personId }}</td>
+        <td>{{ report.personName }}</td>
+        <td>{{ report.checkIn }}</td>
+        <td>{{ report.checkOut }}</td>
+        <td>{{ report.timeSpentMinutes }}</td>
+      </tr>
+    </tbody>
+
+  </table>
+
 </div>

@@ -4,7 +4,7 @@
     <button class="aone" routerLink="/people" routerLinkActive="active">People</button>
     <button class="aone" routerLink="/project" routerLinkActive="active">Project</button>
     <button class="aone" routerLink="/devices" routerLinkActive="active">Devices</button>
-     <!-- <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button> -->
+    <!-- <button class="aone" routerLink="/asset" routerLinkActive="active">Asset</button> -->
   </div>
 </nav>
 
@@ -55,7 +55,7 @@
     class="person-search" />
 
   <div class="navicons">
-    <img src="assets/add.png" alt="Add" (click)="openCreatePersonPopup()" class="nav-icon upload-icon" >
+    <img src="assets/add.png" alt="Add" (click)="openCreatePersonPopup()" class="nav-icon upload-icon">
     <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
     <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
     <img src="assets/refresh.png" alt="Refresh" (click)="loadPerson()" class="nav-icon upload-icon">
@@ -69,8 +69,8 @@
 
 
 
- 
- <div *ngIf="activeTab==='person'" class="table-container">
+
+<div *ngIf="activeTab==='person'" class="table-container">
   <table>
     <thead>
       <tr>
@@ -139,7 +139,7 @@
 
 
 
-</div> 
+</div>
 
 
 
@@ -177,12 +177,12 @@
       </div>
       <div class="user-data"> <label>Vehicle Id</label> <input type="text" [(ngModel)]="createPerson.vehicleId"> </div>
       <div class="user-data"> <label>Id Number</label> <input type="text" [(ngModel)]="createPerson.idNumber"> </div>
-     
+
       <div class="user-data"> <label>Designation</label> <input type="text" [(ngModel)]="createPerson.designation">
       </div>
       <div class="user-data"> <label>Phone Number</label> <input type="text" [(ngModel)]="createPerson.phoneNumber">
       </div>
-       <div class="user-data"> <label>Card bage Number</label> <input type="text"
+      <div class="user-data"> <label>Card bage Number</label> <input type="text"
           [(ngModel)]="createPerson.cardBatchNumber"> </div>
       <div class="user-data">
         <label>Device</label>
@@ -192,6 +192,11 @@
             {{ device.deviceName }}
           </option>
         </select>
+
+      </div>
+      <div class="user-data">
+        <label>Image</label>
+        <input type="file" [(ngModel)]="createPerson.imagePath">
       </div>
 
     </div>
@@ -268,17 +273,17 @@
         <label>Card Bage Number</label>
         <input type="text" [(ngModel)]="updatePerson.cardBatchNumber">
       </div>
-   
 
-    <div class="user-data">
-      <label>Device</label>
-      <select [(ngModel)]="updatePerson.device">
-        <option *ngFor="let d of deviceList" [value]="d.id">
-          {{ d.deviceName }}
-        </option>
-      </select>
+
+      <div class="user-data">
+        <label>Device</label>
+        <select [(ngModel)]="updatePerson.device">
+          <option *ngFor="let d of deviceList" [value]="d.id">
+            {{ d.deviceName }}
+          </option>
+        </select>
+      </div>
     </div>
- </div>
 
     <div class="user-button">
       <button class="btn create" (click)="personUpdate()">Update</button>
@@ -1151,7 +1156,7 @@
     <img src="assets/add.png" alt="Add" (click)="openCreateManualAttendancePopup()" class="nav-icon upload-icon">
     <img src="assets/upload.png" alt="upload" class="nav-icon upload-icon">
     <img src="assets/download.png" alt="download" class="nav-icon upload-icon">
-    <img src="assets/refresh.png" alt="Refresh" (click)="getManualAttendance()"class="nav-icon upload-icon">
+    <img src="assets/refresh.png" alt="Refresh" (click)="getManualAttendance()" class="nav-icon upload-icon">
   </div>
 </nav>
 

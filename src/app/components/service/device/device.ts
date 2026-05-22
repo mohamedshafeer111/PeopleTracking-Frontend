@@ -140,7 +140,7 @@ export class Device {
   getZoneImageByZoneId(zoneId: string) {
     return this.http.get(`${this.baseUrl}zones/${zoneId}/map`);
   }
-
+// rakesh changed
   getDevicesByZoneId(zoneId: string) {
     return this.http.get(`${this.baseUrl}deviceadd/by-zone/${zoneId}`);
   }
@@ -329,6 +329,16 @@ saveOutdoorZoneMapping(payload: any): Observable<any> {
   return this.http.post(
     `${this.baseUrl}ZoneMappingController1/createZoneMappingBasedOnArea`,
     payload
+  );
+}
+
+createNewProcessAutomation(reqbody:any){
+  return this.http.post(`${this.baseUrl}temp-process-automation/create`,reqbody)
+}
+
+getAllProcessAndAutomation() {
+  return this.http.get(
+    `${this.baseUrl}temp-process-automation/all`
   );
 }
 

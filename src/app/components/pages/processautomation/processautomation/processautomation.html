@@ -5,12 +5,12 @@
 
   <div class="search-container" [class.open]="isSearchOpen">
     <div class="navicons">
-    <input type="text" placeholder="Search by text or date (Y-M-D)" [(ngModel)]="searchQuery"
-      (input)="applyUnifiedSearch()" class="search-input" />
-    <img src="assets/search.png" alt="Search" class="nav-icon upload-icon" (click)="toggleSearch()" />
-    <img src="assets/add.png" alt="Add" routerLink="/createprocessautomation" class="nav-icon upload-icon">
-    <img src="assets/refresh.png" alt="Refresh" class="nav-icon upload-icon">
-    <img src="assets/filter.png" alt="filter" class="nav-icon upload-icon">
+      <input type="text" placeholder="Search by text or date (Y-M-D)" [(ngModel)]="searchQuery"
+        (input)="applyUnifiedSearch()" class="search-input" />
+      <img src="assets/search.png" alt="Search" class="nav-icon upload-icon" (click)="toggleSearch()" />
+      <img src="assets/add.png" alt="Add" routerLink="/createprocessautomation" class="nav-icon upload-icon">
+      <img src="assets/refresh.png" alt="Refresh" class="nav-icon upload-icon">
+      <img src="assets/filter.png" alt="filter" class="nav-icon upload-icon">
     </div>
   </div>
 
@@ -37,13 +37,11 @@
 <!-- 9-2-26 -->
 
 
-<div class="table-container">
+<!-- <div class="table-container">
   <table>
     <thead>
       <tr>
         <th>Rule Name</th>
-        <!-- <th>Type</th> -->
-        <!-- <th>Last Activated</th> -->
         <th>Created On</th>
         <th>Status</th>
         <th>Edit</th>
@@ -59,25 +57,18 @@
 
       <tr *ngFor="let item of filteredItems">
 
-        <!-- Rule Name → condition -->
+   
         <td>{{ item.condition || '-' }}</td>
 
-        <!-- Type → action -->
-        <!-- <td>{{ item.action || '-' }}</td> -->
 
-        <!-- Last Activated → zoneName -->
-        <!-- <td>{{ item.zoneName || '-' }}</td> -->
-
-        <!-- Created On → createdAt -->
         <td>{{ formatDate(item.createdAt) }}</td>
 
-        <!-- Status → status string with toggle -->
         <td>
           <label class="switch">
             <input type="checkbox" [checked]="true" (change)="toggleStatus(item)" />
             <span class="slider"></span>
           </label>
-          <!-- <span class="status-text">{{ item.status }}</span> -->
+    
         </td>
 
         <td class="actions">
@@ -89,4 +80,43 @@
 
     </tbody>
   </table>
+</div> -->
+
+
+
+
+
+<div class="table-container">
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>Rule Name</th>
+             
+
+                <th>Created At</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr *ngFor="let item of processAutomationList">
+
+                <td>{{ item.title }}</td>
+
+
+
+               
+
+                <td>
+                    {{ item.createdAt | date:'yyyy-MM-dd hh:mm a' }}
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
 </div>

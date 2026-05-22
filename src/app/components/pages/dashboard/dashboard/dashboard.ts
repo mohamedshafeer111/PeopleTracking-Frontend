@@ -1,13 +1,48 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Roleservice } from '../../../service/role/roleservice';
-import { RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, Event, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { Device } from '../../../service/device/device';
 import { HttpClient } from '@angular/common/http';
 import { Websocket } from '../../../service/websocket/websocket';
 import { FormsModule } from '@angular/forms';
 import { ClockWidget } from '../../clock-widget/clock-widget/clock-widget';
 import { Widget } from '../../../service/widget/widget';
+import { Peopleservice } from '../../../service/people/peopleservice';
+import {
+  // PieController,
+  // ArcElement,
+  // Tooltip,
+  // Legend,
+  // Chart
+  Chart,
+  PieController,
+  ArcElement,
+  Tooltip,
+  Legend,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Filler
+} from 'chart.js';
+
+
+import { Subscription } from 'rxjs';
+Chart.register(
+  PieController,
+  ArcElement,
+  Tooltip,
+  Legend,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Filler
+);
+
 
 @Component({
   selector: 'app-dashboard',
@@ -15,22 +50,156 @@ import { Widget } from '../../../service/widget/widget';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit, OnDestroy {
+export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
 
   // private wsUrl = environment.wsUrl;
+  private routerSub!: Subscription;
 
+
+
+  private peopleCountInterval: any;
+
+  private chartsInitialized = false; // ✅ flag to prevent multiple renders
   ngOnInit(): void {
     this.loadProject();
     this.loadZoneSensors();
-    //this.connectWebSocket();
     this.loadDashboard();
     this.getDashboards();
     this.connectDeviceNotificationWS();
+    this.loadTotalEmployees();
+    this.connectWebSockets();
+    this.loadAlert();
+    this.loadVisitorCount();
+    this.loadEventList();
+    this.getEmpInOutSummary();
+
+
+
+    this.loadPersonVisit();
+    this.loadGender();
+    this.connectPersonStream();
+    this.createDeviceStatusChart();
+    this.loadCustomerChart();
+    this.loadFamilyChart();
+    this.loadFootfallChart();
+
+
+
+    setInterval(() => {
+
+      this.loadPersonVisit();
+      this.getEmpInOutSummary();
+      this.loadEventList();
+
+    }, 30000);
+
+
+    this.loadPeopleCount(); // ✅ first load
+
+    // ✅ Poll every 10 seconds
+    this.peopleCountInterval = setInterval(() => {
+      this.loadPeopleCount();
+      this.cdr.detectChanges();
+    }, 10000);
+
   }
+
+
+
+
+  ngAfterViewInit(): void {
+    this.loadPeopleCount();
+    this.initSummaryCharts();
+  }
+
+  ngAfterViewChecked(): void {
+    // ✅ Try again if charts not yet initialized
+    if (!this.chartsInitialized) {
+      const canvas = document.getElementById('chart-w1') as HTMLCanvasElement;
+      if (canvas) {
+        this.initSummaryCharts();
+        this.chartsInitialized = true;
+      }
+    }
+  }
+
+
+  initSummaryCharts() {
+    const chartData: { [key: string]: number[] } = {
+      'chart-w1': [40, 55, 45, 60, 52, 70, 65, 80, 72, 90, 85, 95],
+      'chart-w2': [30, 38, 35, 42, 40, 50, 48, 55, 52, 60, 58, 65],
+      'chart-w3': [10, 11, 10.5, 12, 11.5, 12.7, 12.2, 13, 12.8, 13.5, 13, 13.8],
+      'chart-w4': [3.5, 3.8, 4, 4.1, 3.9, 4.2, 4.1, 4.4, 4.3, 4.5, 4.4, 4.6],
+      'chart-w5': [12, 15, 14, 16, 15, 17, 16, 18, 17, 19, 18, 18],
+    };
+
+    const colors: { [key: string]: string } = {
+      'chart-w1': '#7F77DD',
+      'chart-w2': '#1D9E75',
+      'chart-w3': '#378ADD',
+      'chart-w4': '#D85A30',
+      'chart-w5': '#3B6D11',
+    };
+
+    const allCanvasReady = Object.keys(chartData).every(id =>
+      document.getElementById(id) !== null
+    );
+
+    if (!allCanvasReady) return; // ✅ wait until all canvases exist
+
+
+    setTimeout(() => {
+      Object.keys(chartData).forEach(id => {
+        const canvas = document.getElementById(id) as HTMLCanvasElement;
+        if (!canvas) return;
+
+        // ✅ Destroy existing chart if already created
+        const existing = Chart.getChart(canvas);
+        if (existing) existing.destroy();
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        canvas.style.height = '48px';  // ✅ fix height
+        canvas.style.maxHeight = '48px';
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData[id].map((_, i) => i),
+            datasets: [{
+              data: chartData[id],
+              borderColor: colors[id],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.4,
+              fill: true,
+              backgroundColor: colors[id] + '18'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } },
+            animation: false
+          }
+        });
+      });
+    }, 500);
+  }
+
+
+
+
 
   constructor(private cdr: ChangeDetectorRef, private role: Roleservice,
     private device: Device, private http: HttpClient, private zoneSocket: Websocket,
-    private widget: Widget) { }
+    private widget: Widget, private peopleService: Peopleservice, private router: Router, private activatedRoute: ActivatedRoute) { }
+
+
+
+
 
   isAddWidgetPopup: boolean = false;
 
@@ -41,8 +210,6 @@ export class Dashboard implements OnInit, OnDestroy {
   closeAddWidgetPopup() {
     this.isAddWidgetPopup = false;
   }
-
-
 
 
   projects: any[] = [];
@@ -128,11 +295,6 @@ export class Dashboard implements OnInit, OnDestroy {
           this.areaByCountry[countryId] = Array.isArray(res) ? res : [];
           this.expandedCountry.add(countryId);
           this.cdr.detectChanges();
-
-          // ✅ Call devices API for this country
-          // if (this.selectedProjectId) {
-          //   this.devicesGetByCountryId(this.selectedProjectId, countryId);
-          // }
         },
         error: () => {
           console.log("Error loading areas");
@@ -142,10 +304,6 @@ export class Dashboard implements OnInit, OnDestroy {
       this.expandedCountry.add(countryId);
       this.cdr.detectChanges();
 
-      // ✅ Also call devices API when re-expanding
-      // if (this.selectedProjectId) {
-      //   this.devicesGetByCountryId(this.selectedProjectId, countryId);
-      // }
     }
   }
 
@@ -178,7 +336,7 @@ export class Dashboard implements OnInit, OnDestroy {
         this.cdr.detectChanges();
 
         console.log("Before calling devicesGetByAreaId", this.selectedProjectId, this.selectedCountryId, areaId);
-        //this.devicesGetByAreaId(this.selectedProjectId, this.selectedCountryId, areaId);
+
       },
       error: () => {
         console.log("Error loading buildings");
@@ -219,23 +377,12 @@ export class Dashboard implements OnInit, OnDestroy {
         this.expandedBuilding.add(buildingId);
         this.cdr.detectChanges();
 
-        // ✅ Fetch devices for this building
-        // if (this.selectedProjectId && this.selectedCountryId && this.selectedAreaId) {
-        //   this.devicesGetByBuildingId(
-        //     this.selectedProjectId,
-        //     this.selectedCountryId,
-        //     this.selectedAreaId,
-        //     buildingId
-        //   );
-        // }
       },
       error: () => {
         console.log("Error loading floors");
       }
     });
   }
-
-
 
 
   zones: any[] = [];
@@ -266,16 +413,6 @@ export class Dashboard implements OnInit, OnDestroy {
         this.expandedFloor.add(floorId);
         this.cdr.detectChanges();
 
-        // ✅ Fetch devices for this floor
-        // if (this.selectedProjectId && this.selectedCountryId && this.selectedAreaId && this.selectedBuildingId) {
-        //   this.devicesGetByFloorId(
-        //     this.selectedProjectId,
-        //     this.selectedCountryId,
-        //     this.selectedAreaId,
-        //     this.selectedBuildingId,
-        //     floorId
-        //   );
-        // }
       },
       error: () => {
         console.log("Error loading zones");
@@ -318,7 +455,7 @@ export class Dashboard implements OnInit, OnDestroy {
       }
     });
 
-    // ✅ 2. Always fetch devices for this zone
+
     if (
       this.selectedProjectId &&
       this.selectedCountryId &&
@@ -336,7 +473,6 @@ export class Dashboard implements OnInit, OnDestroy {
       );
     }
   }
-
 
 
 
@@ -444,30 +580,6 @@ export class Dashboard implements OnInit, OnDestroy {
 
   zoneDevices: any[] = [];
 
-  // devicesGetByZoneId(
-  //   projectId: string,
-  //   countryId: string,
-  //   areaId: string,
-  //   buildingId: string,
-  //   floorId: string,
-  //   zoneId: string
-  // ) {
-  //   this.device.getDevicesByZone(projectId, countryId, areaId, buildingId, floorId, zoneId).subscribe({
-  //     next: (res: any) => {
-  //       this.zoneDevices = res;
-  //       this.projectDevices = [];
-  //       this.countryDevices = [];
-  //       this.areaDevices = [];
-  //       this.buildingDevices = [];
-  //       this.floorDevices = [];
-  //       this.activeLevel = 'zone';
-  //       this.cdr.detectChanges();
-  //     },
-  //     error: () => {
-  //       console.log("Error loading devices by zone");
-  //     }
-  //   });
-  // }
   devicesGetByZoneId(
     projectId: string,
     countryId: string,
@@ -522,16 +634,6 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-
-  // toggleParameterSelection(param: any) {
-  //   if (this.selectedParameters.has(param.id)) {
-  //     this.selectedParameters.delete(param.id);
-  //   } else {
-  //     this.selectedParameters.add(param.id);
-  //   }
-
-  //   console.log('Selected Parameters:', Array.from(this.selectedParameters));
-  // }
   toggleParameterSelection(param: any) {
     if (this.selectedParameters.has(param.id)) {
       this.selectedParameters.delete(param.id);
@@ -552,48 +654,6 @@ export class Dashboard implements OnInit, OnDestroy {
   widgets: any[] = [];
 
 
-
-  // loadZoneSensors() {
-  //   this.device.getAllZoneSensors().subscribe(
-  //     (response: any) => {
-  //       const dataArray = Array.isArray(response) ? response : [response];
-
-  //       // ✅ Step 1: Flatten all zoneSensors from all zones
-  //       const allSensors = dataArray.flatMap(zone => zone.zoneSensors || []);
-
-  //       // ✅ Step 2: Group sensors by deviceId (avoid duplicates)
-  //       const deviceMap = new Map<string, any>();
-
-  //       for (const sensor of allSensors) {
-  //         if (!deviceMap.has(sensor.deviceId)) {
-  //           deviceMap.set(sensor.deviceId, {
-  //             deviceId: sensor.deviceId,
-  //             deviceName: sensor.deviceName,
-  //             params: new Set<string>()
-  //           });
-  //         }
-
-  //         const current = deviceMap.get(sensor.deviceId);
-  //         (sensor.params || []).forEach((p: any) => current.params.add(p.paramName));
-  //       }
-
-  //       // ✅ Step 3: Convert grouped data to widget array
-  //       this.widgets = Array.from(deviceMap.values()).map(d => ({
-  //         deviceName: d.deviceName,
-  //         params: Array.from(d.params)
-  //       }));
-
-  //       console.log('🟢 Widgets:', this.widgets);
-  //       this.cdr.detectChanges();
-  //     },
-  //     (error) => {
-  //       console.error('❌ Error fetching zone sensors:', error);
-  //     }
-  //   );
-  // }
-
-
-
   getDeviceNameById(deviceId: string): string {
     const allDevices = [
       ...this.projectDevices,
@@ -611,35 +671,19 @@ export class Dashboard implements OnInit, OnDestroy {
 
   selectedDeviceName: string = '';
 
-  // onDeviceCheckboxChange(event: any, device: any) {
-  //   if (event.target.checked) {
-  //     // ✅ When checkbox is checked
-  //     this.selectedDeviceId = device.id;
-  //     this.selectedDeviceName = device.deviceName;
-
-  //     console.log("✅ Selected Device:", device.deviceName);
-  //     this.loadDeviceParametersByDevice(device.id);
-  //   } else {
-  //     // ✅ When checkbox is unchecked
-  //     if (this.selectedDeviceId === device.id) {
-  //       this.selectedDeviceId = '';
-  //       this.selectedDeviceName = '';
-  //     }
-  //   }
-  // }
-  selectedDeviceUniqueId: string = ''; // ✅ Add this property at the top of your component
+  selectedDeviceUniqueId: string = '';
 
   onDeviceCheckboxChange(event: any, device: any) {
     if (event.target.checked) {
       // ✅ When checkbox is checked
       this.selectedDeviceId = device.id;
       this.selectedDeviceName = device.deviceName;
-      this.selectedDeviceUniqueId = device.deviceUniqueId || device.uniqueId || ''; // ✅ CAPTURE UNIQUE ID
+      this.selectedDeviceUniqueId = device.deviceUniqueId || device.uniqueId || '';
 
       console.log("✅ Selected Device:", {
         id: this.selectedDeviceId,
         name: device.deviceName,
-        uniqueId: this.selectedDeviceUniqueId // ✅ LOG IT
+        uniqueId: this.selectedDeviceUniqueId
       });
 
       this.loadDeviceParametersByDevice(device.id);
@@ -648,7 +692,7 @@ export class Dashboard implements OnInit, OnDestroy {
       if (this.selectedDeviceId === device.id) {
         this.selectedDeviceId = '';
         this.selectedDeviceName = '';
-        this.selectedDeviceUniqueId = ''; // ✅ CLEAR UNIQUE ID
+        this.selectedDeviceUniqueId = '';
       }
     }
   }
@@ -658,91 +702,6 @@ export class Dashboard implements OnInit, OnDestroy {
     this.selectedDeviceName = '';
     this.deviceParameters = [];
   }
-
-
-
-
-
-  // createWidgets() {
-  //   if (!this.selectedDeviceId || this.selectedParameters.size === 0) {
-  //     alert("Please select at least one device and one parameter.");
-  //     return;
-  //   }
-
-  //   const selectedDeviceName = this.getDeviceNameById(this.selectedDeviceId);
-
-  //   const selectedParams = Array.from(this.selectedParameters)
-  //     .map(paramId => this.deviceParameters.find(p => p.id === paramId))
-  //     .filter(p => !!p)
-  //     .map(p => ({
-  //       paramId: p!.id,
-  //       paramName: p!.name
-  //     }));
-
-  //   // UI widget data
-  //   this.widgets = [
-  //     {
-  //       deviceName: selectedDeviceName,
-  //       params: selectedParams
-  //     }
-  //   ];
-
-  //   // ✅ New API Payload (matches your updated request body)
-  //   const payload = {
-  //     id: "",
-
-  //     projectId: this.selectedProjectId,
-  //     countryId: this.selectedCountryId,
-  //     areaId: this.selectedAreaId,
-  //     buildingId: this.selectedBuildingId,
-  //     floorId: this.selectedFloorId,
-
-  //     // ✅ Zone (mapped from floor)
-  //     zoneId: this.selectedFloorId ?? "",
-  //     zone: "",
-
-  //     // ✅ Dashboard (from selectedDashboard object)
-  //     dashboardId: this.selectedDashboard?.id ?? "",
-  //     dashboardName: this.selectedDashboard?.name ?? "",
-
-  //     zoneSensors: [
-  //       {
-  //         deviceId: this.selectedDeviceId,
-  //         deviceName: selectedDeviceName,
-  //         params: selectedParams
-  //       }
-  //     ],
-
-  //     createdAt: new Date().toISOString(),
-  //     updatedAt: new Date().toISOString()
-  //   };
-
-
-  //   console.log("🟢 Zone Sensor Payload:", payload);
-
-  //   this.device.createZoneSensor(payload).subscribe({
-  //     next: (res) => {
-  //       console.log("✅ ZoneSensor Created Successfully:", res);
-
-  //       // ✅ CLOSE POPUP FIRST
-  //       this.closeAddWidgetPopup();
-  //       // ✅ REFRESH DASHBOARD WIDGETS IMMEDIATELY
-  //       if (this.selectedDashboard?.id) {
-  //         this.loadDashboardContent(this.selectedDashboard.id);
-  //       }
-
-  //       // ✅ OPTIONAL: show alert AFTER UI updates
-  //       setTimeout(() => {
-  //         alert("Zone Sensor created successfully!");
-  //       }, 0);
-  //     },
-  //     error: (err) => {
-  //       console.error("❌ Error creating zone sensor:", err);
-  //       alert("Failed to create zone sensor");
-  //     }
-  //   });
-
-  // }
 
 
   createWidgets() {
@@ -858,7 +817,7 @@ export class Dashboard implements OnInit, OnDestroy {
   private ws!: WebSocket;
   //private wsUrl = 'ws://172.16.100.29:5202/ws/ZoneCount';
 
-   private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
+  private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();
@@ -870,8 +829,14 @@ export class Dashboard implements OnInit, OnDestroy {
     if (this.alertIntervalId) {
       clearInterval(this.alertIntervalId);
     }
-  }
 
+
+    if (this.peopleCountInterval) {
+      clearInterval(this.peopleCountInterval);
+    }
+
+
+  }
 
 
   loadZoneSensors() {
@@ -931,9 +896,6 @@ export class Dashboard implements OnInit, OnDestroy {
       return utcTimestamp;
     }
   }
-
-
-
 
 
   connectWebSocket() {
@@ -1080,47 +1042,6 @@ export class Dashboard implements OnInit, OnDestroy {
           }
 
           // ─── MATCH BY BleTagid (Asset widgets) ──────────────
-          // if (update.BleTagid !== undefined) {
-          //   const wsBleTagId = (update.BleTagid || '').trim().toUpperCase();
-          //   console.log("📨 WS BLE Update:", wsBleTagId);
-
-          //   const widget = this.widgets.find((w: any) => {
-          //     const deviceUniqueId = (w.deviceUniqueId || '').trim().toUpperCase();
-          //     return deviceUniqueId === wsBleTagId;
-          //   });
-
-          //   if (widget && widget.params) {
-          //     // ✅ Update Zone Name — display as device name
-          //     const zoneParam = widget.params.find(
-          //       (p: any) => p.name.toLowerCase().includes('zone')
-          //     );
-          //     if (zoneParam) {
-          //       zoneParam.value = widget.deviceName || '—';
-          //     }
-
-          //     // ✅ Update Timestamp — from checkintime
-          //     const timestampParam = widget.params.find(
-          //       (p: any) => p.name.toLowerCase().includes('timestamp')
-          //     );
-          //     if (timestampParam) {
-          //       timestampParam.value = update.checkintime || update.Gsmtimestamp || '—';
-          //     }
-
-          //     // ✅ Update Status
-          //     const statusParam = widget.params.find(
-          //       (p: any) => p.name.toLowerCase() === 'status'
-          //     );
-          //     if (statusParam) {
-          //       statusParam.value = update.checkintime ? 'Active' : 'Inactive';
-          //     }
-
-          //     console.log(`✅ Widget updated for BleTagid ${wsBleTagId}:`, update.checkintime);
-          //   } else {
-          //     console.warn("⚠️ No matching widget for BleTagid:", wsBleTagId);
-          //   }
-          // }
-
-          // ─── MATCH BY BleTagid (Asset widgets) ──────────────
           if (update.BleTagid !== undefined) {
             const wsBleTagId = (update.BleTagid || '').trim().toUpperCase();
             console.log("📨 WS BLE Update:", wsBleTagId);
@@ -1250,7 +1171,6 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-
   showPopup: boolean = false;
   dashboardName: string = "";
 
@@ -1265,8 +1185,6 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   createDashboard() {
-
-
 
     if (!this.dashboardName.trim()) {
       alert("Please enter a dashboard name");
@@ -1291,11 +1209,6 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
 
-
-
-
-
-
   dashboardData: any;
 
   loadDashboard() {
@@ -1309,10 +1222,6 @@ export class Dashboard implements OnInit, OnDestroy {
       }
     });
   }
-
-
-
-
 
 
 
@@ -1347,8 +1256,8 @@ export class Dashboard implements OnInit, OnDestroy {
 
 
   openDeletePopup(item: any) {
-    this.selectedItem = item;   // store dashboard
-    this.showDeletePopup = true;  // show popup
+    this.selectedItem = item;
+    this.showDeletePopup = true;
   }
 
 
@@ -1432,22 +1341,6 @@ export class Dashboard implements OnInit, OnDestroy {
       next: (res: any) => {
         const data = res as any[];
 
-
-
-        // this.widgets = data
-        //   .filter(d => d.dashboardId === dashboardId)
-        //   .flatMap(d =>
-        //     d.zoneSensors.map((sensor: any) => ({
-        //       widgetId: d.id,                // ✅ REQUIRED
-        //       deviceId: sensor.deviceId,
-        //       deviceName: sensor.deviceName,
-        //        deviceUniqueId: sensor.deviceUniqueId,
-        //       params: sensor.params.map((p: any) => ({
-        //         name: p.paramName,
-        //         value: '-'
-        //       }))
-        //     }))
-        //   );
         this.widgets = data
           .filter(d => d.dashboardId === dashboardId)
           .flatMap(d =>
@@ -1668,33 +1561,990 @@ export class Dashboard implements OnInit, OnDestroy {
     timestamp: string
   } | null = null;
 
-showOfflineAlert(alert: { deviceId: string; deviceName: string; description: string; timestamp: string }) {
-  // ✅ Add to queue — avoid duplicate deviceId
-  const exists = this.offlineAlerts.find(a => a.deviceId === alert.deviceId);
-  if (!exists) {
-    this.offlineAlerts.push(alert);
-  } else {
-    // Update existing
-    Object.assign(exists, alert);
+  showOfflineAlert(alert: { deviceId: string; deviceName: string; description: string; timestamp: string }) {
+    // ✅ Add to queue — avoid duplicate deviceId
+    const exists = this.offlineAlerts.find(a => a.deviceId === alert.deviceId);
+    if (!exists) {
+      this.offlineAlerts.push(alert);
+    } else {
+      // Update existing
+      Object.assign(exists, alert);
+    }
+    this.showOfflineAlertBox = true;
+    console.log('🚨 Offline Alerts:', this.offlineAlerts.length);
+    this.cdr.detectChanges();
   }
-  this.showOfflineAlertBox = true;
-  console.log('🚨 Offline Alerts:', this.offlineAlerts.length);
-  this.cdr.detectChanges();
-}
 
-closeOfflineAlert(deviceId: string) {
-  // ✅ Remove specific device alert
-  this.offlineAlerts = this.offlineAlerts.filter(a => a.deviceId !== deviceId);
-  if (this.offlineAlerts.length === 0) {
+  closeOfflineAlert(deviceId: string) {
+
+    this.offlineAlerts = this.offlineAlerts.filter(a => a.deviceId !== deviceId);
+    if (this.offlineAlerts.length === 0) {
+      this.showOfflineAlertBox = false;
+    }
+    this.cdr.detectChanges();
+  }
+  closeAllAlerts() {
+    this.offlineAlerts = [];
     this.showOfflineAlertBox = false;
+    this.cdr.detectChanges();
   }
-  this.cdr.detectChanges();
-}
-closeAllAlerts() {
-  this.offlineAlerts = [];
-  this.showOfflineAlertBox = false;
-  this.cdr.detectChanges();
+
+
+  employeeList: any[] = [];
+
+  totalEmployees: number = 0;
+
+  loadTotalEmployees() {
+    this.peopleService.getTotalEmployees().subscribe({
+      next: (res: any) => {
+        this.employeeList = res.data;
+        this.totalEmployees = res.totalCount
+
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.log("error getting total employees")
+      }
+    })
+
+  }
+
+  employeePopup = false;
+
+  openEmployeePopup() {
+    this.loadTotalEmployees();
+    this.employeePopup = true;
+  }
+
+  closeEmployeePopup() {
+    this.employeePopup = false;
+  }
+
+
+  checkinCount: number = 0;
+  checkoutCount: number = 0;
+
+  socket!: WebSocket;
+
+  connectWebSockets() {
+
+    this.socket = new WebSocket(
+      'ws://172.16.100.29:5402/ws/RealtimeCount'
+    );
+
+    this.socket.onopen = () => {
+      console.log('WebSocket Connected');
+    };
+
+    this.socket.onmessage = (event) => {
+
+      const liveData = JSON.parse(event.data);
+
+      this.checkinCount = liveData.checkinCount;
+
+      this.checkoutCount = liveData.checkoutCount;
+
+      console.log('Live Data:', liveData);
+
+      this.cdr.detectChanges();
+    };
+
+    this.socket.onerror = (error) => {
+      console.log('WebSocket Error:', error);
+    };
+
+    this.socket.onclose = () => {
+      console.log('WebSocket Closed');
+    };
+
+  }
+
+
+  empInOutlist: any[] = [];
+
+  getEmpInOutSummary() {
+    this.peopleService.employeeInCount().subscribe({
+      next: (res: any) => {
+        this.empInOutlist = res;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.log("error getting InOut count ")
+      }
+    })
+  }
+
+  inOutPopup: boolean = false;
+
+  openInOutPopup(type: string) {
+
+    this.peopleService.employeeInCount().subscribe({
+
+      next: (res: any) => {
+
+        this.empInOutlist = res.filter(
+          (item: any) => item.device_trigger === type
+        );
+
+        this.inOutPopup = true;
+
+        this.cdr.detectChanges();
+
+      },
+
+      error: () => {
+        console.log("error getting InOut count");
+      }
+
+    });
+
+  }
+  closeInOutpopup() {
+    this.inOutPopup = false;
+  }
+
+
+
+
+  personList: any[] = []
+
+  loadPersonVisit() {
+    this.peopleService.getPersonVisits().subscribe({
+      next: (res: any) => {
+        this.personList = res;
+      },
+      error: () => {
+        console.log("error getting personList")
+      }
+    })
+  }
+
+  seeMore: boolean = false;
+
+  openSeeMorePopup() {
+    this.seeMore = true;
+    this.loadPersonVisit();
+  }
+
+  closeSeeMorePopup() {
+    this.seeMore = false;
+  }
+
+  seeMoreEvent: boolean = false;
+
+  openSeeMoreEventPopup() {
+    this.seeMoreEvent = true;
+    this.loadEventList();
+  }
+
+  closeSeeMoreEventPopup() {
+    this.seeMoreEvent = false;
+  }
+
+
+  genderList: any = {};
+
+  loadGender() {
+    this.peopleService.getMalefemaleCount().subscribe({
+      next: (res: any) => {
+        this.genderList = res;
+        setTimeout(() => {
+          this.createGenderChart();
+        }, 100);
+
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.log("error getting gender count")
+      }
+    })
+  }
+
+  genderChart: any;
+  createGenderChart() {
+
+    if (this.genderChart) {
+      this.genderChart.destroy();
+    }
+
+    this.genderChart = new Chart('genderPieChart', {
+
+      type: 'pie',
+
+      data: {
+        labels: [
+          `Male (${this.genderList.malePercentage}%)`,
+          `Female (${this.genderList.femalePercentage}%)`
+        ],
+
+        datasets: [{
+          data: [
+            this.genderList.maleCount,
+            this.genderList.femaleCount
+          ],
+
+          backgroundColor: [
+            '#36A2EB',
+            '#FF6384'
+          ]
+        }]
+      },
+
+      options: {
+        responsive: true,
+
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+
+    });
+
+  }
+
+
+  personSocket!: WebSocket;
+
+  personStreamData: any[] = [];
+
+  connectPersonStream() {
+
+    this.personSocket = new WebSocket(
+      'ws://172.16.100.29:5402/ws/PersonStream'
+    );
+
+    this.personSocket.onmessage = (event) => {
+
+      const livePerson = JSON.parse(event.data);
+
+      console.log('Live Person:', livePerson);
+
+      this.personStreamData.unshift(livePerson);
+
+      this.personStreamData = [...this.personStreamData];
+
+      this.cdr.detectChanges();
+
+    };
+
+  }
+
+  deviceChart: any;
+
+  createDeviceStatusChart() {
+
+    if (this.deviceChart) {
+      this.deviceChart.destroy();
+    }
+
+    this.deviceChart = new Chart('deviceStatusChart', {
+
+      type: 'pie',
+
+      data: {
+
+        labels: [
+          'Online (100%)',
+          'Offline (0%)'
+        ],
+
+        datasets: [{
+          data: [100, 0],
+
+          backgroundColor: [
+            '#4CAF50',
+            '#FF5252'
+          ]
+        }]
+      },
+
+      options: {
+
+        responsive: true,
+
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+
+      }
+
+    });
+
+  }
+
+
+
+  alertList: any[] = [];
+  alertCount: number = 0;
+
+  loadAlert() {
+    this.peopleService.alertCount().subscribe({
+      next: (res: any) => {
+        this.alertList = res.data;
+        this.alertCount = res.count;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.log("error getting count")
+      }
+    })
+  }
+
+  alertPopup: boolean = false;
+
+  openalertPopup() {
+    this.alertPopup = true;
+    this.loadAlert();
+  }
+  closealertPopup() {
+    this.alertPopup = false;
+  }
+
+
+
+  downloadTimeCSV(): void {
+
+    if (!this.personList || this.personList.length === 0) {
+      return;
+    }
+
+    // CSV Header
+    const headers = [
+      'Employee Name',
+      'Id',
+      'CheckIn',
+      'CheckOut',
+      'TimeSpend'
+    ];
+
+    // CSV Rows
+    const rows = this.personList.map((emp: any) => [
+      emp.personName,
+      emp.personId,
+      emp.checkInTime,
+      emp.checkOutTime,
+      emp.timeSpent
+    ]);
+
+    // Convert to CSV
+    const csvContent = [headers, ...rows]
+      .map(row => row.join(','))
+      .join('\n');
+
+    // Create Blob
+    const blob = new Blob([csvContent], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    // Create Download Link
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+
+    // File Name
+    link.setAttribute('download', 'timesheet-report.csv');
+
+    document.body.appendChild(link);
+
+    // Trigger Download
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+  }
+
+
+
+
+
+  totalPeopleCount: number = 0;
+
+  loadPeopleCount() {
+    this.peopleService.getPerson(1, 10).subscribe({ // ✅ capital S
+      next: (res: any) => {
+        this.totalPeopleCount = res.totalCount || 0;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error loading people count', err);
+      }
+    });
+  }
+
+  visitorlist: any[] = [];
+  uniqueVisitorInCount: number = 0;
+
+  loadVisitorCount() {
+    this.peopleService.getTotalVisitor().subscribe({
+      next: (res: any) => {
+        this.visitorlist = res;
+        this.uniqueVisitorInCount = res.uniqueVisitorInCount;
+
+      },
+      error: () => {
+        console.log("error getting visitor List")
+      }
+    })
+  }
+
+  eventList: any[] = [];
+
+  loadEventList() {
+    this.peopleService.getDeviceEvents().subscribe({
+      next: (res: any) => {
+        this.eventList = res;
+      },
+      error: () => {
+        console.log("error getting event list")
+      }
+    })
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  widgetImages: { [key: string]: string } = {};
+
+  onWidgetImgUpload(event: globalThis.Event, widgetId: string) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e: globalThis.Event) => {
+      this.widgetImages[widgetId] = (e.target as FileReader).result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+
+  loadCustomerChart() {
+
+    const existingChart = Chart.getChart('customerChart');
+
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    new Chart('customerChart', {
+
+      type: 'doughnut',
+
+      data: {
+
+        labels: ['Male', 'Female', 'Other', 'Unknown'],
+
+        datasets: [{
+          data: [35, 35, 20, 10],
+
+          backgroundColor: [
+            '#e6b3d9',
+            '#ff8fab',
+            '#c792ea',
+            '#a8ddb5'
+          ],
+
+          borderWidth: 0
+        }]
+
+      },
+
+      options: {
+
+        responsive: true,
+
+        cutout: '55%',
+
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+
+      }
+
+    });
+
+
+  }
+
+
+  loadFamilyChart() {
+
+    const existingChart = Chart.getChart('familyChart');
+
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    new Chart('familyChart', {
+
+      type: 'doughnut',
+
+      data: {
+
+        labels: ['Total', 'Conversion'],
+
+        datasets: [{
+          data: [90, 10],
+
+          backgroundColor: [
+            '#c792ea',
+            '#a8ddb5'
+          ],
+
+          borderWidth: 0
+        }]
+
+      },
+
+      options: {
+
+        responsive: true,
+
+        cutout: '0%',
+
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+
+      }
+
+    });
+
+  }
+
+
+  loadFootfallChart() {
+
+    const existingChart = Chart.getChart('footfallChart');
+
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    const canvas = document.getElementById('footfallChart') as HTMLCanvasElement;
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) return;
+
+    // Purple Gradient
+    const purpleGradient = ctx.createLinearGradient(0, 0, 0, 300);
+
+    purpleGradient.addColorStop(0, 'rgba(142, 68, 173, 0.8)');
+    purpleGradient.addColorStop(1, 'rgba(142, 68, 173, 0.05)');
+
+    // Green Gradient
+    const greenGradient = ctx.createLinearGradient(0, 0, 0, 300);
+
+    greenGradient.addColorStop(0, 'rgba(76, 175, 80, 0.7)');
+    greenGradient.addColorStop(1, 'rgba(76, 175, 80, 0.05)');
+
+    new Chart(ctx, {
+
+      type: 'line',
+
+      data: {
+
+        labels: [
+          '12 AM',
+          '4 AM',
+          '8 AM',
+          '12 PM',
+          '4 PM',
+          '8 PM',
+          '12 AM'
+        ],
+
+        datasets: [
+
+          {
+            label: 'Total Visitors',
+
+            data: [100, 650, 620, 850, 500, 1100, 1000],
+
+            borderColor: '#7b2cbf',
+
+            backgroundColor: purpleGradient,
+
+            fill: true,
+
+            tension: 0.45,
+
+            pointRadius: 0,
+
+            borderWidth: 2
+          },
+
+          {
+            label: 'Unique Visitors',
+
+            data: [200, 800, 760, 1100, 600, 1500, 1350],
+
+            borderColor: '#4caf50',
+
+            backgroundColor: greenGradient,
+
+            fill: true,
+
+            tension: 0.45,
+
+            pointRadius: 0,
+
+            borderWidth: 2
+          }
+
+        ]
+
+      },
+
+      options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        plugins: {
+
+          legend: {
+            position: 'top',
+
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 8
+            }
+          }
+
+        },
+
+        scales: {
+
+          x: {
+
+            grid: {
+              display: false
+            }
+
+          },
+
+          y: {
+
+            beginAtZero: true,
+
+            ticks: {
+              stepSize: 300
+            },
+
+            grid: {
+              color: '#ececec'
+            }
+
+          }
+
+        }
+
+      }
+
+    });
+
+  }
+
+  formatTimestamp(timestamp: string): string {
+
+    return timestamp
+      .replace('T', ',')
+      .replace('Z', '')
+      .split('.')[0];
+
+  }
+
+  downloadEventCSV(): void {
+
+    if (!this.eventList || this.eventList.length === 0) {
+      return;
+    }
+
+    // CSV Header
+    const headers = [
+      'PersonName',
+      'CheckIn',
+      'CheckOut',
+      'TimeSpend(minutes)',
+      'Status'
+    ];
+
+    // CSV Rows
+    const rows = this.eventList.map((event: any) => [
+
+      event.personName,
+
+      new Date(event.checkinTime).toLocaleString(),
+
+      new Date(event.checkoutTime).toLocaleString(),
+
+      event.timeSpentMinutes,
+
+      event.timeSpentMinutes > 10
+        ? 'Above threshold value'
+        : 'Below threshold value'
+
+    ]);
+
+    // Convert to CSV
+    const csvContent = [headers, ...rows]
+      .map(row => row.join(','))
+      .join('\n');
+
+    // Create Blob
+    const blob = new Blob([csvContent], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    // Create Download URL
+    const url = window.URL.createObjectURL(blob);
+
+    // Create Link
+    const link = document.createElement('a');
+
+    link.href = url;
+
+    link.setAttribute(
+      'download',
+      'employee-activity-monitor.csv'
+    );
+
+    document.body.appendChild(link);
+
+    // Trigger Download
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+
+  }
+
+
+
+
+
+  get employeeInList() {
+
+    return this.empInOutlist.filter(
+      (emp: any) => emp.device_trigger?.toLowerCase() === 'in'
+    );
+
+  }
+
+  get employeeOutList() {
+
+    return this.empInOutlist.filter(
+      (emp: any) => emp.device_trigger?.toLowerCase() === 'out'
+    );
+
+  }
+
+
+  empInPopup: boolean = false;
+
+  openEmpInPopup() {
+    this.empInPopup = true;
+    this.getEmpInOutSummary();
+
+  }
+  closeEmpInPopup() {
+    this.empInPopup = false;
+  }
+
+
+  empOutPopup: boolean = false;
+
+  openEmpOutpopup() {
+    this.empOutPopup = true;
+    this.getEmpInOutSummary();
+  }
+
+  closeEmpOutPopup() {
+    this.empOutPopup = false;
+  }
+
+
+  downloadEmployeeInCSV() {
+
+    const headers = [
+      'First Name',
+      'Last Name',
+      'Status',
+      'Company',
+      'Timestamp',
+      'Phone',
+      'Designation'
+    ];
+
+    const rows = this.employeeInList.map((emp: any) => [
+
+      emp.person_details.firstName,
+
+      emp.person_details.lastName,
+
+      emp.device_trigger,
+
+      emp.person_details.company,
+
+      this.formatTimestamp(emp.timestamp),
+
+      emp.person_details.phoneNumber,
+
+      emp.person_details.designation
+
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((e: any) => e.join(','))
+    ].join('\n');
+
+    const blob = new Blob(
+      [csvContent],
+      { type: 'text/csv;charset=utf-8;' }
+    );
+
+    const link = document.createElement('a');
+
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+
+    link.setAttribute(
+      'download',
+      'employee_in_list.csv'
+    );
+
+    link.click();
+
+
+  }
+
+  downloadEmployeeOutCSV() {
+
+    const headers = [
+      'First Name',
+      'Last Name',
+      'Status',
+      'Company',
+      'Timestamp',
+      'Phone',
+      'Designation'
+    ];
+
+    const rows = this.employeeOutList.map((emp: any) => [
+
+      emp.person_details.firstName,
+
+      emp.person_details.lastName,
+
+      emp.device_trigger,
+
+      emp.person_details.company,
+
+      this.formatTimestamp(emp.timestamp),
+
+      emp.person_details.phoneNumber,
+
+      emp.person_details.designation
+
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((e: any) => e.join(','))
+    ].join('\n');
+
+    const blob = new Blob(
+      [csvContent],
+      { type: 'text/csv;charset=utf-8;' }
+    );
+
+    const link = document.createElement('a');
+
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+
+    link.setAttribute(
+      'download',
+      'employee_out_list.csv'
+    );
+
+    link.click();
+
+  }
+
+
+  aisleData = [
+  {
+    aisle: 'Bakery',
+    noOfStaffs: 3,
+    staffCount: 3
+  },
+  {
+    aisle: 'Fresh Produce',
+    noOfStaffs: 1,
+    staffCount: 6
+  },
+  {
+    aisle: 'Dairy',
+    noOfStaffs: 2,
+    staffCount: 13
+  },
+  {
+    aisle: 'Organic Foods',
+    noOfStaffs: 2,
+    staffCount: 18
+  },
+  {
+    aisle: 'Zone In',
+    noOfStaffs: 4,
+    staffCount: 7
+  },
+  {
+    aisle: 'Zone Out',
+    noOfStaffs: 6,
+    staffCount: 11
+  }
+];
+
+
+aislePopup:boolean=false;
+
+openAislePopup(){
+  this.aislePopup=true;
 }
 
+closeAislePopup(){
+  this.aislePopup=false;
+}
 
 }

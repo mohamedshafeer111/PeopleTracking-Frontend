@@ -1,10 +1,5 @@
 <div class="dashboard-layout">
 
-    <!-- LEFT SIDE : Vertical Dashboard text -->
-    <!-- <div class="vertical-dashboard">
-        Dashboard
-    </div> -->
-
 
 
     <div class="dashboard-main">
@@ -407,7 +402,7 @@
                 </div>
             </div>
         </div>
-        <!-- </div> -->
+
 
 
 
@@ -492,33 +487,134 @@
 
 
 
-        <!-- <div class="dashboard-grid">
-            <div class="widget" *ngFor="let widget of widgets">
-                <div class="widget-header">
-                    <div class="left-section">
-                        <div class="status-circle"></div>
-                        <span class="device-name">{{ widget.deviceName }}</span>
-                    </div>
 
-                    <div class="right-section">
-                        <img src="assets/edit.png" alt="Edit" class="icon-btn" />
-                        <img src="assets/delete.png" alt="Delete" class="icon-btn" (click)="openDeleteWidget(widget)" />
+        <!-- 5 Summary Widgets -->
+        <div class="summary-widgets-row">
 
+            <!-- Widget 1: Total Visitors -->
+            <div class="s-widget-card">
+                <div class="s-widget-top">
+                    <label class="s-widget-img" title="Upload image">
+                        <!-- <input type="file" accept="image/*" (change)="onWidgetImgUpload($event, 'w1')"
+                            style="display:none"> -->
+                        <img [src]="widgetImages['w1'] || 'assets/group.png'"
+                            style="width:100%;height:100%;object-fit:cover;" />
+                        <i class="ti ti-photo" *ngIf="!widgetImages['w1']"></i>
+                    </label>
+                    <div>
+                        <p class="s-widget-label">Total visitors</p>
+                        <p class="s-widget-value">{{uniqueVisitorInCount}}</p>
                     </div>
                 </div>
-
-                <div class="param-list">
-                    <div class="param-item" *ngFor="let param of widget.params">
-                        <p>{{ param.name }} - {{ param.value }}</p>
-                    </div>
-                </div>
+                <!-- <div class="s-widget-trend up">
+                    <span>↑</span> 18.6% vs yesterday
+                </div> -->
+                <canvas id="chart-w1" class="s-widget-chart"></canvas>
             </div>
-        </div> -->
+
+            <!-- Widget 2: Unique Visitors -->
+            <div class="s-widget-card">
+                <div class="s-widget-top">
+                    <label class="s-widget-img">
+                        <!-- <input type="file" accept="image/*" (change)="onWidgetImgUpload($event, 'w2')"
+                            style="display:none"> -->
+                        <img [src]="widgetImages['w2'] || 'assets/attendance.png'"
+                            style="width:100%;height:100%;object-fit:cover;" />
+                        <i class="ti ti-photo" *ngIf="!widgetImages['w2']"></i>
+                    </label>
+                    <div>
+                        <p class="s-widget-label">Unique visitors</p>
+                        <p class="s-widget-value">{{uniqueVisitorInCount}}</p>
+                    </div>
+                </div>
+                <!-- <div class="s-widget-trend up">
+                    <span>↑</span> 16.3% vs yesterday
+                </div> -->
+                <canvas id="chart-w2" class="s-widget-chart"></canvas>
+            </div>
+
+            <!-- Widget 3: Conversion Rate -->
+            <div class="s-widget-card">
+                <div class="s-widget-top">
+                    <label class="s-widget-img">
+                        <!-- <input type="file" accept="image/*" (change)="onWidgetImgUpload($event, 'w3')"
+                            style="display:none"> -->
+                        <img [src]="widgetImages['w3'] || 'assets/down.png'"
+                            style="width:100%;height:100%;object-fit:cover;" />
+                        <i class="ti ti-photo" *ngIf="!widgetImages['w3']"></i>
+                    </label>
+                    <div>
+                        <p class="s-widget-label">Conversion rate</p>
+                        <p class="s-widget-value">12.7%</p>
+                    </div>
+                </div>
+                <!-- <div class="s-widget-trend up">
+                    <span>↑</span> 2.1% vs yesterday
+                </div> -->
+                <canvas id="chart-w3" class="s-widget-chart"></canvas>
+            </div>
+
+            <!-- Widget 4: Avg Dwell Time -->
+            <div class="s-widget-card">
+                <div class="s-widget-top">
+                    <label class="s-widget-img">
+                        <!-- <input type="file" accept="image/*" (change)="onWidgetImgUpload($event, 'w4')"
+                            style="display:none"> -->
+                        <img [src]="widgetImages['w4'] || 'assets/patient.png'"
+                            style="width:100%;height:100%;object-fit:cover;" />
+                        <i class="ti ti-photo" *ngIf="!widgetImages['w4']"></i>
+                    </label>
+                    <div>
+                        <p class="s-widget-label">Avg. dwell time</p>
+                        <p class="s-widget-value">4m 32s</p>
+                    </div>
+                </div>
+                <!-- <div class="s-widget-trend up">
+                    <span>↑</span> 8.7% vs yesterday
+                </div> -->
+                <canvas id="chart-w4" class="s-widget-chart"></canvas>
+            </div>
+
+            <!-- Widget 5: Employees On Floor -->
+            <div class="s-widget-card">
+                <div class="s-widget-top">
+                    <label class="s-widget-img">
+                        <!-- <input type="file" accept="image/*" (change)="onWidgetImgUpload($event, 'w5')"
+                            style="display:none"> -->
+                        <img [src]="widgetImages['w5'] || 'assets/gathering.png'"
+                            style="width:100%;height:100%;object-fit:cover;" />
+                        <i class="ti ti-photo" *ngIf="!widgetImages['w5']"></i>
+                    </label>
+                    <div>
+                        <p class="s-widget-label">Staffs on floor</p>
+                        <p class="s-widget-value">{{totalEmployees}}</p>
+                    </div>
+                </div>
+                <!-- <div class="s-widget-trend neutral">
+                    <span>●</span> Present now
+                </div> -->
+                <canvas id="chart-w5" class="s-widget-chart"></canvas>
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+
+
 
 
         <div class="dashboard-grid">
 
-            <!-- Existing Zone / Device Widgets -->
+
+
+
+
+
             <div class="widget" *ngFor="let widget of widgets">
                 <div class="widget-header">
                     <div class="left-section">
@@ -527,19 +623,46 @@
                     </div>
 
                     <div class="right-section">
-                        <img src="assets/edit.png" class="icon-btn" />
+                        <!-- <img src="assets/edit.png" class="icon-btn" /> -->
                         <img src="assets/delete.png" class="icon-btn" (click)="openDeleteWidget(widget)" />
                     </div>
                 </div>
 
                 <div class="param-list">
                     <div class="param-item" *ngFor="let param of widget.params">
-                        <p>{{ param.name }} - {{ param.value }}</p>
+
+                        <p>
+                            {{ param.name }} -
+
+                            {{
+                            param.name === 'Total Employee'
+                            ? totalEmployees
+
+                            : param.name === 'Employee In'
+                            ? checkinCount
+
+                            : param.name === 'Employee Out'
+                            ? checkoutCount
+
+                            : param.value
+                            }}
+                        </p>
+                        <img src="assets/show.png" class="show-icon" alt="show" (click)="
+                                          param.name === 'Total Employee'
+                                  ? openEmployeePopup()
+
+                                     : param.name === 'Employee In'
+                              ? openInOutPopup('in')
+
+                                      : param.name === 'Employee Out'
+                               ? openInOutPopup('out')
+
+                                              : null
+                              " />
                     </div>
                 </div>
             </div>
 
-            <!-- ✅ PERSONAL CLOCK WIDGET -->
             <ng-container *ngFor="let pWidget of personalWidgets">
                 <div class="widget" *ngIf="pWidget.personalWidgetName === 'Clock Widget'">
 
@@ -550,16 +673,680 @@
                         </div>
 
                         <div class="right-section">
-                            <img src="assets/delete.png" class="icon-btn" (click)="openClockDeletePopup(activeDashboardId,pWidget.personalWidgetid)"/>
+                            <img src="assets/delete.png" class="icon-btn"
+                                (click)="openClockDeletePopup(activeDashboardId,pWidget.personalWidgetid)" />
                         </div>
                     </div>
 
                     <div class="widget-body">
-                        <app-clock-widget  [isPreview]="false"></app-clock-widget>
+                        <app-clock-widget [isPreview]="false"></app-clock-widget>
                     </div>
 
                 </div>
             </ng-container>
+
+
+            <div class="dashboard-layouts">
+
+                <div class="tables-section">
+
+                    <div class="time-sheet-widget">
+                        <div class="widget-header">
+                            <h2>Staff Log</h2>
+                        </div>
+
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>StaffName</th>
+                                    <th>Id</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Time Spend</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let person of personList.slice(0, 3); let isEven = even"
+                                    [class.row-highlight]="isEven">
+                                    <td>{{ person.personName }}</td>
+                                    <td>{{ person.personId }}</td>
+                                    <td class="timestamp">{{ formatTimestamp(person.checkInTime)}}</td>
+                                    <td class="timestamp">{{ formatTimestamp(person.checkOutTime)}}</td>
+                                    <td>{{ person.timeSpent }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="see-more" *ngIf="personList.length > 3" (click)="openSeeMorePopup()">
+
+                            See More
+
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- <div class="time-sheet-widget">
+
+                        <div class="widget-header">
+                            <h2>Live Person Stream</h2>
+
+
+                        </div>
+
+                        <table class="data-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Id</th>
+                                    <th>Status</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr *ngFor="let person of personStreamData; let isEven = even"
+                                    [class.row-highlight]="isEven">
+
+                                    <td>{{ person.person_name }}</td>
+
+                                    <td>{{ person.person_id }}</td>
+
+                                    <td>{{ person.device_trigger }}</td>
+
+                                    <td class="timestamp">{{ person.timestamp | date:'yyyy-MM-dd,hh:mm:ss' }}</td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div> -->
+
+                    <div class="time-sheet-widget">
+
+                        <div class="widget-header">
+                            <h2>Staff On Site</h2>
+
+
+                        </div>
+
+                        <table class="data-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Aisle</th>
+                                    <th>No Of Staffs</th>
+                                    <th>View</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr *ngFor="let aisle of aisleData.slice(0,3); let isEven = even"
+                                    [class.row-highlight]="isEven">
+
+                                    <td>{{ aisle.aisle }}</td>
+
+                                    <td>{{ aisle.noOfStaffs }}</td>
+
+                                    <td><img src="assets/show.png" class="show-icon" alt="show" />
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                        <div class="see-more" *ngIf="aisleData.length > 3" (click)="openAislePopup()">
+
+                            See More
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card zone-widget">
+
+                        <div class="zone-header">
+
+                            <h2>Top Zone by Staff</h2>
+
+                            <select class="zone-filter">
+                                <option>Today</option>
+                                <option>Yesterday</option>
+                                <option>This Week</option>
+                            </select>
+
+                        </div>
+
+                        <table class="zone-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Zone</th>
+                                    <th>Count</th>
+                                    <th>Check</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td class="zone-name">Zone In</td>
+
+                                    <td>{{ checkinCount }}</td>
+
+                                    <td>
+                                        <img src="assets/show.png" class="zone-eye-icon" alt="show"
+                                            (click)="openInOutPopup('in')" />
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td class="zone-name">Zone Out</td>
+
+                                    <td>{{ checkoutCount }}</td>
+
+                                    <td>
+                                        <img src="assets/show.png" class="zone-eye-icon" alt="show"
+                                            (click)="openInOutPopup('out')" />
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+
+
+
+
+                </div>
+
+
+
+                <!-- <div class="chart-section">
+
+                    <div class="chart-card">
+                        <h2>Gender Ratio</h2>
+
+                        <div class="chart-container">
+                            <canvas id="genderPieChart"></canvas>
+                        </div>
+                    </div>
+
+
+                    <div class="chart-card">
+                        <div class="widget-header">
+                            <h2>People Count</h2>
+                        </div>
+
+                        <div class="people-count-body">
+
+                            <div class="count-row">
+                                <span class="count-label">Total People</span>
+                                <span class="count-value">{{ totalPeopleCount }}</span>
+                            </div>
+
+                            <div class="count-row">
+                                <span class="count-label">Employee In</span>
+                                <span class="count-value">{{ checkinCount }}</span>
+                            </div>
+
+                            <div class="count-row">
+                                <span class="count-label">Employee Out</span>
+                                <span class="count-value">{{ checkoutCount }}</span>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+                    <div class="chart-card alert-card">
+
+                        <div class="alert-headers">
+
+                            <h2>Alert</h2>
+
+           
+                            <img src="assets/show.png" alt="Show" class="show-icon" (click)="openalertPopup()" />
+
+                        </div>
+
+                        <div class="alert-container">
+                            Count -- {{ alertCount }}
+                        </div>
+
+                    </div>
+
+                    <div class="chart-card">
+
+                        <h2>Device Status</h2>
+
+                        <div class="chart-container">
+                            <canvas id="deviceStatusChart"></canvas>
+                        </div>
+
+                    </div>
+
+                </div> -->
+                <div class="analytics-grid">
+
+
+                    <div class="time-sheet-widget">
+
+                        <div class="widget-header">
+                            <h2>Staff Activity Monitor</h2>
+                        </div>
+
+                        <div class="table-scroll">
+
+                            <table class="data-table">
+
+                                <thead>
+                                    <tr>
+
+                                        <th>StaffName</th>
+                                        <th>CheckIn</th>
+                                        <th>CheckOut</th>
+                                        <th>Count</th>
+                                        <th>TimeSpend(min)</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <tr *ngFor="let event of eventList.slice(0,5); let isEven = even"
+                                        [class.row-highlight]="isEven">
+
+
+
+                                        <td>{{ event.personName }}</td>
+
+                                        <td class="timestamp">
+                                            {{formatTimestamp(event.checkinTime)}}
+                                        </td>
+
+                                        <td class="timestamp">
+                                            {{formatTimestamp(event.checkoutTime)}}
+                                        </td>
+
+                                        <td>{{event.count}}</td>
+                                        <td class="time-spent">
+
+                                            <span class="time-value">
+                                                {{ event.timeSpentMinutes }}
+                                            </span>
+
+                                            <span [ngClass]="event.timeSpentMinutes > 10 ? 'up-arrow' : 'down-arrow'"
+                                                [title]="
+          event.timeSpentMinutes > 10
+          ? 'Above threshold value'
+          : 'Below threshold value'
+        ">
+
+                                                {{ event.timeSpentMinutes > 10 ? '↑' : '↓' }}
+
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                            <div class="see-more" *ngIf="eventList.length > 5" (click)="openSeeMoreEventPopup()">
+
+                                See More
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="time-sheet-widget">
+                        <div class="widget-header">
+                            <h2>Staff In List</h2>
+                        </div>
+
+                        <table class="data-table">
+
+                            <thead>
+                                <tr>
+                                    <th>StaffName</th>
+
+                                    <th>Id</th>
+
+                                    <th>Status</th>
+
+                                    <th>TimeStamp</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let empl of employeeInList">
+
+                                    <td>{{ empl.person_details.firstName }}</td>
+
+                                    <td>{{empl.person_id}}</td>
+
+
+                                    <td>{{ empl.device_trigger }}</td>
+
+
+                                    <td class="timestamp">
+                                        {{ formatTimestamp(empl.timestamp) }}
+                                    </td>
+
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                        <div class="see-more" *ngIf="employeeInList.length > 3" (click)="openEmpInPopup()">
+
+                            See More
+
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="time-sheet-widget">
+                        <div class="widget-header">
+                            <h2>Staff Out List</h2>
+                        </div>
+
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>StaffName</th>
+                                    <th>Id</th>
+                                    <th>Status</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let empl of employeeOutList">
+
+                                    <td>{{ empl.person_details.firstName }}</td>
+
+                                    <td>{{empl.person_id}}</td>
+
+
+                                    <td>{{ empl.device_trigger }}</td>
+
+
+                                    <td class="timestamp">
+                                        {{ formatTimestamp(empl.timestamp) }}
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="see-more" *ngIf="employeeOutList.length > 3" (click)="openEmpOutpopup()">
+
+                            See More
+
+                        </div>
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="widget-top">
+
+                            <h2>Customer Demographics</h2>
+
+                        </div>
+
+                        <div class="demographic-body">
+
+                            <div class="donut-chart">
+                                <canvas id="customerChart"></canvas>
+
+                                <div class="center-text">
+                                    <h3>1248</h3>
+                                    <p>Visitors</p>
+                                </div>
+                            </div>
+
+                            <div class="legend-list">
+
+                                <div class="legend-item">
+                                    <span class="dot male"></span>
+                                    <p>Male</p>
+                                    <span>35%</span>
+                                </div>
+
+                                <div class="legend-item">
+                                    <span class="dot female"></span>
+                                    <p>Female</p>
+                                    <span>35%</span>
+                                </div>
+
+                                <div class="legend-item">
+                                    <span class="dot other"></span>
+                                    <p>Other</p>
+                                    <span>20%</span>
+                                </div>
+
+                                <div class="legend-item">
+                                    <span class="dot unknown"></span>
+                                    <p>Unknown</p>
+                                    <span>10%</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="zone-header">
+
+                            <h2>Footfall Trend</h2>
+
+                            <select class="zone-filter">
+                                <option>Today</option>
+                            </select>
+
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="footfallChart"></canvas>
+                        </div>
+
+                    </div>
+
+
+                    <div class="chart-card">
+
+                        <div class="zone-header">
+
+                            <h2>Age Group Distribution</h2>
+
+                            <select class="zone-filter">
+                                <option>Today</option>
+                            </select>
+
+                        </div>
+
+                        <div class="age-group-list">
+
+                            <div class="age-item">
+                                <span>0-18</span>
+
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width:8%"></div>
+                                </div>
+
+                                <p>8%</p>
+                            </div>
+
+                            <div class="age-item">
+                                <span>19-25</span>
+
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width:24%"></div>
+                                </div>
+
+                                <p>24%</p>
+                            </div>
+
+                            <div class="age-item">
+                                <span>26-35</span>
+
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width:34%"></div>
+                                </div>
+
+                                <p>34%</p>
+                            </div>
+
+                            <div class="age-item">
+                                <span>36-45</span>
+
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width:22%"></div>
+                                </div>
+
+                                <p>22%</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+
+
+                    <div class="chart-card">
+
+                        <div class="zone-header">
+
+                            <h2>Family Activity</h2>
+
+                            <select class="zone-filter">
+                                <option>Today</option>
+                            </select>
+
+                        </div>
+
+                        <div class="family-layout">
+
+                            <div class="family-chart">
+                                <canvas id="familyChart"></canvas>
+                            </div>
+
+                            <div class="family-info">
+
+                                <div class="family-row">
+                                    <span class="purple-dot"></span>
+                                    <p>Total</p>
+                                    <span>90 (90%)</span>
+                                </div>
+
+                                <div class="family-row">
+                                    <span class="green-dot"></span>
+                                    <p>Conversion</p>
+                                    <span>10 (10%)</span>
+                                </div>
+
+                                <div class="avg-box">
+
+                                    <p>Avg Dwell Time</p>
+
+                                    <h3>4m 32s</h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- <div class="chart-card">
+
+                        <div class="zone-header">
+
+                            <h2>Alerts & Notifications</h2>
+
+                            <p class="view-all">View All</p>
+
+                        </div>
+
+                        <div class="alert-list">
+
+                            <div class="alert-item" *ngFor="let item of [1,2,3,4]">
+
+                                <div class="alert-left">
+
+                                    <span class="alert-icon">!</span>
+
+                                    <div>
+                                        <h4>John Smith Missing</h4>
+                                        <p>Warehouse A</p>
+                                    </div>
+
+                                </div>
+
+                                <span class="alert-time">8.45 AM</span>
+
+                            </div>
+
+                        </div>
+
+                    </div> -->
+
+
+
+                </div>
+
+            </div>
+
+
+
+
+
 
 
         </div>
@@ -577,37 +1364,489 @@
 
 
 <div class="offline-alert-overlay" *ngIf="showOfflineAlertBox">
-  <div class="offline-alert-box">
+    <div class="offline-alert-box">
 
-    <div class="alert-header">
-      <span class="alert-icon"></span>
-      <span class="alert-title">Device Offline Alert ({{ offlineAlerts.length }})</span>
-      <span class="alert-close" (click)="closeAllAlerts()">✕</span>
+        <div class="alert-header">
+            <span class="alert-icon"></span>
+            <span class="alert-title">Device Offline Alert ({{ offlineAlerts.length }})</span>
+            <span class="alert-close" (click)="closeAllAlerts()">✕</span>
+        </div>
+
+        <!-- ✅ One row per device -->
+        <div class="alert-body">
+            <div class="alert-card" *ngFor="let alert of offlineAlerts">
+                <div class="alert-row">
+                    <span class="alert-label">Device Name</span>
+                    <span class="alert-value">{{ alert.deviceName }}</span>
+                </div>
+                <div class="alert-row">
+                    <span class="alert-label">Description</span>
+                    <span class="alert-value">{{ alert.description }}</span>
+                </div>
+                <div class="alert-row">
+                    <span class="alert-label">Timestamp</span>
+                    <span class="alert-value">{{ alert.timestamp | date: 'dd MM yyyy, hh:mm:ss a' : '+0400'
+                        }}</span>
+                </div>
+                <!-- ✅ Dismiss individual alert -->
+                <div class="alert-footer">
+                    <button class="alert-dismiss-btn" (click)="closeOfflineAlert(alert.deviceId)">
+                        Dismiss
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<div class="popup-overlay" *ngIf="employeePopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Total Employees</h4>
+
+            <span class="close-btn" (click)="closeEmployeePopup()">
+                ✖
+            </span>
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>FirstName</th>
+                    <th>LastName</th>
+                    <th>Company</th>
+                    <th>StartDate</th>
+                    <th>EndDate</th>
+                    <th>Phone</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let emp of employeeList">
+
+                    <td>{{ emp.firstName }}</td>
+                    <td> {{ emp.lastName }}</td>
+                    <td>{{ emp.company }}</td>
+                    <td>{{ emp.startDate | date:'yyyy-MM-dd'}}</td>
+                    <td>{{emp.endDate | date:'yyyy-MM-dd'}}</td>
+                    <td>{{ emp.phoneNumber }}</td>
+                    <td>{{ emp.designation }}</td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
     </div>
 
-    <!-- ✅ One row per device -->
-    <div class="alert-body">
-      <div class="alert-card" *ngFor="let alert of offlineAlerts">
-        <div class="alert-row">
-          <span class="alert-label">Device Name</span>
-          <span class="alert-value">{{ alert.deviceName }}</span>
+</div>
+
+
+
+
+<div class="popup-overlay" *ngIf="alertPopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Person Alert</h4>
+
+
+            <span class="close-btn" (click)="closealertPopup()">
+                ✖
+            </span>
         </div>
-        <div class="alert-row">
-          <span class="alert-label">Description</span>
-          <span class="alert-value">{{ alert.description }}</span>
-        </div>
-        <div class="alert-row">
-          <span class="alert-label">Timestamp</span>
-          <span class="alert-value">{{ alert.timestamp | date: 'dd MMM yyyy, hh:mm:ss a' : '+0400' }}</span>
-        </div>
-        <!-- ✅ Dismiss individual alert -->
-        <div class="alert-footer">
-          <button class="alert-dismiss-btn" (click)="closeOfflineAlert(alert.deviceId)">
-            Dismiss
-          </button>
-        </div>
-      </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>PersonId</th>
+                    <th>PersonName</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let emp of alertList">
+
+                    <td>{{ emp.person_id }}</td>
+                    <td> {{ emp.person_name }}</td>
+                    <td class="timestamp">{{ emp.timestamp | date:'yyyy-MM-dd,hh:mm:ss' }}</td>
+                    <td>{{ emp.status}}</td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
     </div>
 
-  </div>
+</div>
+
+
+<div class="popup-overlay" *ngIf="seeMore">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+
+            <h4>Staff Log</h4>
+
+            <div class="popup-actions">
+
+                <!-- Download Icon -->
+                <img src="assets/download.png" alt="Download" class="download-icon" (click)="downloadTimeCSV()" />
+
+                <span class="close-btn" (click)="closeSeeMorePopup()">
+                    ✖
+                </span>
+
+            </div>
+
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>StaffName</th>
+                    <th>Id</th>
+                    <th>CheckIn</th>
+                    <th>checkOut</th>
+                    <th>TimeSpent</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr *ngFor="let emp of personList">
+
+                    <td>{{ emp.personName }}</td>
+                    <td>{{ emp.personId }}</td>
+                    <td class="timestamp">{{ formatTimestamp(emp.checkInTime)}}</td>
+                    <td class="timestamp">{{ formatTimestamp(emp.checkOutTime)}}</td>
+                    <td>{{ emp.timeSpent }}</td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<div class="popup-overlay" *ngIf="seeMoreEvent">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+
+            <h4>Staff Activity Monitor</h4>
+
+            <div class="popup-actions">
+
+                <!-- Download Icon -->
+                <img src="assets/download.png" alt="Download" class="download-icon" (click)="downloadEventCSV()" />
+
+                <span class="close-btn" (click)="closeSeeMoreEventPopup()">
+                    ✖
+                </span>
+
+            </div>
+
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>StaffName</th>
+                    <th>CheckIn</th>
+                    <th>CheckOut</th>
+                    <th>Count</th>
+                    <th>TimeSpend(minutes)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr *ngFor="let event of eventList; let isEven = even" [class.row-highlight]="isEven">
+
+                    <!-- <td>{{ event.personId }}</td> -->
+
+                    <td>{{ event.personName }}</td>
+
+                    <td class="timestamp">
+                        {{formatTimestamp(event.checkinTime)}}
+                    </td>
+
+                    <td class="timestamp">
+                        {{formatTimestamp(event.checkoutTime)}}
+                    </td>
+
+                    <td>{{event.count}}</td>
+                    <td class="time-spent">
+
+                        <span class="time-value">
+                            {{ event.timeSpentMinutes }}
+                        </span>
+
+                        <span [ngClass]="event.timeSpentMinutes > 10 ? 'up-arrow' : 'down-arrow'" [title]="
+          event.timeSpentMinutes > 10
+          ? 'Above threshold value'
+          : 'Below threshold value'
+        ">
+
+                            {{ event.timeSpentMinutes > 10 ? '↑' : '↓' }}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+
+
+    </div>
+
+</div>
+
+<div class="popup-overlay" *ngIf="inOutPopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Employees In Out List</h4>
+
+            <span class="close-btn" (click)="closeInOutpopup()">
+                ✖
+            </span>
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Status</th>
+                    <th>Company</th>
+                    <th>TimeStamp</th>
+                    <th>Phone</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let empl of empInOutlist">
+
+                    <td>{{ empl.person_details.firstName }}</td>
+
+                    <td>{{ empl.person_details.lastName }}</td>
+
+                    <td>{{ empl.device_trigger }}</td>
+
+                    <td>{{ empl.person_details.company }}</td>
+
+                    <td class="timestamp">
+                        {{ formatTimestamp(empl.timestamp) }}
+                    </td>
+                    <td>{{ empl.person_details.phoneNumber }}</td>
+
+                    <td>{{ empl.person_details.designation }}</td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="popup-overlay" *ngIf="empInPopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Staff In List</h4>
+
+            <div class="popup-actions">
+
+                <img src="assets/download.png" alt="Download" class="download-icon" (click)="downloadEmployeeInCSV()" />
+                <span class="close-btn" (click)="closeEmpInPopup()">
+                    ✖
+                </span>
+            </div>
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Status</th>
+                    <th>Company</th>
+                    <th>TimeStamp</th>
+                    <th>Phone</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let empl of employeeInList">
+
+                    <td>{{ empl.person_details.firstName }}</td>
+
+                    <td>{{ empl.person_details.lastName }}</td>
+
+                    <td>{{ empl.device_trigger }}</td>
+
+                    <td>{{ empl.person_details.company }}</td>
+
+                    <td class="timestamp">
+                        {{ formatTimestamp(empl.timestamp) }}
+                    </td>
+                    <td>{{ empl.person_details.phoneNumber }}</td>
+
+                    <td>{{ empl.person_details.designation }}</td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="popup-overlay" *ngIf="empOutPopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Staff Out List</h4>
+            <div class="popup-actions">
+
+                <img src="assets/download.png" alt="Download" class="download-icon"
+                    (click)="downloadEmployeeOutCSV()" />
+                <span class="close-btn" (click)="closeEmpOutPopup()">
+                    ✖
+                </span>
+            </div>
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Status</th>
+                    <th>Company</th>
+                    <th>TimeStamp</th>
+                    <th>Phone</th>
+                    <th>Designation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let empl of employeeOutList">
+
+                    <td>{{ empl.person_details.firstName }}</td>
+
+                    <td>{{ empl.person_details.lastName }}</td>
+
+                    <td>{{ empl.device_trigger }}</td>
+
+                    <td>{{ empl.person_details.company }}</td>
+
+                    <td class="timestamp">
+                        {{ formatTimestamp(empl.timestamp) }}
+                    </td>
+                    <td>{{ empl.person_details.phoneNumber }}</td>
+
+                    <td>{{ empl.person_details.designation }}</td>
+
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="popup-overlay" *ngIf="aislePopup">
+
+    <div class="popup-container">
+
+        <div class="popup-header">
+            <h4>Staff On Site</h4>
+            <div class="popup-actions">
+
+                <span class="close-btn" (click)="closeAislePopup()">
+                    ✖
+                </span>
+            </div>
+        </div>
+
+        <table class="employee-table">
+
+            <thead>
+                <tr>
+                    <th>Aisle</th>
+                    <th>No Of Staff </th>
+                    <th>View</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let aisle of aisleData">
+
+                    <td>{{ aisle.aisle }}</td>
+
+                    <td>{{ aisle.noOfStaffs }}</td>
+
+                    <td><img src="assets/show.png" class="show-icon" alt="show" />
+                    </td>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>

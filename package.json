@@ -33,7 +33,7 @@
     "@angular/router": "^20.1.0",
     "@angular/ssr": "^20.1.5",
     "@ng-select/ng-select": "^20.5.0",
-    "chart.js": "^4.4.1",
+    "chart.js": "^4.5.1",
     "express": "^5.1.0",
     "file-saver": "^2.0.5",
     "leaflet": "^1.9.4",

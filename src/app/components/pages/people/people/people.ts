@@ -203,7 +203,8 @@ export class People implements OnInit {
     phoneNumber: '',
     cardBatchNumber: '',
     department: '',
-    device: ''
+    device: '',
+    imagePath:''
   };
 
 
