@@ -30,6 +30,7 @@ import {
 
 
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../../environments/environment.prod';
 Chart.register(
   PieController,
   ArcElement,
@@ -105,7 +106,7 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
-
+  private wsBaseUrl = environment.wsBaseUrl;
 
   ngAfterViewInit(): void {
     this.loadPeopleCount();
@@ -817,7 +818,10 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
   private ws!: WebSocket;
   //private wsUrl = 'ws://172.16.100.29:5202/ws/ZoneCount';
 
-  private wsUrl = 'ws://172.16.100.26:5202/ws/ZoneCount';
+  private wsUrl = `${this.wsBaseUrl}/ws/ZoneCount`;
+
+
+
 
   ngOnDestroy() {
     if (this.ws) this.ws.close();
@@ -1491,7 +1495,10 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
       this.deviceNotificationWs.close();
     }
 
-    this.deviceNotificationWs = new WebSocket('ws://172.16.100.26:5202/ws/DeviceNotification');
+    // this.deviceNotificationWs = new WebSocket('ws://172.16.100.26:5202/ws/DeviceNotification');
+    this.deviceNotificationWs = new WebSocket(
+      `${this.wsBaseUrl}/ws/DeviceNotification`
+    );
 
     this.deviceNotificationWs.onopen = () => {
       console.log('✅ Device Notification WS Connected');
@@ -1628,8 +1635,11 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
 
   connectWebSockets() {
 
+    // this.socket = new WebSocket(
+    //   'ws://172.16.100.29:5402/ws/RealtimeCount'
+    // );
     this.socket = new WebSocket(
-      'ws://172.16.100.29:5402/ws/RealtimeCount'
+      `${this.wsBaseUrl}/ws/RealtimeCount`
     );
 
     this.socket.onopen = () => {
@@ -1811,8 +1821,11 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
 
   connectPersonStream() {
 
+    // this.personSocket = new WebSocket(
+    //   'ws://172.16.100.29:5402/ws/PersonStream'
+    // );
     this.personSocket = new WebSocket(
-      'ws://172.16.100.29:5402/ws/PersonStream'
+      `${this.wsBaseUrl}/ws/PersonStream`
     );
 
     this.personSocket.onmessage = (event) => {
@@ -2504,47 +2517,47 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
 
 
   aisleData = [
-  {
-    aisle: 'Bakery',
-    noOfStaffs: 3,
-    staffCount: 3
-  },
-  {
-    aisle: 'Fresh Produce',
-    noOfStaffs: 1,
-    staffCount: 6
-  },
-  {
-    aisle: 'Dairy',
-    noOfStaffs: 2,
-    staffCount: 13
-  },
-  {
-    aisle: 'Organic Foods',
-    noOfStaffs: 2,
-    staffCount: 18
-  },
-  {
-    aisle: 'Zone In',
-    noOfStaffs: 4,
-    staffCount: 7
-  },
-  {
-    aisle: 'Zone Out',
-    noOfStaffs: 6,
-    staffCount: 11
+    {
+      aisle: 'Bakery',
+      noOfStaffs: 3,
+      staffCount: 3
+    },
+    {
+      aisle: 'Fresh Produce',
+      noOfStaffs: 1,
+      staffCount: 6
+    },
+    {
+      aisle: 'Dairy',
+      noOfStaffs: 2,
+      staffCount: 13
+    },
+    {
+      aisle: 'Organic Foods',
+      noOfStaffs: 2,
+      staffCount: 18
+    },
+    {
+      aisle: 'Zone In',
+      noOfStaffs: 4,
+      staffCount: 7
+    },
+    {
+      aisle: 'Zone Out',
+      noOfStaffs: 6,
+      staffCount: 11
+    }
+  ];
+
+
+  aislePopup: boolean = false;
+
+  openAislePopup() {
+    this.aislePopup = true;
   }
-];
 
-
-aislePopup:boolean=false;
-
-openAislePopup(){
-  this.aislePopup=true;
-}
-
-closeAislePopup(){
-  this.aislePopup=false;
-}
+  closeAislePopup() {
+    this.aislePopup = false;
+  }
 
 }

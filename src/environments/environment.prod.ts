@@ -1,9 +1,11 @@
 
 export const environment = {
   production: true,
-     apiUrl: 'http://165.22.215.89:5202/api/',
+     apiUrl: 'http://172.16.100.29:5402/api/',
+       wsBaseUrl: 'ws://172.16.100.29:5402',
+
   // wsUrl: 'ws://165.22.215.89:5202/ws/ZoneCount'
-     wsUrl: '/ws/ZoneCount'
+   //   wsUrl: '/ws/ZoneCount'
 };
 
 
